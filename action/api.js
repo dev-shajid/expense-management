@@ -29,7 +29,7 @@ export async function GetAllProjects() {
     try {
         let projects = await db.project.findMany({
             orderBy:{
-                start: 'desc',
+                created_at: 'desc',
             }
         })
         return projects
