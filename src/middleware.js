@@ -9,7 +9,7 @@ export default async function middleware(req) {
         let decode = token ? await verifyToken(token) : null
         // console.log({decode, token, path})
 
-        if (path?.startsWith('/signin') || path?.startsWith('/signup')) {
+        if (path?.startsWith('/signin')) {
             if (decode?.id) {
                 return NextResponse.redirect(new URL('/', req.url))
             }
@@ -33,6 +33,6 @@ export default async function middleware(req) {
 export const config = {
     matcher: [
         '/',
-        '/signin', '/signup',
+        '/signin',
     ]
 }

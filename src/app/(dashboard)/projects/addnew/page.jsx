@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation';
 
 export default function AddNewProduct() {
     const [isLoading, setIsLoading] = useState(false)
-    const [values, setValues] = useState({ name: 'Project 2', start: '14/3/2024', budget: '25000', details: 'Just a details' })
+    const [values, setValues] = useState({ name: null, start: null, budget: null, details: null })
     const [errors, setErrors] = useState({})
     const router = useRouter()
 
