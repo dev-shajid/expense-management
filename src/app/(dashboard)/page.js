@@ -20,11 +20,7 @@ export default function Home() {
     authUser()
   }, [])
 
-  if (isLoading) return (
-    <section className='flex justify-center items-center h-[100dvh]'>
-      <Loading />
-    </section>
-  )
+  if (isLoading) return <Loading page/>
   return (
     <>
       <div className="text-3xl">
