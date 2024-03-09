@@ -1,10 +1,21 @@
+'use client'
+
 import ProjectCard from '@/components/ProjectCard'
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { GetAllProjects } from '../../../../action/api'
 
 export default async function ProjectsPage() {
-  let projects=await GetAllProjects()
+  const [projects, setProject] = useState([])
+
+  async function getProjects(){
+    const res=await GetAllProjects()
+    setProject(res)
+  }
+
+  useEffect(()=>{
+    getProjects()
+  },[])
   
   return (
     <section className='container'>
