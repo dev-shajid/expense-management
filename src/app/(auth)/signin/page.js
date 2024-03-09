@@ -9,7 +9,7 @@ import { Backdrop } from '@mui/material'
 
 export default function page({ searchParams }) {
     const [isLoading, setIsLoading] = useState(false)
-    const [values, setValues] = useState({ email: '', password: '' })
+    const [values, setValues] = useState({ name:"admin", email: '', password: '' })
     const router = useRouter()
 
     function handleChange(e) {
@@ -21,7 +21,7 @@ export default function page({ searchParams }) {
         try {
             e.preventDefault()
             setIsLoading(true)
-            let res=await axios.post('/api/auth/login', values)
+            let res=await axios.post('/api/auth/register', values)
             // console.log(res)
             router.push('/')
             if (res.status == 200) {

@@ -55,13 +55,14 @@ export default function AddNewProduct() {
                         helperText="Hello"
                         label="Date"
                         defaultValue={values.start}
+                        format='DD/MM/YYYY'
                         slotProps={{
                             textField: {
                                 helperText: "Enter Project Date",
                                 error: errors?.start?.length && true,
                             },
                         }}
-                        onChange={(e) => setValues((pre) => ({ ...pre, start: dayjs(e).format('DD/MM/YYYY') }))}
+                        onChange={(e) => setValues((pre) => ({ ...pre, start: dayjs(e) }))}
                     />
                 </LocalizationProvider>
                 <TextField

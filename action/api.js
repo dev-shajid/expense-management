@@ -15,7 +15,7 @@ export async function Logout() {
 // TODO: Project
 export async function AddProject(data) {
     try {
-        // data.start = new Date(data.start).toISOString()
+        data.start = new Date(data.start).toISOString()
         data.budget = Number(data.budget)
         console.log(data)
         let project = await db.project.create({ data })
@@ -29,7 +29,7 @@ export async function GetAllProjects() {
     try {
         let projects = await db.project.findMany({
             orderBy:{
-                created_at: 'desc',
+                createdAt: 'desc',
             }
         })
         return projects

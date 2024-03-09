@@ -2,13 +2,13 @@ import { NextResponse } from "next/server";
 import bcrypt from 'bcryptjs'
 import db from "@/lib/db";
 import { signJwtToken } from "@/lib/jwt";
-import { validateLoginForm, validateRegisterForm } from "@/helper/validate";
+import { validateRegisterForm } from "@/helper/validate";
 
 export async function POST(req) {
     try {
         const formData = await req.json()
         let validation = await validateRegisterForm(formData)
-        console.log({validation, formData})
+        // console.log({validation, formData})
         if (Object.keys(validation).length) throw new Error("Invalid Form")
     
         const { name, email, password } = formData

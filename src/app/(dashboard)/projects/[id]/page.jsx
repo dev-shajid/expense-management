@@ -2,10 +2,11 @@ import Link from 'next/link'
 import React from 'react'
 import { GetProject } from '../../../../../action/api'
 import ProjectTransactionTable from './ProjectTransactionTable';
+import dayjs from 'dayjs';
 
 
 export default async function ProjectPage({ params }) {
-  let project = await GetProject(Number(params.id))
+  let project = await GetProject(params.id)
 
 
   if (!project) return <>No Project is Found!</>
@@ -26,7 +27,7 @@ export default async function ProjectPage({ params }) {
       <div className='grid gap-4 lg:grid-cols-5 sm:grid-cols-3 grid-cols-2'>
         {
           [
-            { title: "Date", value: project.start },
+            { title: "Date", value: dayjs(project.start).format('D MMM YYYY') },
             { title: "Budget", value: project.budget },
             { title: "Income", value: project.total_income },
             { title: "Expense", value: project.total_expense },
@@ -34,9 +35,9 @@ export default async function ProjectPage({ params }) {
             { title: "A/C Payable", value: project.payable },
             { title: "A/C Receivable", value: project.receivable },
           ].map((p, i) => (
-            <div key={i} className='flex flex-col justify-center items-center gap-1 bg-white rounded-md p-4 border'>
+            <div key={i} className='flex flex-col text-center justify-center items-center gap-1 bg-white rounded-md p-4 border'>
               <span className='text-xs'>{p.title}</span>
-              <span className='text font-semibold'>{p.value}</span>
+              <span className='text font-semibold min-w-fit'>{p.value}</span>
             </div>
           ))
         }
