@@ -9,7 +9,7 @@ export default function Home() {
   const [user, setUser] = useState({})
 
   function authUser() {
-    axios.get('http://localhost:3000/api/auth/authUser')
+    axios.get('/api/auth/authUser')
       .then(res => {
         setUser(res.data.user)
       })
