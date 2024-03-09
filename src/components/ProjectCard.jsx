@@ -1,7 +1,6 @@
 import React from 'react'
 
 export default function ProjectCard({project}) {
-    console.log(project)
     return (
         <div className='flex border shadow-sm sm:hover:shadow-lg duration-100 flex-col justify-between p-4 rounded-md space-y-8 cursor-pointer bg-white'>
             <div className='space-y-4'>

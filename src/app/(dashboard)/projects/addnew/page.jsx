@@ -11,12 +11,13 @@ import { validateAddProjectForm } from '@/helper/validate';
 import { AddProject } from '../../../../../action/api';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import useApi from '@/lib/useApi';
 
 export default function AddNewProduct() {
-    const [isLoading, setIsLoading] = useState(false)
-    const [values, setValues] = useState({ name: null, start: null, budget: null, details: null })
+    const [values, setValues] = useState({ name: '', start: undefined, budget: '', details: '' })
     const [errors, setErrors] = useState({})
     const router = useRouter()
+    const { creatProject } = useApi()
 
     function handleChange(e) {
         setValues((pre) => ({ ...pre, [e.target.name]: e.target.value }))
@@ -29,23 +30,23 @@ export default function AddNewProduct() {
         if (!Object.keys(d).length) {
             // alert(JSON.stringify(values,null,2))
             let loadingPromise = toast.loading("Loading...")
-            try {
-                setIsLoading(true)
-                let res = await AddProject(values)
-                router.refresh();
-                router.push('/projects')
-                toast.success("Project added Successfully!", { id: loadingPromise })
-            } catch (error) {
-                toast.error("Some error arised", { id: loadingPromise })
-            } finally {
-                setIsLoading(false)
-            }
+            creatProject.mutate(values, {
+                onSuccess: () => {
+                    // router.refresh();
+                    router.push('/projects')
+                    toast.success("Project added Successfully!", { id: loadingPromise })
+                },
+                onError: (e) => {
+                    toast.error("Fail to create Project", { id: loadingPromise })
+                },
+            })
         }
     }
 
+    if(creatProject.isError) return <pre>{JSON.stringify(creatProject.error, null, 2)}</pre>
     return (
         <section className='container'>
-            <Backdrop className='backdrop' open={isLoading} />
+            <Backdrop className='backdrop' open={creatProject?.isPending} />
             <div className="title">New Projects</div>
             <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>

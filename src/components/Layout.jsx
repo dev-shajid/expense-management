@@ -3,8 +3,10 @@
 import React from 'react'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { purple } from '@mui/material/colors';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-export default function Layout({children}) {
+const queryClient = new QueryClient()
+export default function Layout({ children }) {
     const theme = createTheme({
         palette: {
             primary: {
@@ -15,9 +17,12 @@ export default function Layout({children}) {
             },
         },
     });
+
     return (
-        <ThemeProvider theme={theme}>
-            {children}
-        </ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+            <ThemeProvider theme={theme}>
+                {children}
+            </ThemeProvider>
+        </QueryClientProvider>
     )
 }
