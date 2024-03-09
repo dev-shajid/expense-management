@@ -1,0 +1,153 @@
+/* @tailwind base; */
+@tailwind components;
+@tailwind utilities;
+
+@layer tailwind {
+  @tailwind base;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  max-width: 100dvw !important;
+  min-height: 100dvh;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  color: black !important;
+}
+
+section {
+  flex: 1;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+.container {
+  max-width: 1400px;
+  width: 100%;
+  margin: auto;
+  padding: 0 1rem;
+}
+
+section.container {
+  width: 100%;
+  min-height: 100dvh !important;
+  padding: 1rem;
+}
+
+.title {
+  @apply sm:text-2xl text-xl font-semibold mb-2;
+}
+
+.text {
+  @apply sm:text-base text-sm;
+}
+
+.text-s {
+  @apply sm:text-sm text-xs;
+}
+
+@media screen and (max-width:768px) {
+  .active_sidebar {
+    overflow-y: hidden;
+  }
+
+  .active_sidebar .sidebar_overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    width: 100dvw;
+    background: #0006;
+    backdrop-filter: blur(10px);
+  }
+
+  aside.main_sidebar {
+    transition: .3s left ease-in;
+  }
+
+  .active_sidebar aside.main_sidebar {
+    z-index: 100;
+    left: 0;
+    border: none;
+  }
+
+  .overlay {
+    opacity: 0;
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 100%;
+    width: 100vw;
+    z-index: 15;
+    background-color: #0005;
+    backdrop-filter: blur(10px);
+    visibility: hidden;
+    transition: .3s ease;
+  }
+
+  .active_sidebar .overlay {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+@media screen and (max-width:480px) {
+  .container {
+    padding: 10px !important;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+button.size-sm {
+  @apply px-4 py-1.5 sm:text-sm text-xs;
+}
+
+img {
+  width: auto;
+  height: auto;
+}
+
+.add_button {
+  @apply text-sm bg-black rounded-md px-3 py-1.5 font-medium cursor-pointer text-white self-center;
+}
+
+.MuiBackdrop-root.backdrop {
+  backdrop-filter: blur(4px);
+  z-index: 100 !important;
+}
+
+table {
+  /* border: 1px solid lightgray; */
+  background: #fff;
+}
+
+tbody {
+  border-bottom: 1px solid lightgray;
+}
+
+th, td {
+  border-bottom: 1px solid lightgray;
+  padding: 4px 10px;
+  font-size: 14px !important;
+}
+
+tr:nth-child(2n){
+  @apply bg-gray-200;
+}

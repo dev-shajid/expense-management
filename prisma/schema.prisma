@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // uses connection pooling
+  // directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  name       String
+  email      String
+  password   String
+  role       String?   @default("user")
+  verified   Boolean?  @default(false)
+  created_at DateTime? @default(now())
+}
+
+model Project {
+  id            Int           @id @default(autoincrement())
+  name          String
+  details       String?
+  budget        Int
+  total_income  Int?          @default(0)
+  total_expense Int?          @default(0)
+  payable       Int?          @default(0)
+  receivable    Int?          @default(0)
+  status        String?       @default("On Going") // on going -> end
+  start         String
+  transactions  Transaction[]
+  Activity      Activity[]
+  created_at    DateTime?     @default(now())
+}
+
+model Transaction {
+  id         Int       @id @default(autoincrement())
+  name       String
+  details    String
+  project    Project   @relation(fields: [projectId], references: [id])
+  projectId  Int
+  to_from    String
+  source     String
+  amount     Int
+  type       String // expense - income
+  date       DateTime
+  created_at DateTime? @default(now())
+}
+
+model Withdraw {
+  id           Int       @id @default(autoincrement())
+  bank_account String
+  details      String
+  amount       Int
+  previous     Int
+  remaining    Int
+  date         DateTime
+  created_at   DateTime? @default(now())
+}
+
+model Activity {
+  id        Int      @id @default(autoincrement())
+  name      String
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId Int
+  amount    Int
+  type      String
+  date      DateTime @default(now())
+}
