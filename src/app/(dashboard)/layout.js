@@ -3,6 +3,7 @@ import "../globals.css";
 import { Toaster } from "react-hot-toast";
 import Sidebar from "@/components/Sidebar";
 import Layout from "@/components/Layout";
+import NextTopLoader from 'nextjs-toploader';
 
 
 
@@ -17,6 +18,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
+        <NextTopLoader color="#6366f1" />
         <Layout>
           <Toaster
             position="top-center"

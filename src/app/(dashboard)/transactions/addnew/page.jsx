@@ -1,10 +1,10 @@
 'use client'
 
-import { Backdrop, Button, TextField } from '@mui/material'
+import { Autocomplete, Backdrop, Button, TextField } from '@mui/material'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import dayjs from 'dayjs';
 import Submit from '@/components/Submit';
 import { validateAddProjectForm } from '@/helper/validate';
@@ -16,6 +16,7 @@ export default function AddNewProduct() {
     const [isLoading, setIsLoading] = useState(false)
     const [values, setValues] = useState({ name: 'Project 2', start: '14/3/2024', budget: '25000', details: 'Just a details' })
     const [errors, setErrors] = useState({})
+    const [projectNames, setProjectNames] = useState([])
     const router = useRouter()
 
     function handleChange(e) {
@@ -43,6 +44,16 @@ export default function AddNewProduct() {
         }
     }
 
+    async function getProjectNames() {
+        let data = await fetch("https://jsonplaceholder.typicode.com/todos").then(res => res.json())
+        let arr = data.map(e => ({ label: e.title, value: e }))
+        setProjectNames(arr);
+    }
+
+    useEffect(() => {
+        getProjectNames()
+    }, [])
+
     return (
         <section className='container'>
             <Backdrop className='backdrop' open={isLoading} />
@@ -63,6 +74,13 @@ export default function AddNewProduct() {
                         onChange={(e) => setValues((pre) => ({ ...pre, start: dayjs(e).format('DD/MM/YYYY') }))}
                     />
                 </LocalizationProvider>
+                <Autocomplete
+                    disablePortal
+                    id="combo-box-demo"
+                    options={projectNames}
+                    sx={{ width: 300 }}
+                    renderInput={(params) => <TextField {...params} label="Movie" />}
+                />
                 <TextField
                     label='Name'
                     name='name'
