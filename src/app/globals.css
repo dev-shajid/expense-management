@@ -130,7 +130,7 @@ img {
 
 .MuiBackdrop-root.backdrop {
   backdrop-filter: blur(4px);
-  z-index: 100 !important;
+  z-index: 1000 !important;
 }
 
 table {
@@ -142,12 +142,31 @@ tbody {
   border-bottom: 1px solid lightgray;
 }
 
-th, td {
+th,
+td {
   border-bottom: 1px solid lightgray;
   padding: 4px 10px;
   font-size: 14px !important;
 }
 
-tr:nth-child(2n){
+table:not(.invoice) tr:nth-child(2n) {
   @apply bg-gray-200;
+}
+
+table.invoice th,
+table.invoice td {
+  /* border: none; */
+}
+
+
+table td {
+  text-align: center;
+}
+
+table td:first-child {
+  text-align: left;
+}
+
+table.invoice tr {
+  height: 50px;
 }

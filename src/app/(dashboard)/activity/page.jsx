@@ -1,7 +1,14 @@
-import React from 'react'
+import { GetAllActiviies } from '../../../../action/api'
+import ActivityTable from './ActivityTable'
 
-export default function ActivityPage() {
+export default async function ActivityPage() {
+  let data = await GetAllActiviies()
   return (
-    <div>Project Page</div>
+    <>
+      <div className="title">All Activities</div>
+      <div className='space-y-4'>
+        <ActivityTable data={data} />
+      </div>
+    </>
   )
 }

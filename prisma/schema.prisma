@@ -106,17 +106,18 @@ model Project {
 }
 
 model Transaction {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
   name      String
-  details   String
-  project   Project  @relation(fields: [projectId], references: [id])
-  projectId String   @db.ObjectId
-  to_from   String
-  source    String
+  details   String?
+  project   Project    @relation(fields: [projectId], references: [id])
+  projectId String     @db.ObjectId
+  to_from   String?    @default("")
+  source    String?
   amount    Int
   type      String // expense - income
   date      DateTime
-  createdAt DateTime @default(now())
+  createdAt DateTime   @default(now())
+  Activity  Activity[]
 }
 
 model Withdraw {
@@ -131,12 +132,23 @@ model Withdraw {
 }
 
 model Activity {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  project   Project  @relation(fields: [projectId], references: [id])
-  projectId String   @db.ObjectId
-  amount    Int
-  type      String
-  date      DateTime @default(now())
-  createdAt DateTime @default(now())
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  transactionId String      @db.ObjectId
+  Project       Project?    @relation(fields: [projectId], references: [id])
+  projectId     String?     @db.ObjectId
+  createdAt     DateTime    @default(now())
+}
+
+model Basic {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  total_project   Int      @default(0) // on going -> end
+  ongoing_project Int      @default(0) // on going -> end
+  end_project     Int      @default(0) // on going -> end
+  income          Int      @default(0) // on going -> end
+  expanse         Int      @default(0) // on going -> end
+  total_income    Int?     @default(0)
+  payable         Int?     @default(0)
+  receivable      Int?     @default(0)
+  createdAt       DateTime @default(now())
 }

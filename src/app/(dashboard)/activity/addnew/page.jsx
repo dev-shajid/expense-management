@@ -34,8 +34,8 @@ export default function AddNewTransaction() {
             try {
                 setIsLoading(true)
                 let res = await AddTransaction(values)
-                router.refresh();
-                router.push('/transactions')
+                // router.refresh();
+                // router.push('/transactions')
                 toast.success("Transaction Successful!", { id: loadingPromise })
             } catch (error) {
                 toast.error("Some error arised", { id: loadingPromise })
@@ -120,6 +120,7 @@ export default function AddNewTransaction() {
                     label='Source'
                     name='source'
                     type='text'
+                    required
                     value={values.source}
                     error={errors?.source?.length && true}
                     helperText={"Enter the Source"}

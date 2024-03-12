@@ -1,18 +1,16 @@
-import Link from 'next/link'
 import React from 'react'
-import { GetProject } from '../../../../../action/api'
+import { GetProject, GetProjectsTransaction } from '../../../../../action/api'
 import ProjectTransactionTable from './ProjectTransactionTable';
 import dayjs from 'dayjs';
 
 
 export default async function ProjectPage({ params }) {
   let project = await GetProject(params.id)
-
-
+  let data = await GetProjectsTransaction(params.id)
   if (!project) return <>No Project is Found!</>
 
   const rows = [
-    { title: "Date", value: project.start },
+    { title: "Date", value: dayjs(project.start).format('D MMM YYYY') },
     { title: "Budget", value: project.budget },
     { title: "Income", value: project.total_income },
     { title: "Expense", value: project.total_expense },
@@ -20,21 +18,13 @@ export default async function ProjectPage({ params }) {
     { title: "A/C Payable", value: project.payable },
     { title: "A/C Receivable", value: project.receivable },
   ]
-  console.log(project)
+  
   return (
     <section className='container'>
       <div className="title">{project.name}</div>
       <div className='grid gap-4 lg:grid-cols-5 sm:grid-cols-3 grid-cols-2'>
         {
-          [
-            { title: "Date", value: dayjs(project.start).format('D MMM YYYY') },
-            { title: "Budget", value: project.budget },
-            { title: "Income", value: project.total_income },
-            { title: "Expense", value: project.total_expense },
-            { title: "Status", value: project.status },
-            { title: "A/C Payable", value: project.payable },
-            { title: "A/C Receivable", value: project.receivable },
-          ].map((p, i) => (
+          rows.map((p, i) => (
             <div key={i} className='flex flex-col text-center justify-center items-center gap-1 bg-white rounded-md p-4 border'>
               <span className='text-xs'>{p.title}</span>
               <span className='text font-semibold min-w-fit'>{p.value}</span>
@@ -49,8 +39,14 @@ export default async function ProjectPage({ params }) {
 
 
       <div className='mt-8 space-y-4'>
-        <div className="font-semibold text">All Transaction</div>
-        <ProjectTransactionTable />
+        {
+          data.length ?
+            <>
+              <div className="font-semibold text">All Transactions</div>
+              <ProjectTransactionTable data={data} />
+            </> :
+            <div className='text-center font-medium text-2xl text-gray-400 select-none'>No Transaction!</div>
+        }
       </div>
 
     </section>

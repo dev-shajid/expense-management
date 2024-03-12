@@ -12,7 +12,7 @@ export default function ProjectsPage() {
 
   if (isError) return <div>{JSON.stringify(error, null, 2)}</div>
   if (isLoading) return <Loading page />
-  console.log({ projects })
+  // console.log({ projects })
   return (
     <section className='container'>
       <div className='flex justify-between mb-4 flex-wrap'>

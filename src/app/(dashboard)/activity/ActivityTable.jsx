@@ -8,36 +8,36 @@ import { GrNext, GrPrevious } from "react-icons/gr";
 import dayjs from 'dayjs'
 
 
-export default function ProjectTransactionTable({ data }) {
+export default function ActivityTable({ data }) {
     const columns = useMemo(
         () => [
             {
                 Header: 'Id',
-                accessor: 'projectId',
+                accessor: 'transaction.projectId',
             },
             {
                 Header: 'Name',
-                accessor: 'name',
+                accessor: 'transaction.name',
             },
             // {
             //     Header: 'Details',
-            //     accessor: 'details',
+            //     accessor: 'transaction.details',
             // },
             {
                 Header: 'Date',
-                accessor: 'date',
+                accessor: 'transaction.date',
             },
             {
                 Header: 'Amount',
-                accessor: 'amount',
+                accessor: 'transaction.amount',
             },
             {
                 Header: 'Project',
-                accessor: 'project.name',
+                accessor: 'transaction.project.name',
             },
             {
                 Header: 'Type',
-                accessor: 'type',
+                accessor: 'transaction.type',
             },
         ],
         [])
@@ -75,7 +75,7 @@ export default function ProjectTransactionTable({ data }) {
                                         const { key, ...restColumn } = column.getHeaderProps(column.getSortByToggleProps())
                                         return (
                                             <th align='center' key={key} {...restColumn} className="px-5 py-4 border-b-[1px] border-gray-300 dark:border-gray-600 bg-gray-300 dark:bg-gray-800 text-left md:text-base text-sm font-semibold uppercase" >
-                                                <div className={`flex space-x-1 ${j == 0 ? '' : 'justify-center'} items-center`}>
+                                                <div className={`flex space-x-1 ${j==0?'':'justify-center'} items-center`}>
                                                     <p className='relative'>
                                                         {column.render('Header')}
                                                         <span className={`absolute right-[-15px]`}>

@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation';
 import useApi from '@/lib/useApi';
 
 export default function AddNewProduct() {
-    const [values, setValues] = useState({ name: '', start: undefined, budget: '', details: '' })
+    const [values, setValues] = useState({ name: '', date: undefined, budget: '', details: '' })
     const [errors, setErrors] = useState({})
     const router = useRouter()
     const { creatProject } = useApi()
@@ -54,15 +54,15 @@ export default function AddNewProduct() {
                         minDate={dayjs(new Date())}
                         helperText="Hello"
                         label="Date"
-                        defaultValue={values.start}
+                        defaultValue={values.date}
                         format='DD/MM/YYYY'
                         slotProps={{
                             textField: {
                                 helperText: "Enter Project Date",
-                                error: errors?.start?.length && true,
+                                error: errors?.date?.length && true,
                             },
                         }}
-                        onChange={(e) => setValues((pre) => ({ ...pre, start: dayjs(e) }))}
+                        onChange={(e) => setValues((pre) => ({ ...pre, date: dayjs(e) }))}
                     />
                 </LocalizationProvider>
                 <TextField

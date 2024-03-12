@@ -2,46 +2,47 @@
 
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
-import React, { useReducer, useState } from 'react'
-import data from '../../../lib/data.json'
+import React, { useEffect, useMemo, useReducer, useState } from 'react'
 import { useAsyncDebounce, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table'
 import { GrNext, GrPrevious } from "react-icons/gr";
-
-export const columns = [
-    {
-        Header: 'Id',
-        accessor: 'id',
-    },
-    {
-        Header: 'First Name',
-        accessor: 'first_name',
-    },
-    {
-        Header: 'Last Name',
-        accessor: 'last_name',
-    },
-    {
-        Header: 'Date of Birth',
-        accessor: 'date_of_birth',
-    },
-    {
-        Header: 'Country',
-        accessor: 'country',
-        // accessor: (d) => (
-        //   <div className="flex space-x-4">
-        //     <div className="font-semibold">BD</div>
-        //     <div className=''>{d.country}</div>
-        //   </div>
-        // ),
-    },
-    {
-        Header: 'Phone',
-        accessor: 'phone',
-    },
-]
+import dayjs from 'dayjs'
 
 
-export default function TransactionTable() {
+export default function TransactionTable({ data }) {
+    const columns = useMemo(
+        () => [
+            {
+                Header: 'Id',
+                accessor: 'projectId',
+            },
+            {
+                Header: 'Name',
+                accessor: 'name',
+            },
+            // {
+            //     Header: 'Details',
+            //     accessor: 'details',
+            // },
+            {
+                Header: 'Date',
+                accessor: 'date',
+            },
+            {
+                Header: 'Amount',
+                accessor: 'amount',
+            },
+            {
+                Header: 'Project',
+                accessor: 'project.name',
+            },
+            {
+                Header: 'Type',
+                accessor: 'type',
+            },
+        ],
+        [])
+
+
     const {
         getTableProps,
         getTableBodyProps,
@@ -64,7 +65,7 @@ export default function TransactionTable() {
                 setGlobalFilter={setGlobalFilter}
             />
             <div className='rounded-md overflow-x-auto'>
-                <table {...getTableProps()} className='w-full dark:text-white !text-sm'>
+                <table {...getTableProps()} className='w-full dark:text-white !text-sm min-w-[800px]'>
                     <thead>
                         {headerGroups.map((headerGroup, i) => {
                             const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps()
@@ -73,16 +74,18 @@ export default function TransactionTable() {
                                     {headerGroup.headers.map((column, j) => {
                                         const { key, ...restColumn } = column.getHeaderProps(column.getSortByToggleProps())
                                         return (
-                                            <th key={key} {...restColumn} className="px-5 py-4 border-b-[1px] border-gray-300 dark:border-gray-600 bg-gray-300 dark:bg-gray-800 text-left md:text-base text-sm font-semibold uppercase" >
-                                                <div className='flex space-x-1 items-center'>
-                                                    <span>{column.render('Header')}</span>
-                                                    <span>
-                                                        {column.isSorted
-                                                            ? column.isSortedDesc
-                                                                ? '▼'
-                                                                : '▲'
-                                                            : ''}
-                                                    </span>
+                                            <th align='center' key={key} {...restColumn} className="px-5 py-4 border-b-[1px] border-gray-300 dark:border-gray-600 bg-gray-300 dark:bg-gray-800 text-left md:text-base text-sm font-semibold uppercase" >
+                                                <div className={`flex space-x-1 ${j == 0 ? '' : 'justify-center'} items-center`}>
+                                                    <p className='relative'>
+                                                        {column.render('Header')}
+                                                        <span className={`absolute right-[-15px]`}>
+                                                            {column.isSorted
+                                                                ? column.isSortedDesc
+                                                                    ? '▼'
+                                                                    : '▲'
+                                                                : ''}
+                                                        </span>
+                                                    </p>
                                                 </div>
                                             </th>
                                         )
@@ -103,13 +106,22 @@ export default function TransactionTable() {
                                     {...resRow}>
                                     {row.cells.map((cell, j) => {
                                         const { key, ...restCell } = cell.getCellProps()
+                                        // console.log(cell)
                                         return (
                                             <td
                                                 key={j}
                                                 className="px-5 md:py-5 py-3 md:text-base text-sm"
                                                 {...restCell}
                                             >
-                                                {cell.render('Cell')}
+                                                {
+                                                    cell.column.Header == 'Date'
+                                                        ? dayjs(cell.value)?.format('DD MMM YYYY')
+                                                        : cell.column.Header == 'Id'
+                                                            ? (20*j + i + 1)
+                                                            : cell.column.Header == 'Type'
+                                                                ? <p className={`${cell.value == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.value}</p>
+                                                                : cell.value
+                                                }
                                             </td>
                                         )
                                     })}

@@ -17,8 +17,19 @@ export async function validateLoginForm(values) {
 
 export async function validateAddProjectForm(values) {
     const errors = {}
-    nameVerify(errors, values)
+    nameVerify(errors, values, 'name')
     budgetVerify(errors, values)
+    dateVerify(errors, values)
+
+    return errors
+}
+
+export async function validateAddTransactionForm(values) {
+    const errors = {}
+    // nameVerify(errors, values, 'name')
+    // nameVerify(errors, values, 'type')
+    // nameVerify(errors, values, 'project')
+    amountVerify(errors, values)
     dateVerify(errors, values)
 
     return errors
@@ -26,9 +37,9 @@ export async function validateAddProjectForm(values) {
 
 /** ************************ Verify Function ************************* */
 
-function nameVerify(errors, values) {
-    if (!values.name?.trim()) {
-        errors.name = 'Name is Required...!'
+function nameVerify(errors, values, name='name') {
+    if (!values[name]?.trim().length) {
+        errors[name] =  name[0].toUpperCase()+name.slice(1)+` is Required...!`
     }
 
     return errors;
@@ -68,9 +79,17 @@ function budgetVerify(errors, values) {
     return errors;
 }
 
+function amountVerify(errors, values) {
+    if (!values.amount?.trim()) {
+        errors.amount = 'Amount is Required...!'
+    }
+
+    return errors;
+}
+
 function dateVerify(errors, values) {
-    if (!values.start) {
-        errors.start = 'Date is Required...!'
+    if (!values.date) {
+        errors.date = 'Date is Required...!'
     }
 
     return errors;
