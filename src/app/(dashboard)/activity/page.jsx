@@ -1,8 +1,16 @@
-import { GetAllActiviies } from '../../../../action/api'
+'use client'
+
+import Loading from '@/components/Loading'
+import useApi from '@/lib/useApi'
 import ActivityTable from './ActivityTable'
 
 export default async function ActivityPage() {
-  let data = await GetAllActiviies()
+  const { getAllActivities } = useApi()
+  let { data, isError, error, isLoading } = getAllActivities
+
+  if (isError) return <div>{JSON.stringify(error, null, 2)}</div>
+  if (isLoading) return <Loading page />
+
   return (
     <>
       <div className="title">All Activities</div>

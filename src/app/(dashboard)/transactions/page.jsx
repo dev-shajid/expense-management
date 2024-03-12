@@ -1,19 +1,17 @@
+'use client'
+
 import TransactionTable from './TransactionTable'
 import Link from 'next/link'
-import { GetAllTransactions } from '../../../../action/api'
+import Loading from '@/components/Loading'
+import useApi from '@/lib/useApi'
 
 export default async function TransactionsPage() {
-  // const [data, setData] = useState([])
-  // async function getData() {
-  //   setData(await GetAllTransactions())
-  // }
+  const { getAllTransactions } = useApi()
+  let { data, isError, error, isLoading } = getAllTransactions
 
-  // useEffect(() => {
-  //   getData()
-  // }, [])
-  // console.log({data})
+  if (isError) return <div>{JSON.stringify(error, null, 2)}</div>
+  if (isLoading) return <Loading page />
 
-  let data = await GetAllTransactions()
   return (
     <>
       <div className="title">All Transaction</div>
