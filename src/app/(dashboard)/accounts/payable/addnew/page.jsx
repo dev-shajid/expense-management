@@ -1,18 +1,19 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import dayjs from 'dayjs';
 import Submit from '@/components/Submit';
 import { validateAddTransactionForm } from '@/helper/validate';
-import { AddProject, AddTransaction, GetAllProjectsTitle } from '../../../../../action/api';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import useApi from '@/lib/useApi';
 import Overlay from '@/components/Overlay';
 import { DateInput } from '@mantine/dates';
 import { Autocomplete, Select, TextInput, Textarea } from '@mantine/core';
+import { GetAllProjectsTitle } from '../../../../../../action/api';
 
 export default function AddNewTransaction() {
-    const [values, setValues] = useState({ name: '', date: undefined, amount: '', source: '', details: '', type: '', projectId: '', isPaid: true })
+    const [values, setValues] = useState({ name: '', date: undefined, amount: '', source: '', details: '', type: 'expense', projectId: '', isPaid: false })
     const [errors, setErrors] = useState({})
     const [projectNames, setProjectNames] = useState([])
     const router = useRouter()
@@ -30,9 +31,9 @@ export default function AddNewTransaction() {
         if (!Object.keys(d).length) {
             // alert(JSON.stringify(values, null, 2))
             let loadingPromise = toast.loading("Loading...")
-            creatTransaction.mutate(({data:values, isPaid: true}), {
+            creatTransaction.mutate(({data:values, isPaid: false}), {
                 onSuccess: () => {
-                    router.push('/transactions')
+                    router.push('/accounts/payable')
                     toast.success("Transaction Successful!", { id: loadingPromise })
                 },
                 onError: (e) => {
@@ -57,12 +58,12 @@ export default function AddNewTransaction() {
     return (
         <section className='container'>
             <Overlay isLoading={creatTransaction.isPending || deleteTransaction.isPending} />
-            <div className="title">New Projects</div>
+            <div className="title">New Transaction</div>
             <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
                 <DateInput
                     minDate={new Date()}
                     value={values?.date}
-                    onChange={(e) => setValues((pre) => ({ ...pre, date: e }))}
+                    onChange={(e) => setValues((pre) => ({ ...pre, date: dayjs(e) }))}
                     label="Date"
                     placeholder="Date input"
                     name='date'
@@ -72,7 +73,8 @@ export default function AddNewTransaction() {
 
                 <Select
                     data={[{ label: 'Income', value: 'income' }, { label: 'Expense', value: 'expense' }]}
-                    value={values.type}
+                    value={values?.type}
+                    readOnly
                     name='type'
                     onChange={(v) => setValues(p => ({ ...p, type: v.toLowerCase() }))}
                     label="Type"

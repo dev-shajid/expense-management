@@ -7,8 +7,10 @@ import { AiOutlineMenuUnfold } from 'react-icons/ai'
 import { IoIosLogOut } from 'react-icons/io'
 import { usePathname, useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
-import { Avatar, Backdrop, IconButton, MenuItem, MenuList } from '@mui/material'
 import { Logout } from '../../action/api'
+import Overlay from './Overlay'
+import { IoIosArrowDown } from "react-icons/io";
+import { Accordion } from '@mantine/core'
 
 
 export default function Sidebar() {
@@ -53,7 +55,7 @@ export default function Sidebar() {
 
     return (
         <>
-            <Backdrop className='backdrop' open={isLoading} />
+            <Overlay isLoading={isLoading} />
             <div className='container mobile_top_nav border-b border-blight-1 sticky top-0 backdrop-blur-md z-[5] md:hidden'>
                 <div
                     onClick={openSidebar}
@@ -78,30 +80,42 @@ export default function Sidebar() {
                 <div className="flex flex-1 space-y-5 flex-col justify-between">
                     <div className="sidebar-menu space-y-2">
                         {
-                            MenuItems.map((item, i) => (
-                                <Link onClick={closeSidebar} key={i} href={item.link} className={`flex items-center text w-full rounded-md transition-all 
-                                    ${'/' + pathname.split('/')[1] == item.link ? 'bg-gray-700 text-white' : 'md:hover:bg-gray-600 text-white'}
-                                `}>
-                                    <MenuItem className='rounded-md m-0 !w-full'>
-                                        <div className='rounded-md flex items-center space-x-3'>
-                                            <span>{item.icon}</span>
-                                            <span>{item.name}</span>
-                                        </div>
-                                    </MenuItem>
-                                </Link>
-                            ))
+                            MenuItems.map((item, i) => {
+                                if (item.name == 'Accounts') return (
+                                    <Accordion key={i} defaultValue={pathname.split('/')[1]}>
+                                        <Accordion.Item value='accounts' className='!border-b-0 !py-0'>
+                                            <Accordion.Control icon={<RxDashboard />} className='md:hover:!bg-gray-600 !text-white rounded-md !px-3 !m-0' style={{ padding: 0 }}>
+                                                Accounts
+                                            </Accordion.Control>
+                                            <Accordion.Panel className='pt-4 transition-all'>
+                                                <div className='flex flex-col space-y-2 pl-6'>
+                                                    <Link onClick={closeSidebar} href='/accounts/payable' className={`flex text pl-3 py-1.5 rounded-md transition-all ${pathname.split('/')[2] == 'payable' ? 'bg-gray-700 text-white' : 'md:hover:bg-gray-600 text-white'}`}>
+                                                        A/C Payable
+                                                    </Link>
+                                                    <Link onClick={closeSidebar} href='/accounts/receivable' className={`flex text pl-3 py-1.5 rounded-md transition-all ${pathname.split('/')[2] == 'receivable'? 'bg-gray-700 text-white' : 'md:hover:bg-gray-600 text-white'}`}>
+                                                        A/C Receivable
+                                                    </Link>
+                                                </div>
+                                            </Accordion.Panel>
+
+                                        </Accordion.Item>
+                                    </Accordion>
+                                )
+                                return (
+                                    <Link onClick={closeSidebar} key={i} href={item.link} className={`flex items-center px-3 py-1.5 space-x-3 text rounded-md transition-all ${'/' + pathname.split('/')[1] == item.link ? 'bg-gray-700 text-white' : 'md:hover:bg-gray-600 text-white'}`}>
+                                        <span>{item.icon}</span>
+                                        <span>{item.name}</span>
+                                    </Link>
+                                )
+                            })
                         }
                     </div>
-                    <div className='flex w-full items-center text rounded-md transition-all'>
-                        <MenuItem className='rounded-md w-full' onClick={apiLogout}>
-                            <div className='rounded-md flex items-center space-x-3'>
-                                <IoIosLogOut color='white' size={20} />
-                                <span>Logout</span>
-                            </div>
-                        </MenuItem>
+                    <div onClick={apiLogout} className='flex items-center px-3 py-1.5 space-x-3 text rounded-md transition-all md:hover:bg-gray-600 text-white cursor-pointer'>
+                        <IoIosLogOut color='white' size={20} />
+                        <span>Logout</span>
                     </div>
                 </div>
-            </aside>
+            </aside >
         </>
     )
 }

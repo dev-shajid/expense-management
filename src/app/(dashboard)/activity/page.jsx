@@ -4,7 +4,7 @@ import Loading from '@/components/Loading'
 import useApi from '@/lib/useApi'
 import ActivityTable from './ActivityTable'
 
-export default async function ActivityPage() {
+export default function ActivityPage() {
   const { getAllActivities } = useApi()
   let { data, isError, error, isLoading } = getAllActivities
 

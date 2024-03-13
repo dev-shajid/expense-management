@@ -2,7 +2,7 @@
 
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useReducer, useState } from 'react'
 import { useAsyncDebounce, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table'
 import { GrNext, GrPrevious } from "react-icons/gr";
 import { AiOutlineDelete } from "react-icons/ai"
@@ -15,8 +15,7 @@ import toast from 'react-hot-toast'
 import Overlay from '@/components/Overlay'
 
 
-export default function ProjectTransactionTable({ data }) {
-    console.log(data)
+export default function TransactionTable({ data }) {
     const router = useRouter()
 
     const columns = useMemo(
@@ -26,13 +25,9 @@ export default function ProjectTransactionTable({ data }) {
                 accessor: 'id',
             },
             {
-                Header: 'Name',
+                Header: 'Transaction Name',
                 accessor: 'name',
             },
-            // {
-            //     Header: 'Details',
-            //     accessor: 'details',
-            // },
             {
                 Header: 'Date',
                 accessor: 'date',
@@ -42,20 +37,12 @@ export default function ProjectTransactionTable({ data }) {
                 accessor: 'amount',
             },
             {
-                Header: 'Source',
-                accessor: 'source',
-            },
-            {
                 Header: 'Project',
                 accessor: 'project.name',
             },
             {
                 Header: 'Type',
                 accessor: 'type',
-            },
-            {
-                Header: 'Paid',
-                accessor: 'isPaid',
             },
             {
                 Header: 'Action',
@@ -99,7 +86,7 @@ export default function ProjectTransactionTable({ data }) {
     if (deleteTransaction.isError) return <pre>{JSON.stringify(deleteTransaction.error, null, 2)}</pre>
     return (
         <>
-            <Overlay isLoading={deleteTransaction.isPending} />
+            <Overlay isLoading={deleteTransaction.isPending}/>
             <GlobalFilter
                 globalFilter={state?.globalFilter}
                 setGlobalFilter={setGlobalFilter}
@@ -157,26 +144,24 @@ export default function ProjectTransactionTable({ data }) {
                                                     cell.column.Header == 'Date'
                                                         ? dayjs(cell.value)?.format('DD MMM YYYY')
                                                         : cell.column.Header == 'Id'
-                                                            ? (i + 1)
+                                                            ? (20 * j + i + 1)
                                                             : cell.column.Header == 'Type'
                                                                 ? <p className={`${cell.value == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.value}</p>
-                                                                : cell.column.Header == 'Paid'
-                                                                    ? cell.value == true ? 'True' : 'False'
-                                                                    : cell.column.Header == 'Action'
-                                                                        ? <div className='flex gap-3 justify-center items-center'>
-                                                                            <Link href={`/transactions/edit/${cell.row.values.id}`}>
-                                                                                <FiEdit
-                                                                                    size={18}
-                                                                                    cursor='pointer'
-                                                                                />
-                                                                            </Link>
-                                                                            <AiOutlineDelete
-                                                                                size={20}
+                                                                : cell.column.Header == 'Action'
+                                                                    ? <div className='flex gap-3 justify-center items-center'>
+                                                                        <Link href={`/transactions/edit/${cell.row.values.id}`}>
+                                                                            <FiEdit
+                                                                                size={18}
                                                                                 cursor='pointer'
-                                                                                onClick={() => handleDelete(cell.row.values.id)}
                                                                             />
-                                                                        </div>
-                                                                        : cell.value
+                                                                        </Link>
+                                                                        <AiOutlineDelete
+                                                                            size={20}
+                                                                            cursor='pointer'
+                                                                            onClick={() => handleDelete(cell.row.values.id)}
+                                                                        />
+                                                                    </div>
+                                                                    : cell.value
                                                 }
                                             </td>
                                         )

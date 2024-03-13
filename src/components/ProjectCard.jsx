@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import React from 'react'
 
-export default function ProjectCard({project}) {
+export default function ProjectCard({ project }) {
     return (
         <div className='flex border shadow-sm sm:hover:shadow-lg duration-100 flex-col justify-between p-4 rounded-md space-y-8 cursor-pointer bg-white'>
             <div className='space-y-4'>
@@ -9,11 +9,11 @@ export default function ProjectCard({project}) {
                 <div className='grid gap-3 text-s'>
                     <div className='flex items-center justify-between'>
                         <p className='bg-green-300 rounded-md text-center w-[130px] py-1'>Total Income</p>
-                        <p className='text text-green-700 font-semibold'>৳ {project.total_income}</p>
+                        <p className='text text-green-700 font-semibold'>৳ {project.income}</p>
                     </div>
                     <div className='flex items-center justify-between'>
                         <p className='bg-red-300 rounded-md text-center w-[130px] py-1'>Total Expense</p>
-                        <p className='text text-red-500 font-semibold'>৳ {project.total_expense}</p>
+                        <p className='text text-red-500 font-semibold'>৳ {project.expense}</p>
                     </div>
                 </div>
             </div>

@@ -3,20 +3,22 @@
 import React, { useEffect, useState } from 'react'
 import Submit from '@/components/Submit';
 import { validateAddTransactionForm } from '@/helper/validate';
-import { AddProject, AddTransaction, GetAllProjectsTitle } from '../../../../../action/api';
+import { GetAllProjectsTitle } from '../../../../../../action/api';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import useApi from '@/lib/useApi';
 import Overlay from '@/components/Overlay';
 import { DateInput } from '@mantine/dates';
-import { Autocomplete, Select, TextInput, Textarea } from '@mantine/core';
+import { Select, TextInput, Textarea } from '@mantine/core';
+import Loading from '@/components/Loading';
 
-export default function AddNewTransaction() {
-    const [values, setValues] = useState({ name: '', date: undefined, amount: '', source: '', details: '', type: '', projectId: '', isPaid: true })
+export default function AddNewTransaction({ params }) {
+    const [values, setValues] = useState({ name: '', date: null, amount: '', source: '', details: '', type: '', projectId: '', isPaid: true })
     const [errors, setErrors] = useState({})
     const [projectNames, setProjectNames] = useState([])
     const router = useRouter()
-    const { creatTransaction, deleteTransaction } = useApi()
+    const { editTransaction, getTransaction } = useApi()
+    let { data, isError, error, isLoading } = getTransaction(params.id, true)
 
     function handleChange(e) {
         setValues((pre) => ({ ...pre, [e.target.name]: e.target.value }))
@@ -26,17 +28,18 @@ export default function AddNewTransaction() {
         e.preventDefault()
         let d = await validateAddTransactionForm(values)
         setErrors(d)
-        console.log(d)
+        // console.log(d)
         if (!Object.keys(d).length) {
             // alert(JSON.stringify(values, null, 2))
             let loadingPromise = toast.loading("Loading...")
-            creatTransaction.mutate(({data:values, isPaid: true}), {
+            editTransaction.mutate({ id: params.id, data: values }, {
                 onSuccess: () => {
                     router.push('/transactions')
                     toast.success("Transaction Successful!", { id: loadingPromise })
                 },
                 onError: (e) => {
-                    toast.error("Fail to create Transaction", { id: loadingPromise })
+                    console.log(e)
+                    toast.error(e?.message || "Fail to create Project", { id: loadingPromise })
                 },
             })
         }
@@ -44,7 +47,6 @@ export default function AddNewTransaction() {
 
     async function getProjectNames() {
         let arr = await GetAllProjectsTitle()
-        // console.log(arr)
         setProjectNames(arr);
     }
 
@@ -52,16 +54,23 @@ export default function AddNewTransaction() {
         getProjectNames()
     }, [])
 
-    if (creatTransaction.isError) return <pre>{JSON.stringify(creatTransaction.error, null, 2)}</pre>
-    if (deleteTransaction.isError) return <pre>{JSON.stringify(deleteTransaction.error, null, 2)}</pre>
+    useEffect(() => {
+        if (data?.name) {
+            setValues({ name: data?.name, date: data?.date, amount: data?.amount, source: data?.source, details: data?.details, type: data?.type, projectId: data?.projectId, isPaid: true })
+        }
+    }, [data])
+
+    if (editTransaction.isError) return <pre>Error: {JSON.stringify(editTransaction.error, null, 2)}</pre>
+    if (isError) return <pre>Error: {JSON.stringify(error, null, 2)}</pre>
+    if (isLoading) return <Loading page />
     return (
         <section className='container'>
-            <Overlay isLoading={creatTransaction.isPending || deleteTransaction.isPending} />
+            <Overlay isLoading={editTransaction.isPending} />
             <div className="title">New Projects</div>
             <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
                 <DateInput
                     minDate={new Date()}
-                    value={values?.date}
+                    value={values.date}
                     onChange={(e) => setValues((pre) => ({ ...pre, date: e }))}
                     label="Date"
                     placeholder="Date input"
@@ -74,7 +83,7 @@ export default function AddNewTransaction() {
                     data={[{ label: 'Income', value: 'income' }, { label: 'Expense', value: 'expense' }]}
                     value={values.type}
                     name='type'
-                    onChange={(v) => setValues(p => ({ ...p, type: v.toLowerCase() }))}
+                    onChange={(v) => setValues(p => ({ ...p, type: v }))}
                     label="Type"
                     error={errors?.type}
                     placeholder="Pick value"
@@ -86,6 +95,7 @@ export default function AddNewTransaction() {
                     placeholder="Select Your Project"
                     data={projectNames}
                     name="projectId"
+                    value={values.projectId}
                     error={errors?.projectId}
                     onChange={(v) => setValues(p => ({ ...p, projectId: v }))}
                     required
@@ -107,7 +117,7 @@ export default function AddNewTransaction() {
                     label="Source"
                     name='source'
                     type='text'
-                    value={values.source}
+                    value={values?.source}
                     error={errors?.source}
                     onChange={handleChange}
                     placeholder="Enter the Source"

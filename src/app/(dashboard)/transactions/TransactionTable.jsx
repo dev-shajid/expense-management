@@ -5,24 +5,29 @@ import 'regenerator-runtime/runtime'
 import React, { useEffect, useMemo, useReducer, useState } from 'react'
 import { useAsyncDebounce, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table'
 import { GrNext, GrPrevious } from "react-icons/gr";
+import { AiOutlineDelete } from "react-icons/ai"
+import { FiEdit } from "react-icons/fi"
 import dayjs from 'dayjs'
+import useApi from '@/lib/useApi'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import toast from 'react-hot-toast'
+import Overlay from '@/components/Overlay'
 
 
 export default function TransactionTable({ data }) {
+    const router = useRouter()
+
     const columns = useMemo(
         () => [
             {
                 Header: 'Id',
-                accessor: 'projectId',
+                accessor: 'id',
             },
             {
-                Header: 'Name',
+                Header: 'Transaction Name',
                 accessor: 'name',
             },
-            // {
-            //     Header: 'Details',
-            //     accessor: 'details',
-            // },
             {
                 Header: 'Date',
                 accessor: 'date',
@@ -38,6 +43,9 @@ export default function TransactionTable({ data }) {
             {
                 Header: 'Type',
                 accessor: 'type',
+            },
+            {
+                Header: 'Action',
             },
         ],
         [])
@@ -58,14 +66,33 @@ export default function TransactionTable({ data }) {
         setGlobalFilter
     } = useTable({ columns, data, initialState: { pageSize: 20, } }, useGlobalFilter, useSortBy, usePagination)
 
+
+    const { deleteTransaction } = useApi()
+
+    async function handleDelete(id) {
+        let loadingPromise = toast.loading("Loading...")
+        deleteTransaction.mutate(id, {
+            onSuccess: () => {
+                toast.success("Deleted Transaction!", { id: loadingPromise })
+            },
+            onError: (e) => {
+                console.log(e)
+                toast.error(e?.message || "Fail to delete Transaction", { id: loadingPromise })
+            },
+        })
+    }
+
+
+    if (deleteTransaction.isError) return <pre>{JSON.stringify(deleteTransaction.error, null, 2)}</pre>
     return (
         <>
+            <Overlay isLoading={deleteTransaction.isPending} />
             <GlobalFilter
                 globalFilter={state?.globalFilter}
                 setGlobalFilter={setGlobalFilter}
             />
             <div className='rounded-md overflow-x-auto'>
-                <table {...getTableProps()} className='w-full dark:text-white !text-sm min-w-[800px]'>
+                <table {...getTableProps()} className='w-full table dark:text-white !text-sm min-w-[800px]'>
                     <thead>
                         {headerGroups.map((headerGroup, i) => {
                             const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps()
@@ -117,10 +144,24 @@ export default function TransactionTable({ data }) {
                                                     cell.column.Header == 'Date'
                                                         ? dayjs(cell.value)?.format('DD MMM YYYY')
                                                         : cell.column.Header == 'Id'
-                                                            ? (20*j + i + 1)
+                                                            ? (20 * j + i + 1)
                                                             : cell.column.Header == 'Type'
                                                                 ? <p className={`${cell.value == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.value}</p>
-                                                                : cell.value
+                                                                : cell.column.Header == 'Action'
+                                                                    ? <div className='flex gap-3 justify-center items-center'>
+                                                                        <Link href={`/transactions/edit/${cell.row.values.id}`}>
+                                                                            <FiEdit
+                                                                                size={18}
+                                                                                cursor='pointer'
+                                                                            />
+                                                                        </Link>
+                                                                        <AiOutlineDelete
+                                                                            size={20}
+                                                                            cursor='pointer'
+                                                                            onClick={() => handleDelete(cell.row.values.id)}
+                                                                        />
+                                                                    </div>
+                                                                    : cell.value
                                                 }
                                             </td>
                                         )

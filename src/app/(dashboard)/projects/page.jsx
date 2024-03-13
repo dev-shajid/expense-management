@@ -2,7 +2,6 @@
 
 import ProjectCard from '@/components/ProjectCard'
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
 import Loading from '@/components/Loading'
 import useApi from '@/lib/useApi'
 

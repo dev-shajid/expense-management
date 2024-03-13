@@ -12,13 +12,13 @@ export default async function ProjectPage({ params }) {
   const rows = [
     { title: "Date", value: dayjs(project.start).format('D MMM YYYY') },
     { title: "Budget", value: project.budget },
-    { title: "Income", value: project.total_income },
-    { title: "Expense", value: project.total_expense },
+    { title: "Income", value: project.income },
+    { title: "Expense", value: project.expense },
     { title: "Status", value: project.status },
     { title: "A/C Payable", value: project.payable },
     { title: "A/C Receivable", value: project.receivable },
   ]
-  
+
   return (
     <section className='container'>
       <div className="title">{project.name}</div>

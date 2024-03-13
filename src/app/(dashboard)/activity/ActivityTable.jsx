@@ -13,11 +13,11 @@ export default function ActivityTable({ data }) {
         () => [
             {
                 Header: 'Id',
-                accessor: 'transaction.projectId',
+                accessor: 'projectId',
             },
             {
-                Header: 'Name',
-                accessor: 'transaction.name',
+                Header: 'Transaction Name',
+                accessor: 'name',
             },
             // {
             //     Header: 'Details',
@@ -25,19 +25,23 @@ export default function ActivityTable({ data }) {
             // },
             {
                 Header: 'Date',
-                accessor: 'transaction.date',
+                accessor: 'createdAt',
             },
             {
                 Header: 'Amount',
-                accessor: 'transaction.amount',
+                accessor: 'amount',
             },
             {
                 Header: 'Project',
-                accessor: 'transaction.project.name',
+                accessor: 'project',
             },
             {
                 Header: 'Type',
-                accessor: 'transaction.type',
+                accessor: 'type',
+            },
+            {
+                Header: 'Action',
+                accessor: 'action',
             },
         ],
         [])
@@ -65,7 +69,7 @@ export default function ActivityTable({ data }) {
                 setGlobalFilter={setGlobalFilter}
             />
             <div className='rounded-md overflow-x-auto'>
-                <table {...getTableProps()} className='w-full dark:text-white !text-sm min-w-[800px]'>
+                <table {...getTableProps()} className='w-full table dark:text-white !text-sm min-w-[800px]'>
                     <thead>
                         {headerGroups.map((headerGroup, i) => {
                             const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps()
@@ -106,7 +110,6 @@ export default function ActivityTable({ data }) {
                                     {...resRow}>
                                     {row.cells.map((cell, j) => {
                                         const { key, ...restCell } = cell.getCellProps()
-                                        // console.log(cell)
                                         return (
                                             <td
                                                 key={j}
@@ -115,7 +118,7 @@ export default function ActivityTable({ data }) {
                                             >
                                                 {
                                                     cell.column.Header == 'Date'
-                                                        ? dayjs(cell.value)?.format('DD MMM YYYY')
+                                                        ? dayjs(cell.value)?.format('DD MMM YYYY, hh:mm:ss A')
                                                         : cell.column.Header == 'Id'
                                                             ? (i + 1)
                                                             : cell.column.Header == 'Type'

@@ -80,7 +80,7 @@ function budgetVerify(errors, values) {
 }
 
 function amountVerify(errors, values) {
-    if (!values.amount?.trim()) {
+    if (!values.amount) {
         errors.amount = 'Amount is Required...!'
     }
 

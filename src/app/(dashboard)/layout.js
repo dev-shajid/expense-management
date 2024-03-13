@@ -1,5 +1,7 @@
 import { Inter } from "next/font/google";
 import "../globals.css";
+import '@mantine/core/styles.css';
+import '@mantine/dates/styles.css';
 import { Toaster } from "react-hot-toast";
 import Sidebar from "@/components/Sidebar";
 import Layout from "@/components/Layout";

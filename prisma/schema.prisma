@@ -1,76 +1,3 @@
-// // This is your Prisma schema file,
-// // learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// generator client {
-//   provider = "prisma-client-js"
-// }
-
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL") // uses connection pooling
-// }
-
-// model User {
-//   id         Int       @id @default(autoincrement())
-//   name       String
-//   email      String
-//   password   String
-//   role       String?   @default("user")
-//   verified   Boolean?  @default(false)
-//   created_at DateTime? @default(now())
-// }
-
-// model Project {
-//   id            Int           @id @default(autoincrement())
-//   name          String
-//   details       String?
-//   budget        Int
-//   total_income  Int?          @default(0)
-//   total_expense Int?          @default(0)
-//   payable       Int?          @default(0)
-//   receivable    Int?          @default(0)
-//   status        String?       @default("On Going") // on going -> end
-//   start         String
-//   transactions  Transaction[]
-//   Activity      Activity[]
-//   created_at    DateTime?     @default(now())
-// }
-
-// model Transaction {
-//   id         Int       @id @default(autoincrement())
-//   name       String
-//   details    String
-//   project    Project   @relation(fields: [projectId], references: [id])
-//   projectId  Int
-//   to_from    String
-//   source     String
-//   amount     Int
-//   type       String // expense - income
-//   date       DateTime
-//   created_at DateTime? @default(now())
-// }
-
-// model Withdraw {
-//   id           Int       @id @default(autoincrement())
-//   bank_account String
-//   details      String
-//   amount       Int
-//   previous     Int
-//   remaining    Int
-//   date         DateTime
-//   created_at   DateTime? @default(now())
-// }
-
-// model Activity {
-//   id        Int      @id @default(autoincrement())
-//   name      String
-//   project   Project  @relation(fields: [projectId], references: [id])
-//   projectId Int
-//   amount    Int
-//   type      String
-//   date      DateTime @default(now())
-// }
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -90,34 +17,33 @@ model User {
 }
 
 model Project {
-  id            String        @id @default(auto()) @map("_id") @db.ObjectId
-  name          String
-  details       String?
-  budget        Int
-  total_income  Int?          @default(0)
-  total_expense Int?          @default(0)
-  payable       Int?          @default(0)
-  receivable    Int?          @default(0)
-  status        String?       @default("On Going") // on going -> end
-  start         DateTime
-  transactions  Transaction[]
-  activities    Activity[]
-  createdAt     DateTime      @default(now())
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  details     String?
+  budget      Int
+  income      Int?          @default(0)
+  expense     Int?          @default(0)
+  payable     Int?          @default(0)
+  receivable  Int?          @default(0)
+  status      String?       @default("On Going") // on going -> end
+  start       DateTime
+  createdAt   DateTime      @default(now())
+  Transaction Transaction[]
 }
 
 model Transaction {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   details   String?
-  project   Project    @relation(fields: [projectId], references: [id])
-  projectId String     @db.ObjectId
-  to_from   String?    @default("")
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId String   @db.ObjectId
+  to_from   String?  @default("")
   source    String?
   amount    Int
   type      String // expense - income
+  isPaid    Boolean  @default(false)
   date      DateTime
-  createdAt DateTime   @default(now())
-  Activity  Activity[]
+  createdAt DateTime @default(now())
 }
 
 model Withdraw {
@@ -132,21 +58,22 @@ model Withdraw {
 }
 
 model Activity {
-  id            String      @id @default(auto()) @map("_id") @db.ObjectId
-  transaction   Transaction @relation(fields: [transactionId], references: [id])
-  transactionId String      @db.ObjectId
-  Project       Project?    @relation(fields: [projectId], references: [id])
-  projectId     String?     @db.ObjectId
-  createdAt     DateTime    @default(now())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  project   String
+  amount    Int
+  type      String
+  action    String
+  createdAt DateTime @default(now())
 }
 
 model Basic {
   id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  total_project   Int      @default(0) // on going -> end
-  ongoing_project Int      @default(0) // on going -> end
-  end_project     Int      @default(0) // on going -> end
-  income          Int      @default(0) // on going -> end
-  expanse         Int      @default(0) // on going -> end
+  total_project   Int      @default(0)
+  ongoing_project Int      @default(0)
+  end_project     Int      @default(0)
+  income          Int      @default(0)
+  expense         Int      @default(0)
   total_income    Int?     @default(0)
   payable         Int?     @default(0)
   receivable      Int?     @default(0)

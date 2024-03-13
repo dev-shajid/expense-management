@@ -19,6 +19,7 @@ body {
   width: 100%;
   overflow-x: hidden;
   color: black !important;
+  background: #fff;
 }
 
 section {
@@ -133,40 +134,42 @@ img {
   z-index: 1000 !important;
 }
 
-table {
-  /* border: 1px solid lightgray; */
+table.table {
   background: #fff;
 }
 
-tbody {
+table.table tbody {
   border-bottom: 1px solid lightgray;
 }
 
-th,
-td {
+table.table th,
+table.table td {
   border-bottom: 1px solid lightgray;
-  padding: 4px 10px;
+  padding: 16px;
   font-size: 14px !important;
 }
 
-table:not(.invoice) tr:nth-child(2n) {
+table.table:not(.invoice) tr:nth-child(2n) {
   @apply bg-gray-200;
 }
 
-table.invoice th,
-table.invoice td {
-  /* border: none; */
-}
-
-
-table td {
+table.table td {
   text-align: center;
 }
 
-table td:first-child {
+table.table td:first-child {
   text-align: left;
 }
 
 table.invoice tr {
   height: 50px;
+}
+
+.mantine-Accordion-label{
+  @apply !py-1.5;
+}
+
+.mantine-Accordion-content{
+  padding-bottom: 0 !important;
+  padding-top: 0 !important;
 }
