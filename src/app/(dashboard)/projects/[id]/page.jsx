@@ -1,13 +1,20 @@
+'use client'
+
 import React from 'react'
-import { GetProject, GetProjectsTransaction } from '../../../../../action/api'
+import { GetAllTransactions, GetProject, GetProjectsTransaction } from '../../../../../action/api'
 import ProjectTransactionTable from './ProjectTransactionTable';
 import dayjs from 'dayjs';
+import useApi from '@/lib/useApi';
+import Loading from '@/components/Loading';
 
-
-export default async function ProjectPage({ params }) {
-  let project = await GetProject(params.id)
-  let data = await GetProjectsTransaction(params.id)
+export default function ProjectPage({ params }) {
+  const { getProject, getAllTransactions } = useApi()
+  const { data: project, isLoading } = getProject({ id: params.id })
+  const { data, isLoading:dataLoading } = getAllTransactions({ projectId: params.id })
+  
+  if (isLoading || dataLoading) return <Loading page />
   if (!project) return <>No Project is Found!</>
+  
 
   const rows = [
     { title: "Date", value: dayjs(project.start).format('D MMM YYYY') },
@@ -18,6 +25,7 @@ export default async function ProjectPage({ params }) {
     { title: "A/C Payable", value: project.payable },
     { title: "A/C Receivable", value: project.receivable },
   ]
+
 
   return (
     <section className='container'>
@@ -38,9 +46,9 @@ export default async function ProjectPage({ params }) {
       </div> : null}
 
 
-      <div className='mt-8 space-y-4'>
+      <div className='mt-8'>
         {
-          data.length ?
+          data?.length ?
             <>
               <div className="font-semibold text">All Transactions</div>
               <ProjectTransactionTable data={data} />

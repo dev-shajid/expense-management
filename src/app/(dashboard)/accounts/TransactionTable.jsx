@@ -9,15 +9,14 @@ import { AiOutlineDelete } from "react-icons/ai"
 import { FiEdit } from "react-icons/fi"
 import dayjs from 'dayjs'
 import useApi from '@/lib/useApi'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import Overlay from '@/components/Overlay'
 
 
 export default function TransactionTable({ data }) {
-    const router = useRouter()
-
+    let path=usePathname()
     const columns = useMemo(
         () => [
             {
@@ -86,7 +85,7 @@ export default function TransactionTable({ data }) {
     if (deleteTransaction.isError) return <pre>{JSON.stringify(deleteTransaction.error, null, 2)}</pre>
     return (
         <>
-            <Overlay isLoading={deleteTransaction.isPending}/>
+            <Overlay isLoading={deleteTransaction.isPending} />
             <GlobalFilter
                 globalFilter={state?.globalFilter}
                 setGlobalFilter={setGlobalFilter}
@@ -149,7 +148,7 @@ export default function TransactionTable({ data }) {
                                                                 ? <p className={`${cell.value == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.value}</p>
                                                                 : cell.column.Header == 'Action'
                                                                     ? <div className='flex gap-3 justify-center items-center'>
-                                                                        <Link href={`/transactions/edit/${cell.row.values.id}`}>
+                                                                        <Link href={`${path}/edit/${cell.row.values.id}`}>
                                                                             <FiEdit
                                                                                 size={18}
                                                                                 cursor='pointer'

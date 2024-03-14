@@ -114,10 +114,11 @@ export async function DeleteTransaction(id) {
     }
 }
 
-export async function GetAllTransactions({ isPaid, type }) {
+export async function GetAllTransactions({ isPaid, type, projectId }) {
     try {
         let query = { isPaid }
         if (type) query.type = type
+        if (projectId) query.projectId = projectId
         let transactions = await db.transaction.findMany({
             where: query,
             orderBy: {

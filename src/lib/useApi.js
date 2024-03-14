@@ -1,9 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { AddProject, AddTransaction, DeleteTransaction, EditTransaction, GetAllActiviies, GetAllProjects, GetAllTransactions, GetTransaction } from "../../action/api"
+import { AddProject, AddTransaction, DeleteTransaction, EditTransaction, GetAllActiviies, GetAllProjects, GetAllTransactions, GetProject, GetTransaction } from "../../action/api"
 
 export default function useApi() {
     const queryClient = useQueryClient()
     return {
+        getProject: ({id})=>useQuery({
+            queryKey: ['projects', id],
+            queryFn: async () => await GetProject(id),
+            refetchOnWindowFocus: false,
+        }),
         getAllProjects: useQuery({
             queryKey: ['projects'],
             queryFn: async () => await GetAllProjects(),
@@ -13,10 +18,10 @@ export default function useApi() {
             mutationFn: AddProject,
             onSuccess: async (_, e) => await queryClient.invalidateQueries(['projects'])
         }),
-        getAllTransactions: ({ isPaid, type }) => {
+        getAllTransactions: ({ isPaid, type, projectId }) => {
             return useQuery({
                 queryKey: ['transactions'],
-                queryFn: async () => await GetAllTransactions({ isPaid, type }),
+                queryFn: async () => await GetAllTransactions({ isPaid, type, projectId }),
                 refetchOnWindowFocus: false,
             })
         },
@@ -32,7 +37,7 @@ export default function useApi() {
             onSuccess: async (_, e) => await queryClient.invalidateQueries(['transactions'])
         }),
         editTransaction: useMutation({
-            mutationFn: ({ id, data, isPaid, type }) => EditTransaction({ id, data, isPaid, type }),
+            mutationFn: ({ id, data }) => EditTransaction({ id, data }),
             onSuccess: async (_, e) => await queryClient.invalidateQueries(['transactions'])
         }),
         deleteTransaction: useMutation({

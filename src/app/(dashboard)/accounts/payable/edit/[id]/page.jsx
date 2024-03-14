@@ -12,13 +12,13 @@ import { Select, TextInput, Textarea } from '@mantine/core';
 import Loading from '@/components/Loading';
 import { GetAllProjectsTitle } from '../../../../../../../action/api';
 
-export default function AddNewTransaction({ params }) {
-    const [values, setValues] = useState({ name: '', date: null, amount: '', source: '', details: '', type: '', projectId: '', isPaid: true })
+export default function EditTransaction({ params }) {
+    const [values, setValues] = useState({ name: '', date: null, amount: '', source: '', details: '', type: '', projectId: '', isPaid: false })
     const [errors, setErrors] = useState({})
     const [projectNames, setProjectNames] = useState([])
     const router = useRouter()
     const { editTransaction, getTransaction } = useApi()
-    let { data, isError, error, isLoading } = getTransaction(params.id, true)
+    let { data, isError, error, isLoading } = getTransaction({ id: params.id, isPaid: false })
 
     function handleChange(e) {
         setValues((pre) => ({ ...pre, [e.target.name]: e.target.value }))
@@ -34,7 +34,7 @@ export default function AddNewTransaction({ params }) {
             let loadingPromise = toast.loading("Loading...")
             editTransaction.mutate({ id: params.id, data: values }, {
                 onSuccess: () => {
-                    router.push('/transactions')
+                    router.push('/accounts/payable')
                     toast.success("Transaction Successful!", { id: loadingPromise })
                 },
                 onError: (e) => {
@@ -56,7 +56,7 @@ export default function AddNewTransaction({ params }) {
 
     useEffect(() => {
         if (data?.name) {
-            setValues({ name: data?.name, date: data?.date, amount: data?.amount, source: data?.source, details: data?.details, type: data?.type, projectId: data?.projectId, isPaid: true })
+            setValues({ name: data?.name, date: data?.date, amount: data?.amount, source: data?.source, details: data?.details, type: data?.type, projectId: data?.projectId, isPaid: false })
         }
     }, [data])
 

@@ -16,7 +16,7 @@ import Overlay from '@/components/Overlay'
 
 
 export default function ProjectTransactionTable({ data }) {
-    console.log(data)
+    // console.log(data)
     const router = useRouter()
 
     const columns = useMemo(
@@ -164,7 +164,7 @@ export default function ProjectTransactionTable({ data }) {
                                                                     ? cell.value == true ? 'True' : 'False'
                                                                     : cell.column.Header == 'Action'
                                                                         ? <div className='flex gap-3 justify-center items-center'>
-                                                                            <Link href={`/transactions/edit/${cell.row.values.id}`}>
+                                                                            <Link href={`/transactions/edit/${cell.row.values.id}?redirect=/projects/${data[0].projectId}`}>
                                                                                 <FiEdit
                                                                                     size={18}
                                                                                     cursor='pointer'

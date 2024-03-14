@@ -12,7 +12,8 @@ import { DateInput } from '@mantine/dates';
 import { Select, TextInput, Textarea } from '@mantine/core';
 import Loading from '@/components/Loading';
 
-export default function AddNewTransaction({ params }) {
+export default function AddNewTransaction({ params, searchParams: { redirect } }) {
+    // console.log(params, redirect)
     const [values, setValues] = useState({ name: '', date: null, amount: '', source: '', details: '', type: '', projectId: '', isPaid: true })
     const [errors, setErrors] = useState({})
     const [projectNames, setProjectNames] = useState([])
@@ -32,9 +33,9 @@ export default function AddNewTransaction({ params }) {
         if (!Object.keys(d).length) {
             // alert(JSON.stringify(values, null, 2))
             let loadingPromise = toast.loading("Loading...")
-            editTransaction.mutate({ id: params.id, data: values }, {
+            editTransaction.mutate({ id: params.id, data: values, redirect }, {
                 onSuccess: () => {
-                    router.push('/transactions')
+                    router.push(redirect ? redirect : '/transactions')
                     toast.success("Transaction Successful!", { id: loadingPromise })
                 },
                 onError: (e) => {
@@ -55,7 +56,7 @@ export default function AddNewTransaction({ params }) {
     }, [])
 
     useEffect(() => {
-        console.log(data)
+        // console.log(data)
         if (data?.name) {
             setValues({ name: data?.name, date: data?.date, amount: data?.amount, source: data?.source, details: data?.details, type: data?.type, projectId: data?.projectId, isPaid: true })
         }
