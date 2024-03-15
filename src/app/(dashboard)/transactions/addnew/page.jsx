@@ -16,7 +16,7 @@ export default function AddNewTransaction() {
     const [errors, setErrors] = useState({})
     const [projectNames, setProjectNames] = useState([])
     const router = useRouter()
-    const { creatTransaction, deleteTransaction } = useApi()
+    const { creatTransaction } = useApi()
 
     function handleChange(e) {
         setValues((pre) => ({ ...pre, [e.target.name]: e.target.value }))
@@ -53,10 +53,9 @@ export default function AddNewTransaction() {
     }, [])
 
     if (creatTransaction.isError) return <pre>{JSON.stringify(creatTransaction.error, null, 2)}</pre>
-    if (deleteTransaction.isError) return <pre>{JSON.stringify(deleteTransaction.error, null, 2)}</pre>
     return (
         <section className='container'>
-            <Overlay isLoading={creatTransaction.isPending || deleteTransaction.isPending} />
+            <Overlay isLoading={creatTransaction.isPending} />
             <div className="title">New Projects</div>
             <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
                 <DateInput

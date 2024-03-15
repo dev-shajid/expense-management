@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { AddProject, AddTransaction, DeleteTransaction, EditTransaction, GetAllActiviies, GetAllProjects, GetAllTransactions, GetProject, GetTransaction } from "../../action/api"
+import { AddCustomer, AddProject, AddTransaction, DeleteTransaction, EditTransaction, GetAllActiviies, GetAllProjects, GetAllTransactions, GetCustomer, GetCustomers, GetProject, GetTransaction } from "../../action/api"
 
 export default function useApi() {
     const queryClient = useQueryClient()
     return {
-        getProject: ({id})=>useQuery({
+        getProject: ({ id }) => useQuery({
             queryKey: ['projects', id],
             queryFn: async () => await GetProject(id),
             refetchOnWindowFocus: false,
@@ -20,7 +20,7 @@ export default function useApi() {
         }),
         getAllTransactions: ({ isPaid, type, projectId }) => {
             return useQuery({
-                queryKey: ['transactions'],
+                queryKey: ['transactions', isPaid, type, projectId],
                 queryFn: async () => await GetAllTransactions({ isPaid, type, projectId }),
                 refetchOnWindowFocus: false,
             })
@@ -50,6 +50,21 @@ export default function useApi() {
             queryKey: ['activities'],
             queryFn: async () => await GetAllActiviies(),
             refetchOnWindowFocus: false,
+        }),
+
+        getCustomers: useQuery({
+            queryKey: ['customers'],
+            queryFn: async () => await GetCustomers(),
+            refetchOnWindowFocus: false,
+        }),
+        getCustomer: ({ id }) => useQuery({
+            queryKey: ['customers'],
+            queryFn: async () => await GetCustomer({ id }),
+            refetchOnWindowFocus: false,
+        }),
+        addCustomer: useMutation({
+            mutationFn: ({ data }) => AddCustomer({ data }),
+            onSuccess: async (_, e) => await queryClient.invalidateQueries(['customers'])
         }),
     }
 }

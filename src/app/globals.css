@@ -126,7 +126,7 @@ img {
 }
 
 .add_button {
-  @apply text-sm bg-black rounded-md px-3 py-1.5 font-medium cursor-pointer text-white self-center;
+  @apply text-sm bg-gray-800 md:hover:bg-gray-900 transition rounded-md px-4 py-2 font-medium cursor-pointer text-white self-center;
 }
 
 .MuiBackdrop-root.backdrop {
@@ -165,11 +165,15 @@ table.invoice tr {
   height: 50px;
 }
 
-.mantine-Accordion-label{
+.mantine-Accordion-label {
   @apply !py-1.5;
 }
 
-.mantine-Accordion-content{
+.mantine-Accordion-content {
   padding-bottom: 0 !important;
   padding-top: 0 !important;
+}
+
+.mantine-Button-root{
+  @apply !bg-gray-800 md:hover:!bg-gray-900 transition;
 }

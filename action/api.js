@@ -217,3 +217,34 @@ export async function GetAllActiviies() {
         return error
     }
 }
+
+// TODO: Customers
+export async function GetCustomers() {
+    try {
+        let customers = await db.customer.findMany({ orderBy: { createdAt: 'desc' } })
+        return customers
+    } catch (error) {
+        console.log({ GetCustomers_Error: error.message })
+        return error
+    }
+}
+
+export async function GetCustomer({ id }) {
+    try {
+        let customer = await db.customer.findFirst({ where: { id } })
+        return customer
+    } catch (error) {
+        console.log({ GetCustomer_Error: error.message })
+        return error
+    }
+}
+
+export async function AddCustomer({ data }) {
+    try {
+        let customer = await db.customer.create({ data })
+        return customer
+    } catch (error) {
+        console.log({ AddCustomer_Error: error.message })
+        return error
+    }
+}

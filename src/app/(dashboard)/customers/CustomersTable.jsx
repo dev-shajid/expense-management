@@ -13,11 +13,11 @@ import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import Overlay from '@/components/Overlay'
-import { RxCross1 } from 'react-icons/rx'
+import { RxCross1 } from "react-icons/rx";
 
 
-export default function TransactionTable({ data }) {
-    let path=usePathname()
+export default function CustomersTable({ data }) {
+    let path = usePathname()
     const columns = useMemo(
         () => [
             {
@@ -25,24 +25,32 @@ export default function TransactionTable({ data }) {
                 accessor: 'id',
             },
             {
-                Header: 'Transaction Name',
+                Header: 'Name',
                 accessor: 'name',
             },
             {
-                Header: 'Date',
-                accessor: 'date',
+                Header: 'Email',
+                accessor: 'email',
             },
             {
-                Header: 'Amount',
-                accessor: 'amount',
+                Header: 'Phone',
+                accessor: 'phone',
             },
             {
-                Header: 'Project',
-                accessor: 'project.name',
+                Header: 'Address',
+                accessor: 'address',
             },
             {
-                Header: 'Type',
-                accessor: 'type',
+                Header: 'Company',
+                accessor: 'company',
+            },
+            {
+                Header: 'Customer Since',
+                accessor: 'since',
+            },
+            {
+                Header: 'Details',
+                accessor: 'details',
             },
             {
                 Header: 'Action',
@@ -141,12 +149,10 @@ export default function TransactionTable({ data }) {
                                                 {...restCell}
                                             >
                                                 {
-                                                    cell.column.Header == 'Date'
+                                                    cell.column.Header == 'Customer Since'
                                                         ? dayjs(cell.value)?.format('DD MMM YYYY')
                                                         : cell.column.Header == 'Id'
                                                             ? row?.index+1
-                                                            : cell.column.Header == 'Type'
-                                                                ? <p className={`${cell.value == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.value}</p>
                                                                 : cell.column.Header == 'Action'
                                                                     ? <div className='flex gap-3 justify-center items-center'>
                                                                         <Link href={`${path}/edit/${cell.row.values.id}`}>

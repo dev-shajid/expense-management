@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useReducer, useState } from 'react'
 import { useAsyncDebounce, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table'
 import { GrNext, GrPrevious } from "react-icons/gr";
 import dayjs from 'dayjs'
+import { RxCross1 } from 'react-icons/rx'
 
 
 export default function ActivityTable({ data }) {
@@ -60,7 +61,7 @@ export default function ActivityTable({ data }) {
         prepareRow,
         state,
         setGlobalFilter
-    } = useTable({ columns, data, initialState: { pageSize: 20, } }, useGlobalFilter, useSortBy, usePagination)
+    } = useTable({ columns, data, initialState: { pageSize: 10, } }, useGlobalFilter, useSortBy, usePagination)
 
     return (
         <>
@@ -79,7 +80,7 @@ export default function ActivityTable({ data }) {
                                         const { key, ...restColumn } = column.getHeaderProps(column.getSortByToggleProps())
                                         return (
                                             <th align='center' key={key} {...restColumn} className="px-5 py-4 border-b-[1px] border-gray-300 dark:border-gray-600 bg-gray-300 dark:bg-gray-800 text-left md:text-base text-sm font-semibold uppercase" >
-                                                <div className={`flex space-x-1 ${j==0?'':'justify-center'} items-center`}>
+                                                <div className={`flex space-x-1 ${j == 0 ? '' : 'justify-center'} items-center`}>
                                                     <p className='relative'>
                                                         {column.render('Header')}
                                                         <span className={`absolute right-[-15px]`}>
@@ -120,10 +121,12 @@ export default function ActivityTable({ data }) {
                                                     cell.column.Header == 'Date'
                                                         ? dayjs(cell.value)?.format('DD MMM YYYY, hh:mm:ss A')
                                                         : cell.column.Header == 'Id'
-                                                            ? (i + 1)
+                                                            ? row?.index + 1
                                                             : cell.column.Header == 'Type'
                                                                 ? <p className={`${cell.value == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.value}</p>
-                                                                : cell.value
+                                                                : !cell.value
+                                                                    ? <RxCross1 className='mx-auto text-gray-400 select-none' />
+                                                                    : cell.value
                                                 }
                                             </td>
                                         )

@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import Overlay from '@/components/Overlay'
+import { RxCross1 } from 'react-icons/rx'
 
 
 export default function TransactionTable({ data }) {
@@ -144,7 +145,7 @@ export default function TransactionTable({ data }) {
                                                     cell.column.Header == 'Date'
                                                         ? dayjs(cell.value)?.format('DD MMM YYYY')
                                                         : cell.column.Header == 'Id'
-                                                            ? (20 * j + i + 1)
+                                                            ? row?.index+1
                                                             : cell.column.Header == 'Type'
                                                                 ? <p className={`${cell.value == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.value}</p>
                                                                 : cell.column.Header == 'Action'
@@ -161,7 +162,9 @@ export default function TransactionTable({ data }) {
                                                                             onClick={() => handleDelete(cell.row.values.id)}
                                                                         />
                                                                     </div>
-                                                                    : cell.value
+                                                                    : !cell.value
+                                                                        ? <RxCross1 className='mx-auto text-gray-400 select-none' />
+                                                                        : cell.value
                                                 }
                                             </td>
                                         )
