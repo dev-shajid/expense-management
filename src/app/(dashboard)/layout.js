@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import Sidebar from "@/components/Sidebar";
 import Layout from "@/components/Layout";
 import NextTopLoader from 'nextjs-toploader';
+import ContextProvider from "@/context/ContextProvider";
 
 
 
@@ -21,18 +22,20 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <NextTopLoader color="#6366f1" />
-        <Layout>
-          <Toaster
-            position="top-center"
-            reverseOrder={false}
-          />
-          <main className="bg-light min-h-[100vh] flex md:flex-row flex-col w-full relative">
-            <Sidebar />
-            <section className="flex-1 max-w-full overflow-hidden container">
-              {children}
-            </section>
-          </main>
-        </Layout>
+        <ContextProvider>
+          <Layout>
+            <Toaster
+              position="top-center"
+              reverseOrder={false}
+            />
+            <main className="bg-light min-h-[100vh] flex md:flex-row flex-col w-full relative">
+              <Sidebar />
+              <section className="flex-1 max-w-full overflow-hidden container">
+                {children}
+              </section>
+            </main>
+          </Layout>
+        </ContextProvider>
       </body>
     </html>
   );

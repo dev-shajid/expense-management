@@ -1,15 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { AddCustomer, AddProject, AddTransaction, DeleteTransaction, EditTransaction, GetAllActiviies, GetAllProjects, GetAllTransactions, GetCustomer, GetCustomers, GetProject, GetTransaction } from "../../action/api"
+import { AddCustomer, AddProject, AddTransaction, AddWithdraw, DeleteCustomer, DeleteTransaction, DeleteUser, DeleteWithdraw, EditCustomer, EditPassword, EditProfile, EditTransaction, EditWithdraw, GetAllActiviies, GetAllProjects, GetAllTransactions, GetAllWithdraws, GetAuthUser, GetBasicInfo, GetCustomer, GetCustomers, GetProject, GetTransaction, GetUsers, GetWithdraw, VerifyUser } from "../../action/api"
 
 export default function useApi() {
     const queryClient = useQueryClient()
+
     return {
         getProject: ({ id }) => useQuery({
             queryKey: ['projects', id],
             queryFn: async () => await GetProject(id),
             refetchOnWindowFocus: false,
         }),
-        getAllProjects: useQuery({
+        getAllProjects: () => useQuery({
             queryKey: ['projects'],
             queryFn: async () => await GetAllProjects(),
             refetchOnWindowFocus: false,
@@ -18,6 +19,8 @@ export default function useApi() {
             mutationFn: AddProject,
             onSuccess: async (_, e) => await queryClient.invalidateQueries(['projects'])
         }),
+
+
         getAllTransactions: ({ isPaid, type, projectId }) => {
             return useQuery({
                 queryKey: ['transactions', isPaid, type, projectId],
@@ -46,19 +49,47 @@ export default function useApi() {
         }),
 
 
-        getAllActivities: useQuery({
+        getAllWithdraws: () => {
+            return useQuery({
+                queryKey: ['withdraws'],
+                queryFn: async () => await GetAllWithdraws(),
+                refetchOnWindowFocus: false,
+            })
+        },
+        getWithdraw: ({ id }) => {
+            return useQuery({
+                queryKey: ['withdraws', id],
+                queryFn: async () => await GetWithdraw({ id }),
+                refetchOnWindowFocus: false,
+            })
+        },
+        creatWithdraw: useMutation({
+            mutationFn: ({ data }) => AddWithdraw({ data }),
+            onSuccess: async (_, e) => await queryClient.invalidateQueries(['withdraws'])
+        }),
+        editWithdraw: useMutation({
+            mutationFn: ({ id, data }) => EditWithdraw({ id, data }),
+            onSuccess: async (_, e) => await queryClient.invalidateQueries(['withdraws'])
+        }),
+        deleteWithdraw: useMutation({
+            mutationFn: ({id}) => DeleteWithdraw({id}),
+            onSuccess: async (_, e) => await queryClient.invalidateQueries(['withdraws'])
+        }),
+
+
+        getAllActivities: () => useQuery({
             queryKey: ['activities'],
             queryFn: async () => await GetAllActiviies(),
             refetchOnWindowFocus: false,
         }),
 
-        getCustomers: useQuery({
+        getCustomers: () => useQuery({
             queryKey: ['customers'],
             queryFn: async () => await GetCustomers(),
             refetchOnWindowFocus: false,
         }),
         getCustomer: ({ id }) => useQuery({
-            queryKey: ['customers'],
+            queryKey: ['customers', id],
             queryFn: async () => await GetCustomer({ id }),
             refetchOnWindowFocus: false,
         }),
@@ -66,5 +97,58 @@ export default function useApi() {
             mutationFn: ({ data }) => AddCustomer({ data }),
             onSuccess: async (_, e) => await queryClient.invalidateQueries(['customers'])
         }),
+        editCustomer: useMutation({
+            mutationFn: ({ id, data }) => EditCustomer({ id, data }),
+            onSuccess: async (_, e) => await queryClient.invalidateQueries(['customers'])
+        }),
+        deleteCustomer: useMutation({
+            mutationFn: ({ id }) => DeleteCustomer({ id }),
+            onSuccess: async (_, e) => await queryClient.invalidateQueries(['customers'])
+        }),
+
+
+        getBasicInfo: () => useQuery({
+            queryKey: ['basic'],
+            queryFn: async () => {
+                let res = await GetBasicInfo()
+                return res
+            },
+            refetchOnWindowFocus: false,
+        }),
+
+        getUsers: () => useQuery({
+            queryKey: ['users'],
+            queryFn: async () => await GetUsers(),
+            refetchOnWindowFocus: false,
+        }),
+        verifyUser: useMutation({
+            mutationFn: ({ id }) => VerifyUser({ id }),
+            onSuccess: async (_, e) => await queryClient.invalidateQueries(['users'])
+        }),
+        roleUser: useMutation({
+            mutationFn: ({ id }) => VerifyUser({ id }),
+            onSuccess: async (_, e) => await queryClient.invalidateQueries(['users'])
+        }),
+        deleteUser: useMutation({
+            mutationFn: ({ id }) => DeleteUser({ id }),
+            onSuccess: async (_, e) => await queryClient.invalidateQueries(['users'])
+        }),
+
+
+        getProfile: () => useQuery({
+            queryKey: ['profile'],
+            queryFn: async () => await GetUsers(),
+            refetchOnWindowFocus: false,
+        }),
+        editProfile: useMutation({
+            mutationFn: ({ id, data }) => EditProfile({ id,data }),
+            onSuccess: async (_, e) => await queryClient.invalidateQueries(['profile'])
+        }),
+        editPassword: useMutation({
+            mutationFn: ({ id, data }) => EditPassword({ id,data }),
+            onSuccess: async (_, e) => await queryClient.invalidateQueries(['profile'])
+        }),
+
+
     }
 }

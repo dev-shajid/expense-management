@@ -2,22 +2,23 @@
 
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
-import React, { useEffect, useMemo, useReducer, useState } from 'react'
+import React, { useMemo } from 'react'
 import { useAsyncDebounce, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table'
 import { GrNext, GrPrevious } from "react-icons/gr";
 import { AiOutlineDelete } from "react-icons/ai"
 import { FiEdit } from "react-icons/fi"
 import dayjs from 'dayjs'
 import useApi from '@/lib/useApi'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import Overlay from '@/components/Overlay'
-import { RxCross1 } from "react-icons/rx";
+import { RxCross1 } from 'react-icons/rx'
 
 
-export default function CustomersTable({ data }) {
-    let path = usePathname()
+export default function WithdrawTable({ data }) {
+    const router = useRouter()
+
     const columns = useMemo(
         () => [
             {
@@ -25,28 +26,24 @@ export default function CustomersTable({ data }) {
                 accessor: 'id',
             },
             {
-                Header: 'Name',
-                accessor: 'name',
+                Header: 'Bank',
+                accessor: 'bank_account',
             },
             {
-                Header: 'Email',
-                accessor: 'email',
+                Header: 'Date',
+                accessor: 'date',
             },
             {
-                Header: 'Phone',
-                accessor: 'phone',
+                Header: 'Amount',
+                accessor: 'amount',
             },
             {
-                Header: 'Address',
-                accessor: 'address',
+                Header: 'Previous',
+                accessor: 'previous',
             },
             {
-                Header: 'Company',
-                accessor: 'company',
-            },
-            {
-                Header: 'Customer Since',
-                accessor: 'since',
+                Header: 'Remaining',
+                accessor: 'remaining',
             },
             {
                 Header: 'Details',
@@ -75,26 +72,26 @@ export default function CustomersTable({ data }) {
     } = useTable({ columns, data, initialState: { pageSize: 20, } }, useGlobalFilter, useSortBy, usePagination)
 
 
-    const { deleteCustomer } = useApi()
+    const { deleteWithdraw } = useApi()
 
     async function handleDelete(id) {
         let loadingPromise = toast.loading("Loading...")
-        deleteCustomer.mutate(id, {
+        deleteWithdraw.mutate({id}, {
             onSuccess: () => {
-                toast.success("Deleted Transaction!", { id: loadingPromise })
+                toast.success("Deleted Withdraw!", { id: loadingPromise })
             },
             onError: (e) => {
                 console.log(e)
-                toast.error(e?.message || "Fail to delete Transaction", { id: loadingPromise })
+                toast.error(e?.message || "Fail to delete Withdraw", { id: loadingPromise })
             },
         })
     }
 
 
-    if (deleteCustomer.isError) return <pre>{JSON.stringify(deleteCustomer.error, null, 2)}</pre>
+    if (deleteWithdraw.isError) return <pre>{JSON.stringify(deleteWithdraw.error, null, 2)}</pre>
     return (
         <>
-            <Overlay isLoading={deleteCustomer.isPending} />
+            <Overlay isLoading={deleteWithdraw.isPending} />
             <GlobalFilter
                 globalFilter={state?.globalFilter}
                 setGlobalFilter={setGlobalFilter}
@@ -111,7 +108,7 @@ export default function CustomersTable({ data }) {
                                         return (
                                             <th align='center' key={key} {...restColumn} className="px-5 py-4 border-b-[1px] border-gray-300 dark:border-gray-600 bg-gray-300 dark:bg-gray-800 text-left md:text-base text-sm font-semibold uppercase" >
                                                 <div className={`flex space-x-1 ${j == 0 ? '' : 'justify-center'} items-center`}>
-                                                    <p className={`relative text-center ${column.id=='since'?'min-w-[160px]':''}`}>
+                                                    <p className='relative'>
                                                         {column.render('Header')}
                                                         <span className={`absolute right-[-15px]`}>
                                                             {column.isSorted
@@ -149,13 +146,15 @@ export default function CustomersTable({ data }) {
                                                 {...restCell}
                                             >
                                                 {
-                                                    cell.column.Header == 'Customer Since'
+                                                    cell.column.Header == 'Date'
                                                         ? dayjs(cell.value)?.format('DD MMM YYYY')
                                                         : cell.column.Header == 'Id'
-                                                            ? row?.index+1
+                                                            ? row?.index + 1
+                                                            : cell.column.Header == 'Type'
+                                                                ? <p className={`${cell.value == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.value}</p>
                                                                 : cell.column.Header == 'Action'
                                                                     ? <div className='flex gap-3 justify-center items-center'>
-                                                                        <Link href={`${path}/edit/${cell.row.values.id}`}>
+                                                                        <Link href={`/withdraw/edit/${cell.row.values.id}`}>
                                                                             <FiEdit
                                                                                 size={18}
                                                                                 cursor='pointer'
@@ -168,7 +167,7 @@ export default function CustomersTable({ data }) {
                                                                         />
                                                                     </div>
                                                                     : !cell.value
-                                                                        ? <RxCross1 className='mx-auto text-gray-400 select-none'/>
+                                                                        ? <RxCross1 className='mx-auto text-gray-400 select-none' />
                                                                         : cell.value
                                                 }
                                             </td>

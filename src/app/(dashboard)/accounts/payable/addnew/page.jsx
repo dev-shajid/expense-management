@@ -31,7 +31,7 @@ export default function AddNewTransaction() {
         if (!Object.keys(d).length) {
             // alert(JSON.stringify(values, null, 2))
             let loadingPromise = toast.loading("Loading...")
-            creatTransaction.mutate(({data:values, isPaid: false}), {
+            creatTransaction.mutate(({ data: values, isPaid: false }), {
                 onSuccess: () => {
                     router.push('/accounts/payable')
                     toast.success("Transaction Successful!", { id: loadingPromise })
@@ -62,7 +62,7 @@ export default function AddNewTransaction() {
                 <DateInput
                     minDate={new Date()}
                     value={values?.date}
-                    onChange={(e) => setValues((pre) => ({ ...pre, date: dayjs(e) }))}
+                    onChange={(e) => setValues((pre) => ({ ...pre, date: e }))}
                     label="Date"
                     placeholder="Date input"
                     name='date'
@@ -122,6 +122,7 @@ export default function AddNewTransaction() {
                     value={values.amount}
                     error={errors?.amount}
                     onChange={handleChange}
+                    onWheel={e=>e.target.blur()}
                     placeholder="Enter the Amount"
                     required
                 />

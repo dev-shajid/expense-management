@@ -177,3 +177,9 @@ table.invoice tr {
 .mantine-Button-root{
   @apply !bg-gray-800 md:hover:!bg-gray-900 transition;
 }
+
+.users_table table th,
+.users_table table td
+{
+  @apply px-4 py-2 text-gray-900 whitespace-nowrap;
+}

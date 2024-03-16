@@ -56,7 +56,7 @@ export default function AddNewTransaction({ params }) {
 
     useEffect(() => {
         if (data?.name) {
-            setValues({ name: data?.name, date: data?.date, amount: data?.amount, source: data?.source, details: data?.details, type: data?.type, projectId: data?.projectId, isPaid: false })
+            setValues({ name: data?.name, date: data?.date, amount: data?.amount, source: data?.source, details: data?.details, type: data?.type, projectId: data?.projectId, isPaid: data?.isPaid })
         }
     }, [data])
 
@@ -131,6 +131,7 @@ export default function AddNewTransaction({ params }) {
                     value={values.amount}
                     error={errors?.amount}
                     onChange={handleChange}
+                    onWheel={e=>e.target.blur()}
                     placeholder="Enter the Amount"
                     required
                 />

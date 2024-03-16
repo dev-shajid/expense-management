@@ -1,18 +1,18 @@
 'use client'
 
+import Link from 'next/link'
 import React, { useState } from 'react'
+import toast from 'react-hot-toast'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
-import toast from 'react-hot-toast';
+import { validateRegisterForm } from '@/helper/validate'
 import Overlay from '@/components/Overlay'
-import Link from 'next/link';
-import Submit from '@/components/Submit';
-import { PasswordInput, TextInput } from '@mantine/core';
-import { validateLoginForm } from '@/helper/validate';
+import { PasswordInput, TextInput } from '@mantine/core'
+import Submit from '@/components/Submit'
 
 export default function page({ searchParams }) {
     const [isLoading, setIsLoading] = useState(false)
-    const [values, setValues] = useState({ email: '', password: '' })
+    const [values, setValues] = useState({ name: 'Mizan', email: 'mizan@gmail.com', password: '123456' })
     const [errors, setErrors] = useState({})
     const router = useRouter()
 
@@ -22,17 +22,18 @@ export default function page({ searchParams }) {
 
     async function handleSubmit(e) {
         e.preventDefault()
-        let validation = await validateLoginForm(values)
+        let validation = await validateRegisterForm(values)
         setErrors(validation)
 
         if (!Object.keys(validation).length) {
             let loadingPromise = toast.loading("Loading...")
             try {
                 setIsLoading(true)
-                let res = await axios.post('/api/auth/login', values)
+                let res = await axios.post('/api/auth/register', values)
+                // console.log(res.data)
                 if (res.status == 200) {
-                    router.push(searchParams.callback || '/')
-                    toast.success(res?.data.message || "Login Successful!", { id: loadingPromise })
+                    router.push('/signin')
+                    toast.success(res?.data.message || "Registration Successful!", { id: loadingPromise })
                 }
             } catch (error) {
                 console.log({ error })
@@ -56,6 +57,15 @@ export default function page({ searchParams }) {
                             </h1>
                             <form onSubmit={handleSubmit} className="space-y-2" action="#">
                                 <TextInput
+                                    label="Name"
+                                    name='name'
+                                    type='text'
+                                    value={values?.name}
+                                    error={errors?.name}
+                                    onChange={handleChange}
+                                    placeholder="Enter Your Name"
+                                />
+                                <TextInput
                                     label="Email"
                                     name='email'
                                     type='text'
@@ -72,10 +82,10 @@ export default function page({ searchParams }) {
                                     onChange={handleChange}
                                     placeholder="Enter Your Password"
                                 />
-                                <Submit loading={isLoading} className='w-full !mt-4'>Sign In</Submit>
+
+                                <Submit loading={isLoading} className='w-full !mt-4'>Sign Up</Submit>
                                 <p className="text-sm font-light text-gray-700">
-                                    Don’t have an account yet?
-                                    <Link href="signup" className="font-medium text-blue-500 underline">Sign up</Link>
+                                    Don’t have an account yet? <Link href="/signin" className="font-medium text-blue-500 underline">Sign in</Link>
                                 </p>
                             </form>
                         </div>

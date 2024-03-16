@@ -44,6 +44,22 @@ export async function validateCustomerForm(values) {
     return errors
 }
 
+export async function validateProfileForm(values) {
+    const errors = {}
+    nameVerify(errors, values, 'name')
+    phoneVerify(errors, values, 1)
+
+    return errors
+}
+
+export async function validatePasswordForm(values) {
+    const errors = {}
+    passwordVerify(errors, values, 'old_password')
+    passwordVerify(errors, values, 'new_password')
+
+    return errors
+}
+
 /** ************************ Verify Function ************************* */
 
 function nameVerify(errors, values, name='name') {
@@ -69,15 +85,15 @@ function emailVerify(errors, values, optional) {
     return errors;
 }
 
-function passwordVerify(errors, values) {
-    if (!values.password?.trim()) {
-        errors.password = 'Password is Required...!'
+function passwordVerify(errors, values, name='password') {
+    if (!values[name]?.trim()) {
+        errors[name] = 'Password is Required...!'
     }
-    else if (values.password.includes(" ")) {
-        errors.password = "Password should not containe space"
+    else if (values[name].includes(" ")) {
+        errors[name] = "Password should not containe space"
     }
-    else if (values.password.length < 6) {
-        errors.password = "Password length must be atleast 6 "
+    else if (values[name].length < 6) {
+        errors[name] = "Password length must be atleast 6 "
     }
     
     return errors;

@@ -9,7 +9,7 @@ export default async function middleware(req) {
         let decode = token ? await verifyToken(token) : null
         // console.log({decode, token, path})
 
-        if (path?.startsWith('/signin')) {
+        if (path?.startsWith('/signin') || path?.startsWith('/signup')) {
             if (decode?.id) {
                 return NextResponse.redirect(new URL('/', req.url))
             }
@@ -22,6 +22,10 @@ export default async function middleware(req) {
                 response.cookies.delete('token')
                 return response
             }
+            if (path?.startsWith('/admin') || path?.startsWith('/projects')) {
+                if (decode?.role == 'admin') return NextResponse.next()
+                return NextResponse.redirect(new URL('/', req.url))
+            }
             return NextResponse.next()
         }
     } catch (error) {
@@ -33,6 +37,7 @@ export default async function middleware(req) {
 export const config = {
     matcher: [
         '/',
-        '/signin',
+        '/admin', '/projects', '/:projects*',
+        '/signin', '/signup',
     ]
 }

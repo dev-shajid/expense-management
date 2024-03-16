@@ -6,7 +6,7 @@ import ActivityTable from './ActivityTable'
 
 export default function ActivityPage() {
   const { getAllActivities } = useApi()
-  let { data, isError, error, isLoading } = getAllActivities
+  let { data, isError, error, isLoading } = getAllActivities()
 
   if (isError) return <div>{JSON.stringify(error, null, 2)}</div>
   if (isLoading) return <Loading page />

@@ -7,7 +7,7 @@ import useApi from '@/lib/useApi'
 
 export default function ProjectsPage() {
   const { getAllProjects } = useApi()
-  let { data: projects, isError, error, isLoading } = getAllProjects
+  let { data: projects, isError, error, isLoading } = getAllProjects()
 
   if (isError) return <div>{JSON.stringify(error, null, 2)}</div>
   if (isLoading) return <Loading page />

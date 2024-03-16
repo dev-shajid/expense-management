@@ -14,12 +14,18 @@ import Link from 'next/link'
 import toast from 'react-hot-toast'
 import Overlay from '@/components/Overlay'
 import { RxCross1 } from 'react-icons/rx'
+import { ActionIcon } from '@mantine/core'
+import { FaCheck } from 'react-icons/fa'
 
 
 export default function TransactionTable({ data }) {
-    let path=usePathname()
+    let path = usePathname()
     const columns = useMemo(
         () => [
+            {
+                Header: '',
+                accessor: 'paid',
+            },
             {
                 Header: 'Id',
                 accessor: 'id',
@@ -67,7 +73,7 @@ export default function TransactionTable({ data }) {
     } = useTable({ columns, data, initialState: { pageSize: 20, } }, useGlobalFilter, useSortBy, usePagination)
 
 
-    const { deleteTransaction } = useApi()
+    const { deleteTransaction, editTransaction } = useApi()
 
     async function handleDelete(id) {
         let loadingPromise = toast.loading("Loading...")
@@ -133,7 +139,7 @@ export default function TransactionTable({ data }) {
                                     {...resRow}>
                                     {row.cells.map((cell, j) => {
                                         const { key, ...restCell } = cell.getCellProps()
-                                        // console.log(cell)
+                                        // console.log(cell.row.original)
                                         return (
                                             <td
                                                 key={j}
@@ -144,7 +150,7 @@ export default function TransactionTable({ data }) {
                                                     cell.column.Header == 'Date'
                                                         ? dayjs(cell.value)?.format('DD MMM YYYY')
                                                         : cell.column.Header == 'Id'
-                                                            ? row?.index+1
+                                                            ? row?.index + 1
                                                             : cell.column.Header == 'Type'
                                                                 ? <p className={`${cell.value == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.value}</p>
                                                                 : cell.column.Header == 'Action'
@@ -161,9 +167,31 @@ export default function TransactionTable({ data }) {
                                                                             onClick={() => handleDelete(cell.row.values.id)}
                                                                         />
                                                                     </div>
-                                                                    : !cell.value
-                                                                        ? <RxCross1 className='mx-auto text-gray-400 select-none'/>
-                                                                        : cell.value
+                                                                    : cell.column.id == 'paid'
+                                                                        ? <>
+                                                                            <ActionIcon
+                                                                                variant="light"
+                                                                                color="indigo"
+                                                                                size="sm"
+                                                                                onClick={() => {
+                                                                                    let loadingPromise = toast.loading("Loading...")
+                                                                                    editTransaction.mutate({ id: cell.row.original.id, data: { isPaid: true, projectId: cell.row.original.projectId } }, {
+                                                                                        onSuccess: () => {
+                                                                                            toast.success("Updated Transaction Successfully!", { id: loadingPromise })
+                                                                                        },
+                                                                                        onError: (e) => {
+                                                                                            console.log(e)
+                                                                                            toast.error(e?.message || "Something is wrong!", { id: loadingPromise })
+                                                                                        },
+                                                                                    })
+                                                                                }}
+                                                                            >
+                                                                                <FaCheck size={14} />
+                                                                            </ActionIcon>
+                                                                        </>
+                                                                        : !cell.value
+                                                                            ? <RxCross1 className='mx-auto text-gray-400 select-none' />
+                                                                            : cell.value
                                                 }
                                             </td>
                                         )

@@ -27,22 +27,9 @@ export async function POST(req) {
         })
     
         if (!newUser) throw new Error("Something went wrong!")
+        
+        return new Response(JSON.stringify({ message: "Succesful! Wait until verification" }), { status: 200 })
 
-        const tokenData = {
-            id: newUser.id,
-            name: newUser.name,
-            email: newUser.email,
-        }
-        const token=signJwtToken(tokenData, {expiresIn:'6d'});
-
-        const response = NextResponse.json({
-            message: "Register successful!",
-            user:tokenData,
-            success: true,
-        })
-        response.cookies.set("token", token, {
-            httpOnly: true,
-        })
         return response;
     } catch (error) {
         // console.log(error)

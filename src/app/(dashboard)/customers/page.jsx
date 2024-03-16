@@ -7,7 +7,7 @@ import CustomersTable from './CustomersTable'
 
 export default function CustomersPage() {
   const { getCustomers } = useApi()
-  let { data, isError, error, isLoading } = getCustomers
+  let { data, isError, error, isLoading } = getCustomers()
 
   if (isError) return <div>{JSON.stringify(error, null, 2)}</div>
   if (isLoading) return <Loading page />

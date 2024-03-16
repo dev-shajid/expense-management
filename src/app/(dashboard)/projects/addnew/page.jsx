@@ -51,7 +51,7 @@ export default function AddNewProduct() {
                 <DateInput
                     minDate={new Date()}
                     value={values?.date}
-                    onChange={(e) => setValues((pre) => ({ ...pre, date: dayjs(e) }))}
+                    onChange={(e) => setValues((pre) => ({ ...pre, date: e }))}
                     label="Date"
                     placeholder="Date input"
                     name='date'
@@ -76,6 +76,7 @@ export default function AddNewProduct() {
                     value={values.budget}
                     error={errors?.budget}
                     onChange={handleChange}
+                    onWheel={e=>e.target.blur()}
                     placeholder="Enter Your Project Budget"
                 />
 

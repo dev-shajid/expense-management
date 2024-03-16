@@ -11,9 +11,11 @@ import { Logout } from '../../action/api'
 import Overlay from './Overlay'
 import { IoIosArrowDown } from "react-icons/io";
 import { Accordion } from '@mantine/core'
+import { useUserContext } from '@/context/ContextProvider'
 
 
 export default function Sidebar() {
+    const { dispatch, user } = useUserContext()
     const [isLoading, setIsLoading] = useState(false)
     const pathname = usePathname()
     const router = useRouter()
@@ -81,6 +83,7 @@ export default function Sidebar() {
                     <div className="sidebar-menu space-y-2">
                         {
                             MenuItems.map((item, i) => {
+                                if((item.name=='Admin' || item.name=='Projects') && user?.role!='admin') return null
                                 if (item.name == 'Accounts') return (
                                     <Accordion key={i} defaultValue={pathname.split('/')[1]}>
                                         <Accordion.Item value='accounts' className='!border-b-0 !py-0'>
@@ -125,6 +128,11 @@ const MenuItems = [
         name: 'Dashboard',
         icon: <RxDashboard />,
         link: '/'
+    },
+    {
+        name: 'Admin',
+        icon: <RxDashboard />,
+        link: '/admin'
     },
     {
         name: 'Projects',

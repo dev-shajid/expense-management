@@ -21,9 +21,11 @@ export async function POST(req) {
         
         const  isValid = await bcrypt.compare(password, user.password)
         if (!isValid) throw new Error("Wrong Password!")
+        if (!user.verified) throw new Error("Not verified yet!")
 
         const tokenData = {
             id: user.id,
+            role: user.role,
             name: user.name,
             email: user.email
         }

@@ -120,6 +120,7 @@ export default function AddNewTransaction() {
                     value={values.amount}
                     error={errors?.amount}
                     onChange={handleChange}
+                    onWheel={e=>e.target.blur()}
                     placeholder="Enter the Amount"
                     required
                 />

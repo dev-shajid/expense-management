@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import dayjs from 'dayjs';
 import Submit from '@/components/Submit';
 import { validateCustomerForm } from '@/helper/validate';
 import toast from 'react-hot-toast';
@@ -10,12 +9,14 @@ import useApi from '@/lib/useApi';
 import Overlay from '@/components/Overlay';
 import { DateInput } from '@mantine/dates';
 import { TextInput, Textarea } from '@mantine/core';
+import Loading from '@/components/Loading';
 
-export default function AddNewCustomer() {
-    const [values, setValues] = useState({ name: '', email: '', phone: '', address: '', company: '', since: undefined, details: '', })
+export default function EditCustomer({ params }) {
+    const [values, setValues] = useState({ name: '', email: '', phone: '', address: '', company: '', since: null, details: '', })
     const [errors, setErrors] = useState({})
     const router = useRouter()
-    const { addCustomer } = useApi()
+    const { getCustomer, editCustomer } = useApi()
+    const { data, isLoading } = getCustomer({ id: params.id })
 
     function handleChange(e) {
         setValues((pre) => ({ ...pre, [e.target.name]: e.target.value }))
@@ -29,29 +30,36 @@ export default function AddNewCustomer() {
         if (!Object.keys(d).length) {
             // alert(JSON.stringify(values, null, 2))
             let loadingPromise = toast.loading("Loading...")
-            addCustomer.mutate(({ data: values }), {
+            editCustomer.mutate(({ id:params.id, data: values }), {
                 onSuccess: () => {
                     router.push('/customers')
-                    toast.success("Customer added Successfully!", { id: loadingPromise })
+                    toast.success("Customer updated Successfully!", { id: loadingPromise })
                 },
                 onError: (e) => {
-                    toast.error(e.error || "Fail to create Customer", { id: loadingPromise })
+                    toast.error(e.error || "Fail to update Customer", { id: loadingPromise })
                 },
             })
         }
     }
 
-    if (addCustomer.isError) return <pre>{JSON.stringify(addCustomer.error, null, 2)}</pre>
+    useEffect(()=>{
+        setValues({ name: data?.name, email: data?.email, phone: data?.phone, address: data?.address, company: data?.company, since: data?.since, details: data?.details })
+    },[data])
+
+    if (editCustomer.isError) return <pre>{JSON.stringify(editCustomer.error, null, 2)}</pre>
+    if (editCustomer.isPending || isLoading) return <Loading page/>
+
+    if(values?.name)
     return (
         <section className='container'>
-            <Overlay isLoading={addCustomer.isPending} />
-            <div className="title">New Customer</div>
+            <Overlay isLoading={editCustomer.isPending} />
+            <div className="title">Edit Customer</div>
             <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
                 <TextInput
                     label="Name"
                     name='name'
                     type='text'
-                    value={values.name}
+                    value={values?.name}
                     error={errors?.name}
                     onChange={handleChange}
                     placeholder="Enter Customers Name"
@@ -61,7 +69,7 @@ export default function AddNewCustomer() {
                     label="Email"
                     name='email'
                     type='text'
-                    value={values.email}
+                    value={values?.email}
                     error={errors?.email}
                     onChange={handleChange}
                     placeholder="Enter Customers Email"
@@ -71,7 +79,7 @@ export default function AddNewCustomer() {
                     label="Phone"
                     name='phone'
                     type='number'
-                    value={values.phone}
+                    value={values?.phone}
                     error={errors?.phone}
                     onChange={handleChange}
                     onWheel={e=>e.target.blur()}
@@ -82,7 +90,7 @@ export default function AddNewCustomer() {
                     label="Address"
                     name='address'
                     type='text'
-                    value={values.address}
+                    value={values?.address}
                     onChange={handleChange}
                     placeholder="Enter Customers Address"
                 />
@@ -91,7 +99,7 @@ export default function AddNewCustomer() {
                     label="Company"
                     name='company'
                     type='text'
-                    value={values.company}
+                    value={values?.company}
                     onChange={handleChange}
                     placeholder="Enter Customers Company Name"
                 />
@@ -99,7 +107,7 @@ export default function AddNewCustomer() {
                 <DateInput
                     maxDate={new Date()}
                     value={values?.since}
-                    onChange={(e) => setValues((pre) => ({ ...pre, since: e}))}
+                    onChange={(e) => setValues((pre) => ({ ...pre, since: e }))}
                     label="Date"
                     placeholder="Customer Since"
                     name='date'
@@ -107,7 +115,7 @@ export default function AddNewCustomer() {
 
                 <Textarea
                     name='details'
-                    value={values.details}
+                    value={values?.details}
                     onChange={handleChange}
                     autosize
                     minRows={5}

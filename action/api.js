@@ -1,7 +1,9 @@
 "use server"
 
+import { authUser } from "@/app/api/apiMiddleWare";
 import db from "@/lib/db"
 import { cookies } from "next/headers"
+import bcrypt from 'bcryptjs'
 
 export async function Logout() {
     try {
@@ -65,15 +67,29 @@ export async function AddTransaction({ isPaid, data }) {
         data.amount = Number(data.amount)
         data.isPaid = isPaid
 
-        let project = await db.project.findFirst({ where: { id: data.projectId } })
-        if (isPaid == true) {
-            if (data.type == 'income') await db.project.update({ where: { id: data.projectId }, data: { income: project.income + data.amount } })
-            else await db.project.update({ where: { id: data.projectId }, data: { expense: project.expense + data.amount } })
+        let base = (await db.basic.findMany())[0]
+
+        let project = await db.project.findFirst({
+            where: { id: data.projectId },
+            select: { income: true, expense: true, payable: true, receivable: true },
+        })
+
+        let baseValue = {
+            income: base.income + (data.type == 'income' && data.isPaid ? data.amount : 0),
+            expense: base.expense + (data.type == 'expense' && data.isPaid ? data.amount : 0),
+            receivable: base.receivable + (data.type == 'income' && !data.isPaid ? data.amount : 0),
+            payable: base.payable + (data.type == 'expense' && !data.isPaid ? data.amount : 0),
         }
-        else {
-            if (data.type == 'income') await db.project.update({ where: { id: data.projectId }, data: { receivable: project.receivable + data.amount } })
-            else await db.project.update({ where: { id: data.projectId }, data: { payable: project.payable + data.amount } })
+
+        let projectValue = {
+            income: project.income + (data.type == 'income' && data.isPaid ? data.amount : 0),
+            expense: project.expense + (data.type == 'expense' && data.isPaid ? data.amount : 0),
+            receivable: project.receivable + (data.type == 'income' && !data.isPaid ? data.amount : 0),
+            payable: project.payable + (data.type == 'expense' && !data.isPaid ? data.amount : 0),
         }
+
+        await db.project.update({ where: { id: data.projectId }, data: projectValue })
+        await db.basic.update({ where: { id: base.id }, data: baseValue })
 
         data.to_from = ''
         let transaction = await db.transaction.create({ data })
@@ -87,26 +103,66 @@ export async function AddTransaction({ isPaid, data }) {
 
 export async function EditTransaction({ id, data }) {
     try {
-        data.date = new Date(data.date)
-        data.amount = Number(data.amount)
+        if (data.date) data.date = new Date(data.date)
+        if (data.amount) data.amount = Number(data.amount)
+        let prev_transaction = await db.transaction.findFirst({ where: { id } })
         let transaction = await db.transaction.update({ where: { id }, data })
+        let { name, projectId, date, amount, type, isPaid } = transaction
 
-        let { name, projectId, date, amount, type } = transaction
-        let project = (await db.project.findFirst({ where: { id: projectId } })).name
-        await AddActivity({ name, project, date, amount, type, action: 'Updated' })
 
-        return transaction
+        let base = (await db.basic.findMany())[0]
+
+        let project = await db.project.findFirst({ where: { id: projectId } })
+        let projectValue = {
+            income: project.income - (prev_transaction.type == 'income' && prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'income' && isPaid ? amount : 0),
+            expense: project.expense - (prev_transaction.type == 'expense' && prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'expense' && isPaid ? amount : 0),
+            receivable: project.receivable - (prev_transaction.type == 'income' && !prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'expense' && !isPaid ? amount : 0),
+            payable: project.payable - (prev_transaction.type == 'expense' && !prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'income' && !isPaid ? amount : 0),
+        }
+
+        let baseValue = {
+            income: base.income - (prev_transaction.type == 'income' && prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'income' && isPaid ? amount : 0),
+            expense: base.expense - (prev_transaction.type == 'expense' && prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'expense' && isPaid ? amount : 0),
+            receivable: base.receivable - (prev_transaction.type == 'income' && !prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'expense' && !isPaid ? amount : 0),
+            payable: base.payable - (prev_transaction.type == 'expense' && !prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'income' && !isPaid ? amount : 0),
+        }
+
+
+        await db.project.update({ where: { id: projectId }, data: projectValue })
+        await db.basic.update({ where: { id: base.id }, data: baseValue })
+
+        await AddActivity({ name, project: project.name, date, amount, type, action: 'Updated' })
+
+        // return transaction
     } catch (error) {
-        console.log({ TransactioN_Error: error.message })
+        console.log({ EditTransaction_Error: error.message })
         return error
     }
 }
 
 export async function DeleteTransaction(id) {
     try {
-        let { name, projectId, date, amount, type } = await db.transaction.delete({ where: { id } })
-        let project = (await db.project.findFirst({ where: { id: projectId } })).name
-        await AddActivity({ name, project, date, amount, type, action: 'Deleted' })
+        let { name, projectId, date, amount, type, isPaid } = await db.transaction.delete({ where: { id } })
+        let project = await db.project.findFirst({ where: { id: projectId } })
+        let data = {
+            income: project.income - (type == 'income' && isPaid ? amount : 0),
+            expense: project.expense - (type == 'expense' && isPaid ? amount : 0),
+            receivable: project.receivable - (type == 'income' && !isPaid ? amount : 0),
+            payable: project.payable - (type == 'expense' && !isPaid ? amount : 0),
+        }
+
+        let base = (await db.basic.findMany())[0]
+        let baseValue = {
+            income: base.income - (type == 'income' && isPaid ? amount : 0),
+            expense: base.expense - (type == 'expense' && isPaid ? amount : 0),
+            receivable: base.receivable - (type == 'income' && !isPaid ? amount : 0),
+            payable: base.payable - (type == 'expense' && !isPaid ? amount : 0),
+        }
+
+        await db.project.update({ where: { id: projectId }, data })
+        await db.basic.update({ where: { id: base.id }, data: baseValue })
+
+        await AddActivity({ name, project: project.name, date, amount, type, action: 'Deleted' })
         return true
     } catch (error) {
         console.log({ TransactioN_Error: error.message })
@@ -163,34 +219,70 @@ export async function GetTransaction(id, isPaid, type) {
     }
 }
 
-export async function GetProjectsTransaction(id) {
+// TODO: Withdraw
+export async function AddWithdraw({ data }) {
     try {
-        let transactions = await db.transaction.findMany(
-            {
-                where: {
-                    projectId: id,
-                },
-                orderBy: {
-                    createdAt: 'desc',
-                },
-                include: {
-                    project: {
-                        select: {
-                            name: true,
-                        }
-                    }
-                }
-            }
-        )
-        return transactions
+        data.date = new Date(data.date).toISOString()
+        data.amount = Number(data.amount)
+        data.previous = Number(data.previous)
+        data.remaining = Number(data.remaining)
+
+        let withdraw = await db.withdraw.create({ data })
+        return withdraw
     } catch (error) {
+        console.log({ AddWithdraw_Error: error.message })
         return error
     }
 }
 
+export async function EditWithdraw({ id, data }) {
+    try {
+        data.date = new Date(data.date).toISOString()
+        data.amount = Number(data.amount)
+        data.previous = Number(data.previous)
+        data.remaining = Number(data.remaining)
+
+        await db.withdraw.update({ where: { id }, data })
+        return true
+    } catch (error) {
+        console.log({ EditWithdraw_Error: error.message })
+        return error
+    }
+}
+
+export async function DeleteWithdraw({ id }) {
+    try {
+        await db.withdraw.delete({ where: { id } })
+        return true
+    } catch (error) {
+        console.log({ DeleteWithdraw_Error: error.message })
+        return error
+    }
+}
+
+export async function GetAllWithdraws() {
+    try {
+        let withdraws = await db.withdraw.findMany({ orderBy: { createdAt: 'desc' } })
+        return withdraws
+    } catch (error) {
+        console.log({ GetAllWithdraws_Error: error.message })
+        return error
+    }
+}
+
+export async function GetWithdraw({ id }) {
+    try {
+        let withdraw = await db.withdraw.findFirst({ where: { id } })
+        return withdraw
+    } catch (error) {
+        console.log({ GetAllTransactions_Error: error.message })
+        return error
+    }
+}
+
+
+
 // TODO: Activity
-
-
 export async function AddActivity({ name, project, amount, type, action }) {
     try {
         let activity = await db.activity.create({
@@ -246,5 +338,117 @@ export async function AddCustomer({ data }) {
     } catch (error) {
         console.log({ AddCustomer_Error: error.message })
         return error
+    }
+}
+
+export async function EditCustomer({ id, data }) {
+    try {
+        let customer = await db.customer.update({ where: { id }, data })
+        return customer
+    } catch (error) {
+        console.log({ AddCustomer_Error: error.message })
+        return error
+    }
+}
+
+export async function DeleteCustomer({ id }) {
+    try {
+        await db.customer.delete({ where: { id } })
+    } catch (error) {
+        console.log({ AddCustomer_Error: error.message })
+        return error
+    }
+}
+
+// TODO: BASIC
+export async function GetBasicInfo() {
+    try {
+        let info = (await db.basic.findMany())[0]
+        return info
+    } catch (error) {
+        console.log({ GetCustomer_Error: error.message })
+        return error
+    }
+}
+
+// TODO: User
+export async function GetAuthUser() {
+    try {
+        const user = await authUser()
+        if (!user) throw new Error("Unauthorized user! sigin again")
+        return (await db.user.findFirst({ where: { id: user.id } }))
+    } catch (error) {
+        console.log({ GetCustomer_Error: error.message })
+        return error
+    }
+}
+
+export async function GetUsers() {
+    try {
+        let users = await db.user.findMany({ orderBy: { createdAt: 'desc' } })
+        return users
+    } catch (error) {
+        console.log({ GetUsers_Error: error.message })
+        return error
+    }
+}
+
+export async function VerifyUser({ id }) {
+    try {
+        await db.user.update({ where: { id }, data: { verified: true } })
+        return true
+    } catch (error) {
+        console.log({ GetUsers_Error: error.message })
+        return error
+    }
+}
+
+export async function RoleUser({ id }) {
+    try {
+        await db.user.update({ where: { id }, data: { role: 'editor' } })
+        return true
+    } catch (error) {
+        console.log({ GetUsers_Error: error.message })
+        return error
+    }
+}
+
+export async function DeleteUser({ id }) {
+    try {
+        await db.user.delete({ where: { id } })
+        return true
+    } catch (error) {
+        console.log({ GetUsers_Error: error.message })
+        return error
+    }
+}
+
+
+// TODO: Profile
+
+export async function EditProfile({ id, data }) {
+    try {
+        let { password, ...user } = await db.user.update({ where: { id }, data })
+        return user
+    } catch (error) {
+        console.log({ GetUsers_Error: error.message })
+        return error
+    }
+}
+
+export async function EditPassword({ id, data }) {
+    try {
+        let user = await db.user.findFirst({ where: { id } })
+
+        const isValid = await bcrypt.compare(data.old_password, user.password)
+        if (!isValid) throw new Error("Wrong Password!")
+
+        const hashedPassword = await bcrypt.hash(data.new_password, 10)
+        await db.user.update({ where: { id }, data: { password: hashedPassword } })
+
+        return { success: true }
+    } catch (error) {
+        console.log({ GetUsers_Error: error.message })
+        return { message: error.message, success: false }
     }
 }
