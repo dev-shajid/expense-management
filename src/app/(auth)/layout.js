@@ -1,8 +1,8 @@
 import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import { MantineProvider } from "@mantine/core";
+import '../globals.css'
 import '@mantine/core/styles.css';
-import "../globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
