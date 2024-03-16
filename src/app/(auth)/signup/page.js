@@ -12,7 +12,7 @@ import Submit from '@/components/Submit'
 
 export default function page({ searchParams }) {
     const [isLoading, setIsLoading] = useState(false)
-    const [values, setValues] = useState({ name: 'Mizan', email: 'mizan@gmail.com', password: '123456' })
+    const [values, setValues] = useState({ name: '', email: '', password: '' })
     const [errors, setErrors] = useState({})
     const router = useRouter()
 
