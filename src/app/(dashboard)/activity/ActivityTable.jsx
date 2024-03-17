@@ -2,14 +2,28 @@
 
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
-import React, { useEffect, useMemo, useReducer, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react'
 import { useAsyncDebounce, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table'
 import { GrNext, GrPrevious } from "react-icons/gr";
 import dayjs from 'dayjs'
 import { RxCross1 } from 'react-icons/rx'
+import useApi from '@/lib/useApi'
+import { GetAllActiviies } from '../../../../action/api'
 
 
-export default function ActivityTable({ data }) {
+export default function ActivityTable({ }) {
+    const { totalActivities } = useApi()
+
+    const [data, setData] = useState([])
+    const { data: total } = totalActivities()
+
+    const getAllActivities = useCallback(async ({ page, limit }) => {
+        let res = await GetAllActiviies({ page: page, limit })
+        // console.log(page, res)
+        setData(res)
+    }, [])
+
+
     const columns = useMemo(
         () => [
             {
@@ -47,21 +61,43 @@ export default function ActivityTable({ data }) {
         ],
         [])
 
+    const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10, })
 
     const {
         getTableProps,
         getTableBodyProps,
         headerGroups,
+        prepareRow,
         page,
+        canPreviousPage,
+        canNextPage,
+        pageOptions,
         nextPage,
         previousPage,
-        canNextPage,
-        canPreviousPage,
-        pageOptions,
-        prepareRow,
         state,
         setGlobalFilter
-    } = useTable({ columns, data, initialState: { pageSize: 10, } }, useGlobalFilter, useSortBy, usePagination)
+    } = useTable({
+        columns,
+        data,
+        initialState: pagination,
+        manualPagination: true,
+        pageCount: Math.ceil(total / 10),
+    }, useGlobalFilter, useSortBy, usePagination)
+
+    const goToNextPage = () => {
+        nextPage();
+        setPagination({ pageIndex: state.pageIndex + 1, pageSize: state.pageSize });
+    };
+
+    const goToPreviousPage = () => {
+        previousPage();
+        setPagination({ pageIndex: state.pageIndex - 1, pageSize: state.pageSize });
+    };
+
+
+    useEffect(() => {
+        getAllActivities({ page: state.pageIndex, pageSize: state.pageSize });
+    }, [state.pageIndex, state.pageSize]);
 
     return (
         <>
@@ -121,7 +157,7 @@ export default function ActivityTable({ data }) {
                                                     cell.column.Header == 'Date'
                                                         ? dayjs(cell.value)?.format('DD MMM YYYY, hh:mm:ss A')
                                                         : cell.column.Header == 'Id'
-                                                            ? row?.index + 1
+                                                            ? row?.index + 1 + 10*pagination.pageIndex
                                                             : cell.column.Header == 'Type'
                                                                 ? <p className={`${cell.value == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.value}</p>
                                                                 : !cell.value
@@ -138,10 +174,9 @@ export default function ActivityTable({ data }) {
                 </table>
             </div >
             <div className={`space-x-4 my-4 flex justify-center items-center ${!canNextPage && !canPreviousPage ? 'hidden' : ''}`}>
-                <button disabled={!canPreviousPage} onClick={previousPage} className={`border disabled:opacity-30 border-gray-500 rounded-full p-2`}><GrPrevious /></button>
+                <button disabled={!canPreviousPage} onClick={goToPreviousPage} className={`border disabled:opacity-30 border-gray-500 rounded-full p-2`}><GrPrevious /></button>
                 <div>Page {state.pageIndex + 1} of {pageOptions.length}</div>
-                <button disabled={!canNextPage} onClick={nextPage} className='border border-gray-500 disabled:opacity-30 rounded-full p-2'><GrNext /></button>
-
+                <button disabled={!canNextPage} onClick={goToNextPage} className='border border-gray-500 disabled:opacity-30 rounded-full p-2'><GrNext /></button>
             </div>
         </>
     )

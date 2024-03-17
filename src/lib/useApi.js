@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { AddCustomer, AddProject, AddTransaction, AddWithdraw, DeleteCustomer, DeleteTransaction, DeleteUser, DeleteWithdraw, EditCustomer, EditPassword, EditProfile, EditTransaction, EditWithdraw, GetAllActiviies, GetAllProjects, GetAllTransactions, GetAllWithdraws, GetAuthUser, GetBasicInfo, GetCustomer, GetCustomers, GetProject, GetTransaction, GetUsers, GetWithdraw, VerifyUser } from "../../action/api"
+import { AddCustomer, AddProject, AddTransaction, AddWithdraw, DeleteCustomer, DeleteTransaction, DeleteUser, DeleteWithdraw, EditCustomer, EditPassword, EditProfile, EditTransaction, EditWithdraw, GetAllActiviies, GetAllProjects, GetAllTransactions, GetAllWithdraws, GetAuthUser, GetBasicInfo, GetCustomer, GetCustomers, GetProject, GetTransaction, GetUsers, GetWithdraw, TotalActiviies, VerifyUser } from "../../action/api"
 
 export default function useApi() {
     const queryClient = useQueryClient()
@@ -72,14 +72,14 @@ export default function useApi() {
             onSuccess: async (_, e) => await queryClient.invalidateQueries(['withdraws'])
         }),
         deleteWithdraw: useMutation({
-            mutationFn: ({id}) => DeleteWithdraw({id}),
+            mutationFn: ({ id }) => DeleteWithdraw({ id }),
             onSuccess: async (_, e) => await queryClient.invalidateQueries(['withdraws'])
         }),
 
 
-        getAllActivities: () => useQuery({
-            queryKey: ['activities'],
-            queryFn: async () => await GetAllActiviies(),
+        totalActivities: () => useQuery({
+            queryKey: ['total_activities'],
+            queryFn: async () => await TotalActiviies(),
             refetchOnWindowFocus: false,
         }),
 
@@ -141,11 +141,11 @@ export default function useApi() {
             refetchOnWindowFocus: false,
         }),
         editProfile: useMutation({
-            mutationFn: ({ id, data }) => EditProfile({ id,data }),
+            mutationFn: ({ id, data }) => EditProfile({ id, data }),
             onSuccess: async (_, e) => await queryClient.invalidateQueries(['profile'])
         }),
         editPassword: useMutation({
-            mutationFn: ({ id, data }) => EditPassword({ id,data }),
+            mutationFn: ({ id, data }) => EditPassword({ id, data }),
             onSuccess: async (_, e) => await queryClient.invalidateQueries(['profile'])
         }),
 

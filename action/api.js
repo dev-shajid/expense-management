@@ -295,15 +295,25 @@ export async function AddActivity({ name, project, amount, type, action }) {
     }
 }
 
-export async function GetAllActiviies() {
+export async function GetAllActiviies({ page, limit = 10 }) {
     try {
+        console.log({page})
         let transactions = await db.activity.findMany({
-            orderBy: {
-                createdAt: 'desc',
-            },
+            skip: (page - 0) * limit,
+            take: limit,
+            orderBy: { createdAt: 'desc', },
         })
         // console.log({ transactions })
         return transactions
+    } catch (error) {
+        console.log({ Activity_Error: error.message })
+        return error
+    }
+}
+
+export async function TotalActiviies() {
+    try {
+        return (await db.activity.count())
     } catch (error) {
         console.log({ Activity_Error: error.message })
         return error
