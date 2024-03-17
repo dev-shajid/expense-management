@@ -23,7 +23,11 @@ export default function AcReceivablePage() {
       <div className="title">All Transaction</div>
       <div className='mt-6'>
         <Link href={'/accounts/payable/addnew'} className="add_button">Add Transaction</Link>
-        <TransactionTable data={data} />
+        {
+          data.length ?
+            <TransactionTable data={data} /> :
+            <div className='text-center font-medium text-2xl text-gray-400 select-none'>No Transaction!</div>
+        }
       </div>
     </div>
   )

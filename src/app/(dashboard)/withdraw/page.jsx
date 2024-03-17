@@ -11,13 +11,16 @@ export default function TransactionsPage() {
 
   if (isError) return <div>{JSON.stringify(error, null, 2)}</div>
   if (isLoading) return <Loading page />
-
   return (
     <>
       <div className="title">All Withdraw</div>
       <div className='mt-6'>
         <Link href={'/withdraw/addnew'} className="add_button">Add Withdraw</Link>
-        <WithdrawTable data={data} />
+        {
+          data.length ?
+            <WithdrawTable data={data} /> :
+            <div className='text-center font-medium text-2xl text-gray-400 select-none'>No withdraw yet.</div>
+        }
       </div>
     </>
   )

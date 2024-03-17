@@ -46,29 +46,32 @@ model Project {
 }
 
 model Transaction {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  details   String?
-  project   Project  @relation(fields: [projectId], references: [id])
-  projectId String   @db.ObjectId
-  to_from   String?  @default("")
-  source    String?
-  amount    Int
-  type      String // expense - income
-  isPaid    Boolean  @default(false)
-  date      DateTime
-  createdAt DateTime @default(now())
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  details    String?
+  project    Project   @relation(fields: [projectId], references: [id])
+  projectId  String    @db.ObjectId
+  withdraw   Withdraw? @relation(fields: [withdrawId], references: [id])
+  withdrawId String?   @default("") @db.ObjectId
+  to_from    String?   @default("")
+  source     String?
+  amount     Int
+  type       String // expense - income
+  isPaid     Boolean   @default(false)
+  date       DateTime
+  createdAt  DateTime  @default(now())
 }
 
 model Withdraw {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
   bank_account String
   details      String
   amount       Int
   previous     Int
   remaining    Int
   date         DateTime
-  createdAt    DateTime @default(now())
+  createdAt    DateTime      @default(now())
+  Transaction  Transaction[]
 }
 
 model Activity {

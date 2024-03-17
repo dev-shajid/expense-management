@@ -3,22 +3,21 @@
 import React, { useEffect, useState } from 'react'
 import Submit from '@/components/Submit';
 import { validateAddTransactionForm } from '@/helper/validate';
+import { GetAllProjectsTitle } from '../../../../../../action/api';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import useApi from '@/lib/useApi';
 import Overlay from '@/components/Overlay';
 import { DateInput } from '@mantine/dates';
-import { Select, TextInput, Textarea } from '@mantine/core';
-import Loading from '@/components/Loading';
-import { GetAllProjectsTitle } from '../../../../../../../action/api';
+import { Autocomplete, Select, TextInput, Textarea } from '@mantine/core';
 
-export default function EditTransaction({ params }) {
-    const [values, setValues] = useState({ name: '', date: null, amount: '', source: '', details: '', type: '', projectId: '', isPaid: false })
+export default function AddNewTransaction({ params }) {
+    // console.log(params)
+    const [values, setValues] = useState({ name: '', date: undefined, amount: '', source: '', details: '', type: 'Expense', projectId: '', isPaid: true, withdrawId: params.withdrawId })
     const [errors, setErrors] = useState({})
     const [projectNames, setProjectNames] = useState([])
     const router = useRouter()
-    const { editTransaction, getTransaction } = useApi()
-    let { data, isError, error, isLoading } = getTransaction({ id: params.id, isPaid: false })
+    const { creatTransaction } = useApi()
 
     function handleChange(e) {
         setValues((pre) => ({ ...pre, [e.target.name]: e.target.value }))
@@ -32,17 +31,17 @@ export default function EditTransaction({ params }) {
         if (!Object.keys(d).length) {
             // alert(JSON.stringify(values, null, 2))
             let loadingPromise = toast.loading("Loading...")
-            editTransaction.mutate({ id: params.id, data: values }, {
+            creatTransaction.mutate(({ data: values, isPaid: true }), {
                 onSuccess: (res) => {
                     if (res.success) {
-                        router.push('/accounts/payable')
+                        router.push(`/withdraw/${params.withdrawId}`)
                         toast.success("Transaction Successful!", { id: loadingPromise })
                     }
                     else throw new Error(res.error)
                 },
                 onError: (e) => {
                     console.log(e)
-                    toast.error(e?.message || "Fail to create Project", { id: loadingPromise })
+                    toast.error(e.message || "Fail to create Transaction", { id: loadingPromise })
                 },
             })
         }
@@ -57,23 +56,15 @@ export default function EditTransaction({ params }) {
         getProjectNames()
     }, [])
 
-    useEffect(() => {
-        if (data?.name) {
-            setValues({ name: data?.name, date: data?.date, amount: data?.amount, source: data?.source, details: data?.details, type: data?.type, projectId: data?.projectId, isPaid: data?.isPaid })
-        }
-    }, [data])
-
-    if (editTransaction.isError) return <pre>Error: {JSON.stringify(editTransaction.error, null, 2)}</pre>
-    if (isError) return <pre>Error: {JSON.stringify(error, null, 2)}</pre>
-    if (isLoading) return <Loading page />
+    // if (creatTransaction.isError) return <pre>{JSON.stringify(creatTransaction.error, null, 2)}</pre>
     return (
         <section className='container'>
-            <Overlay isLoading={editTransaction.isPending} />
-            <div className="title">New Projects</div>
+            <Overlay isLoading={creatTransaction.isPending} />
+            <div className="title">New Transaction</div>
             <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
                 <DateInput
                     minDate={new Date()}
-                    value={values.date}
+                    value={values?.date}
                     onChange={(e) => setValues((pre) => ({ ...pre, date: e }))}
                     label="Date"
                     placeholder="Date input"
@@ -82,15 +73,14 @@ export default function EditTransaction({ params }) {
                     required
                 />
 
-                <Select
-                    data={[{ label: 'Income', value: 'income' }, { label: 'Expense', value: 'expense' }]}
+                <TextInput
                     value={values.type}
                     name='type'
-                    onChange={(v) => setValues(p => ({ ...p, type: v }))}
                     label="Type"
                     error={errors?.type}
                     placeholder="Pick value"
                     required
+                    readOnly
                 />
 
                 <Select
@@ -98,7 +88,7 @@ export default function EditTransaction({ params }) {
                     placeholder="Select Your Project"
                     data={projectNames}
                     name="projectId"
-                    value={values.projectId}
+                    value={values?.projectId}
                     error={errors?.projectId}
                     onChange={(v) => setValues(p => ({ ...p, projectId: v }))}
                     required
@@ -120,7 +110,7 @@ export default function EditTransaction({ params }) {
                     label="Source"
                     name='source'
                     type='text'
-                    value={values?.source}
+                    value={values.source}
                     error={errors?.source}
                     onChange={handleChange}
                     placeholder="Enter the Source"

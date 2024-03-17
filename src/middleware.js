@@ -22,7 +22,7 @@ export default async function middleware(req) {
                 response.cookies.delete('token')
                 return response
             }
-            if (path?.startsWith('/admin') || path?.startsWith('/projects')) {
+            if (path?.startsWith('/admin') || path?.startsWith('/projects') || path?.startsWith('/activity')) {
                 if (decode?.role == 'admin') return NextResponse.next()
                 return NextResponse.redirect(new URL('/', req.url))
             }
@@ -37,7 +37,7 @@ export default async function middleware(req) {
 export const config = {
     matcher: [
         '/',
-        '/admin', '/projects', 
+        '/admin', '/projects', '/activity', 
         '/projects/:path*',
         '/signin', '/signup',
     ]

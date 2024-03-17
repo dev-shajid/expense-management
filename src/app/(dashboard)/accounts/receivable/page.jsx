@@ -9,6 +9,7 @@ export default function AcPayablePage() {
   const { getAllTransactions, getBasicInfo } = useApi()
   let { data, isError, error, isLoading } = getAllTransactions({ isPaid: false, type: 'income' })
   let { data: basicInfo, isLoading: basicInfoLoading } = getBasicInfo()
+  // console.log(data)
 
   if (isError) return <div>{JSON.stringify(error, null, 2)}</div>
   if (isLoading || basicInfoLoading) return <Loading page />
@@ -23,7 +24,14 @@ export default function AcPayablePage() {
       <div className="title">All Transaction</div>
       <div className='mt-6'>
         <Link href={'/accounts/receivable/addnew'} className="add_button">Add Transaction</Link>
-        <TransactionTable data={data} />
+        {
+          data?.length ?
+            <>
+              <div className="font-semibold text">All Transactions</div>
+              <TransactionTable data={data} />
+            </> :
+            <div className='text-center font-medium text-2xl text-gray-400 select-none'>No Transaction!</div>
+        }
       </div>
     </div>
   )

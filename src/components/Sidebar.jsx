@@ -83,7 +83,7 @@ export default function Sidebar() {
                     <div className="sidebar-menu space-y-2">
                         {
                             MenuItems.map((item, i) => {
-                                if((item.name=='Admin' || item.name=='Projects') && user?.role!='admin') return null
+                                if ((item.name == 'Admin' || item.name == 'Projects' || item.name == 'Activity') && user?.role != 'admin') return null
                                 if (item.name == 'Accounts') return (
                                     <Accordion key={i} defaultValue={pathname.split('/')[1]}>
                                         <Accordion.Item value='accounts' className='!border-b-0 !py-0'>
@@ -95,7 +95,7 @@ export default function Sidebar() {
                                                     <Link onClick={closeSidebar} href='/accounts/payable' className={`flex text pl-3 py-1.5 rounded-md transition-all ${pathname.split('/')[2] == 'payable' ? 'bg-gray-700 text-white' : 'md:hover:bg-gray-600 text-white'}`}>
                                                         A/C Payable
                                                     </Link>
-                                                    <Link onClick={closeSidebar} href='/accounts/receivable' className={`flex text pl-3 py-1.5 rounded-md transition-all ${pathname.split('/')[2] == 'receivable'? 'bg-gray-700 text-white' : 'md:hover:bg-gray-600 text-white'}`}>
+                                                    <Link onClick={closeSidebar} href='/accounts/receivable' className={`flex text pl-3 py-1.5 rounded-md transition-all ${pathname.split('/')[2] == 'receivable' ? 'bg-gray-700 text-white' : 'md:hover:bg-gray-600 text-white'}`}>
                                                         A/C Receivable
                                                     </Link>
                                                 </div>

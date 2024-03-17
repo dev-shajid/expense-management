@@ -12,8 +12,7 @@ export default function ProjectPage({ params }) {
   const { data, isLoading:dataLoading } = getAllTransactions({ projectId: params.id })
   
   if (isLoading || dataLoading) return <Loading page />
-  if (!project) return <>No Project is Found!</>
-  
+  if (!project) return <div className='text-center font-medium text-2xl text-gray-400 select-none'>No Project is Found!</div>
 
   const rows = [
     { title: "Date", value: dayjs(project.start).format('D MMM YYYY') },

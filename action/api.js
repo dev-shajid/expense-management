@@ -20,7 +20,8 @@ export async function AddProject(values) {
         let { date, ...data } = values
         data.start = new Date(date).toISOString()
         data.budget = Number(data.budget)
-        console.log(data)
+        let basic = (await db.basic.findMany())[0]
+        await db.basic.update({ where: { id: basic.id }, data: { ongoing_project: basic.ongoing_project + 1 } })
         let project = await db.project.create({ data })
         return project
     } catch (error) {
@@ -61,11 +62,18 @@ export async function GetAllProjectsTitle() {
 }
 
 // TODO: Transaction
-export async function AddTransaction({ isPaid, data }) {
+export async function AddTransaction({ isPaid = true, data }) {
     try {
         data.date = new Date(data.date).toISOString()
         data.amount = Number(data.amount)
         data.isPaid = isPaid
+        if (data.withdrawId) {
+            let withdraw = await db.withdraw.findFirst({ where: { id: data.withdrawId } })
+            if (withdraw.remaining < data.amount) {
+                return { success: false, error: "Insufficient amount!" }
+            }
+            await db.withdraw.update({ where: { id: withdraw.id }, data: { remaining: withdraw.remaining - data.amount } })
+        }
 
         let base = (await db.basic.findMany())[0]
 
@@ -93,8 +101,7 @@ export async function AddTransaction({ isPaid, data }) {
 
         data.to_from = ''
         let transaction = await db.transaction.create({ data })
-        // console.log(transaction)
-        return transaction
+        return { success: true }
     } catch (error) {
         console.log({ TransactioN_Error: error.message })
         return error
@@ -108,6 +115,12 @@ export async function EditTransaction({ id, data }) {
         let prev_transaction = await db.transaction.findFirst({ where: { id } })
         let transaction = await db.transaction.update({ where: { id }, data })
         let { name, projectId, date, amount, type, isPaid } = transaction
+
+        if (data.withdrawId) {
+            let withdraw = await db.withdraw.findFirst({ where: { id: data.withdrawId } })
+            if (withdraw.remaining + prev_transaction.amount < data.amount) return { success: false, error: "Insufficient amount!" }
+            await db.withdraw.update({ where: { id: withdraw.id }, data: { remaining: withdraw.remaining + prev_transaction.amount - data.amount } })
+        }
 
 
         let base = (await db.basic.findMany())[0]
@@ -133,7 +146,7 @@ export async function EditTransaction({ id, data }) {
 
         await AddActivity({ name, project: project.name, date, amount, type, action: 'Updated' })
 
-        // return transaction
+        return { success: true }
     } catch (error) {
         console.log({ EditTransaction_Error: error.message })
         return error
@@ -170,11 +183,9 @@ export async function DeleteTransaction(id) {
     }
 }
 
-export async function GetAllTransactions({ isPaid, type, projectId }) {
+export async function GetAllTransactions(query) {
+    // console.log(query)
     try {
-        let query = { isPaid }
-        if (type) query.type = type
-        if (projectId) query.projectId = projectId
         let transactions = await db.transaction.findMany({
             where: query,
             orderBy: {
@@ -188,6 +199,7 @@ export async function GetAllTransactions({ isPaid, type, projectId }) {
                 }
             }
         })
+        // console.log(transactions)
         return transactions
     } catch (error) {
         console.log({ GetAllTransactions_Error: error.message })
@@ -225,7 +237,7 @@ export async function AddWithdraw({ data }) {
         data.date = new Date(data.date).toISOString()
         data.amount = Number(data.amount)
         data.previous = Number(data.previous)
-        data.remaining = Number(data.remaining)
+        data.remaining = data.amount + data.previous
 
         let withdraw = await db.withdraw.create({ data })
         return withdraw
@@ -273,7 +285,8 @@ export async function GetAllWithdraws() {
 export async function GetWithdraw({ id }) {
     try {
         let withdraw = await db.withdraw.findFirst({ where: { id } })
-        return withdraw
+        if (withdraw?.amount) return withdraw
+        throw new Error("Invalid ID!")
     } catch (error) {
         console.log({ GetAllTransactions_Error: error.message })
         return error
@@ -297,7 +310,7 @@ export async function AddActivity({ name, project, amount, type, action }) {
 
 export async function GetAllActiviies({ page, limit = 10 }) {
     try {
-        console.log({page})
+        console.log({ page })
         let transactions = await db.activity.findMany({
             skip: (page - 0) * limit,
             take: limit,
@@ -403,9 +416,9 @@ export async function GetUsers() {
     }
 }
 
-export async function VerifyUser({ id }) {
+export async function VerifyUser({ id, role = 'user' }) {
     try {
-        await db.user.update({ where: { id }, data: { verified: true } })
+        await db.user.update({ where: { id }, data: { verified: true, role } })
         return true
     } catch (error) {
         console.log({ GetUsers_Error: error.message })

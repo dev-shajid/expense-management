@@ -2,30 +2,24 @@
 
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
-import React, { useEffect, useMemo, useReducer, useState } from 'react'
+import React, { useMemo } from 'react'
 import { useAsyncDebounce, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table'
 import { GrNext, GrPrevious } from "react-icons/gr";
 import { AiOutlineDelete } from "react-icons/ai"
 import { FiEdit } from "react-icons/fi"
 import dayjs from 'dayjs'
 import useApi from '@/lib/useApi'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import Overlay from '@/components/Overlay'
 import { RxCross1 } from 'react-icons/rx'
-import { ActionIcon } from '@mantine/core'
-import { FaCheck } from 'react-icons/fa'
 
 
 export default function TransactionTable({ data }) {
-    let path = usePathname()
+
     const columns = useMemo(
         () => [
-            {
-                Header: '',
-                accessor: 'paid',
-            },
             {
                 Header: 'Id',
                 accessor: 'id',
@@ -73,7 +67,7 @@ export default function TransactionTable({ data }) {
     } = useTable({ columns, data, initialState: { pageSize: 20, } }, useGlobalFilter, useSortBy, usePagination)
 
 
-    const { deleteTransaction, editTransaction } = useApi()
+    const { deleteTransaction } = useApi()
 
     async function handleDelete(id) {
         let loadingPromise = toast.loading("Loading...")
@@ -139,7 +133,7 @@ export default function TransactionTable({ data }) {
                                     {...resRow}>
                                     {row.cells.map((cell, j) => {
                                         const { key, ...restCell } = cell.getCellProps()
-                                        // console.log(cell.row.original)
+                                        // console.log(row)
                                         return (
                                             <td
                                                 key={j}
@@ -155,7 +149,7 @@ export default function TransactionTable({ data }) {
                                                                 ? <p className={`${cell.value == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.value}</p>
                                                                 : cell.column.Header == 'Action'
                                                                     ? <div className='flex gap-3 justify-center items-center'>
-                                                                        <Link href={`${path}/edit/${cell.row.values.id}`}>
+                                                                        <Link href={`/withdraw/${row.original.withdrawId}/edit/${row.original.id}`}>
                                                                             <FiEdit
                                                                                 size={18}
                                                                                 cursor='pointer'
@@ -167,34 +161,9 @@ export default function TransactionTable({ data }) {
                                                                             onClick={() => handleDelete(cell.row.values.id)}
                                                                         />
                                                                     </div>
-                                                                    : cell.column.id == 'paid'
-                                                                        ? <>
-                                                                            <ActionIcon
-                                                                                variant="light"
-                                                                                color="indigo"
-                                                                                size="sm"
-                                                                                onClick={() => {
-                                                                                    let loadingPromise = toast.loading("Loading...")
-                                                                                    editTransaction.mutate({ id: cell.row.original.id, data: { isPaid: true, projectId: cell.row.original.projectId } }, {
-                                                                                        onSuccess: (res) => {
-                                                                                            if (res.success) {
-                                                                                                toast.success("Updated Transaction Successfully!", { id: loadingPromise })
-                                                                                            }
-                                                                                            else throw new Error(res.error)
-                                                                                        },
-                                                                                        onError: (e) => {
-                                                                                            console.log(e)
-                                                                                            toast.error(e?.message || "Something is wrong!", { id: loadingPromise })
-                                                                                        },
-                                                                                    })
-                                                                                }}
-                                                                            >
-                                                                                <FaCheck size={14} />
-                                                                            </ActionIcon>
-                                                                        </>
-                                                                        : !cell.value
-                                                                            ? <RxCross1 className='mx-auto text-gray-400 select-none' />
-                                                                            : cell.value
+                                                                    : !cell.value
+                                                                        ? <RxCross1 className='mx-auto text-gray-400 select-none' />
+                                                                        : cell.value
                                                 }
                                             </td>
                                         )

@@ -14,10 +14,10 @@ export default function Home() {
   if (isLoading) return <Loading page />
 
   const rows = [
-    { title: "Total Projects", value: data.total_project },
+    { title: "Total Projects", value: data.ongoing_project + data.end_project },
     { title: "Ongoing Projects", value: data.ongoing_project },
     { title: "Project Done", value: data.end_project },
-    { title: "Income", value: data.income },
+    // { title: "Income", value: data.income },
     { title: "Expense", value: data.expense },
     { title: "A/C Payable", value: data.payable },
     { title: "A/C Receivable", value: data.receivable },

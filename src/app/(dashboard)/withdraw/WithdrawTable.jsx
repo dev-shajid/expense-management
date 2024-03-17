@@ -76,7 +76,7 @@ export default function WithdrawTable({ data }) {
 
     async function handleDelete(id) {
         let loadingPromise = toast.loading("Loading...")
-        deleteWithdraw.mutate({id}, {
+        deleteWithdraw.mutate({ id }, {
             onSuccess: () => {
                 toast.success("Deleted Withdraw!", { id: loadingPromise })
             },
@@ -134,7 +134,7 @@ export default function WithdrawTable({ data }) {
                             return (
                                 <tr
                                     key={key}
-                                    className={`md:lg:hover:bg-[#fff5] dark:md:lg:hover:bg-gray-700 border-0 border-b-[1px] border-b-gray-100 dark:border-gray-600`}
+                                    className={`md:hover:bg-gray-200 dark:md:lg:hover:bg-gray-700 border-0 border-b-[1px] border-b-gray-100 dark:border-gray-600`}
                                     {...resRow}>
                                     {row.cells.map((cell, j) => {
                                         const { key, ...restCell } = cell.getCellProps()
@@ -150,8 +150,8 @@ export default function WithdrawTable({ data }) {
                                                         ? dayjs(cell.value)?.format('DD MMM YYYY')
                                                         : cell.column.Header == 'Id'
                                                             ? row?.index + 1
-                                                            : cell.column.Header == 'Type'
-                                                                ? <p className={`${cell.value == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.value}</p>
+                                                            : cell.column.Header == 'Bank'
+                                                                ? <Link href={`/withdraw/${cell.row.values.id}`}>{cell.value}</Link>
                                                                 : cell.column.Header == 'Action'
                                                                     ? <div className='flex gap-3 justify-center items-center'>
                                                                         <Link href={`/withdraw/edit/${cell.row.values.id}`}>

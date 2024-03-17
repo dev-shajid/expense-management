@@ -21,10 +21,16 @@ export default function useApi() {
         }),
 
 
-        getAllTransactions: ({ isPaid, type, projectId }) => {
+        getAllTransactions: (values) => {
+            // let query = {}
+            // console.log(values)
+            // if (values?.withdrawId) query.withdrawId = values?.withdrawId
+            // if (values?.isPaid) query.isPaid = values?.isPaid
+            // if (values?.type) query.type = values?.type
+            // if (values?.projectId) query.projectId = values?.projectId
             return useQuery({
-                queryKey: ['transactions', isPaid, type, projectId],
-                queryFn: async () => await GetAllTransactions({ isPaid, type, projectId }),
+                queryKey: ['transactions', values],
+                queryFn: async () => await GetAllTransactions(values),
                 refetchOnWindowFocus: false,
             })
         },
@@ -122,7 +128,7 @@ export default function useApi() {
             refetchOnWindowFocus: false,
         }),
         verifyUser: useMutation({
-            mutationFn: ({ id }) => VerifyUser({ id }),
+            mutationFn: ({ id, role='user' }) => VerifyUser({ id, role }),
             onSuccess: async (_, e) => await queryClient.invalidateQueries(['users'])
         }),
         roleUser: useMutation({

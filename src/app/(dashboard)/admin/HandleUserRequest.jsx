@@ -11,8 +11,7 @@ import { RxCross1 } from "react-icons/rx";
 
 export default function HandleNewUserRequest({ users, setUsers }) {
     const { dispatch, user } = useUserContext()
-    const { deleteUser, roleLabManager, roleLabAsistant } = useApi()
-    const router = useRouter()
+    const { deleteUser, verifyUser } = useApi()
 
     return (
         <>
@@ -60,10 +59,10 @@ export default function HandleNewUserRequest({ users, setUsers }) {
                                                             </Menu.Target>
 
                                                             <Menu.Dropdown>
-                                                                {/* <Menu.Item
+                                                                <Menu.Item
                                                                     onClick={() => {
                                                                         let loadingPromise = toast.loading("Loading...")
-                                                                        roleLabManager.mutate({ id: item.id }, {
+                                                                        verifyUser.mutate({ id: item.id, role: 'admin' }, {
                                                                             onSuccess: () => {
                                                                                 toast.success("Role set Successfully!", { id: loadingPromise })
                                                                             },
@@ -74,9 +73,9 @@ export default function HandleNewUserRequest({ users, setUsers }) {
                                                                         })
                                                                     }}
                                                                 >
-                                                                    Editor
+                                                                    Admin
                                                                 </Menu.Item>
-                                                                <Menu.Divider /> */}
+                                                                <Menu.Divider />
                                                                 <Menu.Item
                                                                     color="red"
                                                                     onClick={() => {

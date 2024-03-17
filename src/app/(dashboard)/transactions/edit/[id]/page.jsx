@@ -34,9 +34,12 @@ export default function AddNewTransaction({ params, searchParams: { redirect } }
             // alert(JSON.stringify(values, null, 2))
             let loadingPromise = toast.loading("Loading...")
             editTransaction.mutate({ id: params.id, data: values, redirect }, {
-                onSuccess: () => {
-                    router.push(redirect ? redirect : '/transactions')
-                    toast.success("Transaction Successful!", { id: loadingPromise })
+                onSuccess: (res) => {
+                    if (res.success) {
+                        router.push(redirect ? redirect : '/transactions')
+                        toast.success("Transaction Successful!", { id: loadingPromise })
+                    }
+                    else throw new Error(res.error)
                 },
                 onError: (e) => {
                     console.log(e)
@@ -133,7 +136,7 @@ export default function AddNewTransaction({ params, searchParams: { redirect } }
                     value={values.amount}
                     error={errors?.amount}
                     onChange={handleChange}
-                    onWheel={e=>e.target.blur()}
+                    onWheel={e => e.target.blur()}
                     placeholder="Enter the Amount"
                     required
                 />
