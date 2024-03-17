@@ -9,7 +9,7 @@ import dayjs from 'dayjs'
 export default function WithdrawPage({ params }) {
   const { getAllTransactions, getWithdraw } = useApi()
   let { data, isError, error, isLoading } = getAllTransactions({ withdrawId: params.withdrawId })
-  let {data:withdraw, isLoading:withdrawIsLoading, isError:withdrawIsError, error:withdrawError} = getWithdraw({ id: params.withdrawId })
+  let { data: withdraw, isLoading: withdrawIsLoading, isError: withdrawIsError, error: withdrawError } = getWithdraw({ id: params.withdrawId })
 
   if (isError || withdrawIsError) return <div>Error: {JSON.stringify(error || withdrawError, null, 2)}</div>
   if (isLoading || withdrawIsLoading) return <Loading page />

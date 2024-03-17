@@ -11,7 +11,7 @@ import { DateInput } from '@mantine/dates';
 import { TextInput, Textarea } from '@mantine/core';
 
 export default function AddNewTransaction() {
-    const [values, setValues] = useState({ date: undefined, amount: '', previous: '', remaining: '', bank_account: '', details: '' })
+    const [values, setValues] = useState({ date: undefined, amount: '', previous: '', bank_account: '', details: '' })
     const [errors, setErrors] = useState({})
     const router = useRouter()
     const { creatWithdraw } = useApi()
@@ -64,7 +64,7 @@ export default function AddNewTransaction() {
                     value={values.amount}
                     error={errors?.amount}
                     onChange={handleChange}
-                    onWheel={e=>e.target.blur()}
+                    onWheel={e => e.target.blur()}
                     placeholder="Enter the amount"
                     required
                 />
@@ -76,12 +76,12 @@ export default function AddNewTransaction() {
                     value={values.previous}
                     error={errors?.previous}
                     onChange={handleChange}
-                    onWheel={e=>e.target.blur()}
+                    onWheel={e => e.target.blur()}
                     placeholder="Previous remaining amount"
                     required
                 />
 
-                <TextInput
+                {/* <TextInput
                     label="Remaining"
                     name='remaining'
                     type='number'
@@ -91,7 +91,7 @@ export default function AddNewTransaction() {
                     onWheel={e=>e.target.blur()}
                     placeholder="Enter the Remaining amount"
                     required
-                />
+                /> */}
 
                 <TextInput
                     label='Bank Account'

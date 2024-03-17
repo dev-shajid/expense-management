@@ -13,7 +13,7 @@ import { Select, TextInput, Textarea } from '@mantine/core';
 import Loading from '@/components/Loading';
 
 export default function AddNewTransaction({ params, searchParams: { redirect } }) {
-    const [values, setValues] = useState({ date: undefined, amount: '', previous: '', remaining: '', bank_account: '', details: '' })
+    const [values, setValues] = useState({ date: undefined, amount: '', previous: '', bank_account: '', details: '' })
     const [errors, setErrors] = useState({})
     const [projectNames, setProjectNames] = useState([])
     const router = useRouter()
@@ -55,7 +55,7 @@ export default function AddNewTransaction({ params, searchParams: { redirect } }
     useEffect(() => {
         // console.log(data)
         if (data) {
-            setValues({ date: data.date, amount: data.amount, previous: data.previous, remaining: data.remaining, bank_account: data.bank_account, details: data.details })
+            setValues({ date: data.date, amount: data.amount, previous: data.previous, bank_account: data.bank_account, details: data.details })
         }
     }, [data])
 
@@ -85,7 +85,7 @@ export default function AddNewTransaction({ params, searchParams: { redirect } }
                     value={values.amount}
                     error={errors?.amount}
                     onChange={handleChange}
-                    onWheel={e=>e.target.blur()}
+                    onWheel={e => e.target.blur()}
                     placeholder="Enter the amount"
                     required
                 />
@@ -97,20 +97,8 @@ export default function AddNewTransaction({ params, searchParams: { redirect } }
                     value={values.previous}
                     error={errors?.previous}
                     onChange={handleChange}
-                    onWheel={e=>e.target.blur()}
+                    onWheel={e => e.target.blur()}
                     placeholder="Previous remaining amount"
-                    required
-                />
-
-                <TextInput
-                    label="Remaining"
-                    name='remaining'
-                    type='number'
-                    value={values.remaining}
-                    error={errors?.remaining}
-                    onChange={handleChange}
-                    onWheel={e=>e.target.blur()}
-                    placeholder="Enter the Remaining amount"
                     required
                 />
 

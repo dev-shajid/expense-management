@@ -178,7 +178,13 @@ export async function EditTransaction({ id, data }) {
 
 export async function DeleteTransaction(id) {
     try {
-        let { name, projectId, date, amount, type, isPaid } = await db.transaction.delete({ where: { id } })
+        let { name, projectId, date, amount, type, isPaid, withdrawId } = await db.transaction.delete({ where: { id } })
+
+        if (withdrawId) {
+            let withdraw = await db.withdraw.findFirst({ where: { id: withdrawId } })
+            await db.withdraw.update({ where: { id: withdraw.id }, data: { remaining: withdraw.remaining + amount } })
+        }
+
         let project = await db.project.findFirst({ where: { id: projectId } })
         let data = {
             income: project.income - (type == 'income' && isPaid ? amount : 0),

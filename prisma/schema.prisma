@@ -68,7 +68,7 @@ model Withdraw {
   details      String
   amount       Int
   previous     Int
-  remaining    Int
+  remaining    Int?          @default(0)
   date         DateTime
   createdAt    DateTime      @default(now())
   Transaction  Transaction[]

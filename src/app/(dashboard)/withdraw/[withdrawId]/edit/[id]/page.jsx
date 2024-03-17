@@ -36,13 +36,13 @@ export default function EditTransaction({ params }) {
                 onSuccess: (res) => {
                     if (res.success) {
                         router.push(`/withdraw/${params.withdrawId}`)
-                        toast.success("Transaction Successful!", { id: loadingPromise })
+                        toast.success("Transaction Updated!", { id: loadingPromise })
                     }
                     else throw new Error(res.error)
                 },
                 onError: (e) => {
                     console.log(e)
-                    toast.error(e.message || "Fail to create Transaction", { id: loadingPromise })
+                    toast.error(e.message || "Fail to Update Transaction", { id: loadingPromise })
                 },
             })
         }
@@ -64,7 +64,7 @@ export default function EditTransaction({ params }) {
         }
     }, [data])
 
-    if (editTransaction.isError) return <pre>Error: {JSON.stringify(editTransaction.error, null, 2)}</pre>
+    // if (editTransaction.isError) return <pre>Error: {JSON.stringify(editTransaction.error, null, 2)}</pre>
     if (isError) return <pre>Error: {JSON.stringify(error, null, 2)}</pre>
     if (isLoading) return <Loading page />
     return (
