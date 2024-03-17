@@ -62,12 +62,12 @@ export async function validatePasswordForm(values) {
 
 /** ************************ Verify Function ************************* */
 
-function nameVerify(errors, values, name='name') {
+function nameVerify(errors, values, name = 'name') {
     if (!values[name]?.trim().length) {
-        errors[name] =  name[0].toUpperCase()+name.slice(1)+` is Required...!`
+        errors[name] = name[0].toUpperCase() + name.slice(1) + ` is Required...!`
     }
-    else if (values[name]?.trim().length<3) {
-        errors[name] =  name[0].toUpperCase()+name.slice(1)+` length should be atleast 3!`
+    else if (values[name]?.trim().length < 3) {
+        errors[name] = name[0].toUpperCase() + name.slice(1) + ` length should be atleast 3!`
     }
 
     return errors;
@@ -80,12 +80,12 @@ function emailVerify(errors, values, optional) {
     else if (values.email?.trim() && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email) || values.email.trim().includes(" ")) {
         errors.email = "Invalid Email address...!"
     }
-    
-    
+
+
     return errors;
 }
 
-function passwordVerify(errors, values, name='password') {
+function passwordVerify(errors, values, name = 'password') {
     if (!values[name]?.trim()) {
         errors[name] = 'Password is Required...!'
     }
@@ -95,12 +95,12 @@ function passwordVerify(errors, values, name='password') {
     else if (values[name].length < 6) {
         errors[name] = "Password length must be atleast 6 "
     }
-    
+
     return errors;
 }
 
 function budgetVerify(errors, values) {
-    if (!values.budget?.trim()) {
+    if (!values.budget) {
         errors.budget = 'Budget is Required...!'
     }
 

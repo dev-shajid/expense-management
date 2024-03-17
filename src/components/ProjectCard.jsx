@@ -17,8 +17,8 @@ export default function ProjectCard({ project }) {
                     </div>
                 </div>
             </div>
-            <div className='flex justify-between text-xs items-center'>
-                <div>Started on: {dayjs(project.start).format('DD-MMM-YYYY')}</div>
+            <div className='flex justify-between text-xs font-medium items-center'>
+                <div>Started on: {dayjs(project.start).format('DD MMM, YYYY')}</div>
                 <div className='border border-gray-300 min-w-[80px] text-center rounded-full px-3 py-1 bg-gray-200'>{project.status}</div>
             </div>
         </div>

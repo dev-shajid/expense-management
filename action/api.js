@@ -21,10 +21,32 @@ export async function AddProject(values) {
         data.start = new Date(date).toISOString()
         data.budget = Number(data.budget)
         let basic = (await db.basic.findMany())[0]
-        await db.basic.update({ where: { id: basic.id }, data: { ongoing_project: basic.ongoing_project + 1 } })
+        await db.basic.update({ where: { id: basic.id }, data: { ongoing_project: basic.ongoing_project + 1, total_project: basic.total_project + 1 } })
         let project = await db.project.create({ data })
         return project
     } catch (error) {
+        console.log({ AddProject_Error: error.message })
+        return error
+    }
+}
+
+export async function EditProject({ id, values }) {
+    try {
+        let { date, ...data } = values
+        if (date) data.start = new Date(date).toISOString()
+        if (data.budget) data.budget = Number(data.budget)
+
+        let basic = (await db.basic.findMany())[0]
+        let prev_project = await db.project.findFirst({ where: { id } })
+        if (prev_project.status != data.status) {
+            if (data.status == 'End') await db.basic.update({ where: { id: basic.id }, data: { ongoing_project: basic.ongoing_project - 1 } })
+            else await db.basic.update({ where: { id: basic.id }, data: { ongoing_project: basic.ongoing_project + 1 } })
+        }
+
+        await db.project.update({ where: { id }, data })
+        return { success: true }
+    } catch (error) {
+        console.log({ EditProject_Error: error.message })
         return error
     }
 }
@@ -39,6 +61,7 @@ export async function GetAllProjects() {
         // console.log({projects})
         return projects
     } catch (error) {
+        console.log({ GetAllProjects_Error: error.message })
         return error
     }
 }

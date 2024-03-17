@@ -5,12 +5,16 @@ import ProjectTransactionTable from './ProjectTransactionTable';
 import dayjs from 'dayjs';
 import useApi from '@/lib/useApi';
 import Loading from '@/components/Loading';
+import { ActionIcon, Menu } from '@mantine/core';
+import { HiOutlineDotsVertical } from 'react-icons/hi';
+import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 export default function ProjectPage({ params }) {
-  const { getProject, getAllTransactions } = useApi()
+  const { getProject, getAllTransactions, editProject } = useApi()
   const { data: project, isLoading } = getProject({ id: params.id })
-  const { data, isLoading:dataLoading } = getAllTransactions({ projectId: params.id })
-  
+  const { data, isLoading: dataLoading } = getAllTransactions({ projectId: params.id })
+
   if (isLoading || dataLoading) return <Loading page />
   if (!project) return <div className='text-center font-medium text-2xl text-gray-400 select-none'>No Project is Found!</div>
 
@@ -27,7 +31,65 @@ export default function ProjectPage({ params }) {
 
   return (
     <section className='container'>
-      <div className="title">{project.name}</div>
+      <div className='flex justify-between items-center gap-4'>
+        <div className="title">{project.name}</div>
+        <>
+          <Menu width={200} shadow="md">
+            <Menu.Target>
+              <ActionIcon
+                variant="transparent"
+                size='sm'
+                color="#000"
+                className="!bg-inherit"
+              >
+                <HiOutlineDotsVertical size={20} />
+              </ActionIcon>
+            </Menu.Target>
+
+            <Menu.Dropdown>
+              <Link href={`/projects/${params.id}/edit`}>
+                <Menu.Item>
+                  Edit Project
+                </Menu.Item>
+              </Link>
+              <Menu.Item
+                onClick={() => {
+                  let loadingPromise = toast.loading("Loading...")
+                  editProject.mutate({ id: project.id, values: { status: project.status == 'End' ? 'On Going' : 'End' } }, {
+                    onSuccess: (res) => {
+                      if(res.success) toast.success("Project Updated!", { id: loadingPromise })
+                    },
+                    onError: (e) => {
+                      console.log(e)
+                      toast.error(e?.message || "Something is wrong!", { id: loadingPromise })
+                    },
+                  })
+                }}
+              >
+                {project.status == 'End' ? 'On Going' : 'End'} Project
+              </Menu.Item>
+              <Menu.Divider />
+              <Menu.Item
+                color="red"
+                onClick={() => {
+                  let loadingPromise = toast.loading("Loading...")
+                  deleteUser.mutate({ id: project.id }, {
+                    onSuccess: () => {
+                      toast.success("Deleted Successfully!", { id: loadingPromise })
+                    },
+                    onError: (e) => {
+                      console.log(e)
+                      toast.error(e?.message || "Something is wrong!", { id: loadingPromise })
+                    },
+                  })
+                }}
+              >
+                Delete Project
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        </>
+      </div>
       <div className='grid gap-4 lg:grid-cols-5 sm:grid-cols-3 grid-cols-2'>
         {
           rows.map((p, i) => (
