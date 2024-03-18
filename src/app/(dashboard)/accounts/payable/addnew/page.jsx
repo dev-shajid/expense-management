@@ -122,7 +122,7 @@ export default function AddNewTransaction() {
                     value={values.amount}
                     error={errors?.amount}
                     onChange={handleChange}
-                    onWheel={e=>e.target.blur()}
+                    onWheel={e => e.target.blur()}
                     placeholder="Enter the Amount"
                     required
                 />
@@ -136,7 +136,7 @@ export default function AddNewTransaction() {
                     label="Project Details"
                     placeholder="Enter some details"
                 />
-                <Submit />
+                <Submit type='submit' />
             </form>
         </section>
     )

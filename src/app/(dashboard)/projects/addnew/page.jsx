@@ -76,7 +76,7 @@ export default function AddNewProduct() {
                     value={values.budget}
                     error={errors?.budget}
                     onChange={handleChange}
-                    onWheel={e=>e.target.blur()}
+                    onWheel={e => e.target.blur()}
                     placeholder="Enter Your Project Budget"
                 />
 
@@ -89,7 +89,7 @@ export default function AddNewProduct() {
                     label="Project Details"
                     placeholder="Enter some details"
                 />
-                <Submit />
+                <Submit type='submit' />
             </form>
         </section>
     )

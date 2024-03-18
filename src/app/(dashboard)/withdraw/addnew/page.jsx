@@ -113,7 +113,7 @@ export default function AddNewTransaction() {
                     label="Project Details"
                     placeholder="Enter some details"
                 />
-                <Submit />
+                <Submit type='submit' />
             </form>
         </section>
     )

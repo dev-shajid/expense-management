@@ -106,7 +106,7 @@ export default function SettingsPage() {
               placeholder="Enter Your Phone Number"
             />
 
-            <Submit value="Update Profile" />
+            <Submit type='submit' value="Update Profile" />
           </form>
         </div>
 
@@ -131,7 +131,7 @@ export default function SettingsPage() {
               placeholder="Enter New Password"
             />
 
-            <Submit value="Update Password" />
+            <Submit type='submit' value="Update Password" />
           </form>
         </div>
       </div>

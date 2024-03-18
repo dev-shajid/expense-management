@@ -30,7 +30,7 @@ export default function AddNewTransaction() {
         if (!Object.keys(d).length) {
             // alert(JSON.stringify(values, null, 2))
             let loadingPromise = toast.loading("Loading...")
-            creatTransaction.mutate(({data:values, isPaid: true}), {
+            creatTransaction.mutate(({ data: values, isPaid: true }), {
                 onSuccess: () => {
                     router.push('/transactions')
                     toast.success("Transaction Successful!", { id: loadingPromise })
@@ -120,7 +120,7 @@ export default function AddNewTransaction() {
                     value={values.amount}
                     error={errors?.amount}
                     onChange={handleChange}
-                    onWheel={e=>e.target.blur()}
+                    onWheel={e => e.target.blur()}
                     placeholder="Enter the Amount"
                     required
                 />
@@ -134,7 +134,7 @@ export default function AddNewTransaction() {
                     label="Project Details"
                     placeholder="Enter some details"
                 />
-                <Submit />
+                <Submit type='submit' />
             </form>
         </section>
     )

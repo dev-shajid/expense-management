@@ -1,14 +1,19 @@
 'use client'
 
-import React, { useRef } from 'react'
+import { useUserContext } from '@/context/ContextProvider';
+import { Space, Table } from '@mantine/core';
+import dayjs from 'dayjs';
+import React, { useEffect, useRef } from 'react'
 import { useReactToPrint } from 'react-to-print';
 
 
 export default function InvoiceDesign() {
+    const { invoice_items, dispatch } = useUserContext()
     const InvoiceRef = useRef()
     const handlePrint = useReactToPrint({
         content: () => InvoiceRef.current,
     });
+
     return (
         <div className='max-w-[700px] w-full flex flex-col gap-4'>
             <div onClick={handlePrint} className="add_button">Print Invoice</div>
@@ -27,46 +32,60 @@ export default function InvoiceDesign() {
                     <div className='flex justify-between items-start'>
                         <div className='text-left'>
                             <div className='text-sm font-bold'>Bill To:</div>
-                            <div className='text-xl font-medium'>Company Name</div>
-                            <div className='text-sm'>Your Business Address</div>
-                            <div className='text-sm'>Email</div>
-                            <div className='text-sm'>Phone</div>
+                            <div className='text-xl font-medium'>{invoice_items?.name || 'Company Name'}</div>
+                            <div className='text-sm'>{invoice_items?.address || 'Your Business Address'}</div>
+                            <div className='text-sm'>{invoice_items?.email || 'Email'}</div>
+                            <div className='text-sm'>{invoice_items?.phone || 'Phone'}</div>
                         </div>
                         <div className='text-right'>
-                            <div className='text-sm'>INVOICE NO: #12032</div>
-                            <div className='text-sm'>Date: 12, April 2024</div>
+                            {/* <div className='text-sm'>INVOICE NO: #12032</div> */}
+                            <div className='text-sm'>Date: {dayjs(new Date()).format('DD MMM, YYYY - hh:MM A')}</div>
                         </div>
                     </div>
-                    <hr />
-                    <table className='w-full bg-inherit invoice'>
-                        <thead>
-                            <tr className='!py-4'>
-                                <th align='left'>Items</th>
-                                <th>Description</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th align='right'>Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <Table withTableBorder withColumnBorders withRowBorders>
+                        <Table.Thead>
+                            <Table.Tr>
+                                <Table.Th>Item</Table.Th>
+                                <Table.Th className='!text-center'>Quantity</Table.Th>
+                                <Table.Th className='!text-center'>Price</Table.Th>
+                                <Table.Th className='!text-end'>Amount</Table.Th>
+                            </Table.Tr>
+                        </Table.Thead>
+                        <Table.Tbody>
                             {
-                                [1, 2, 3, 4].map((e) => (
-                                    <tr key={e} className='!py-4'>
-                                        <td align='left'>{e}</td>
-                                        <td align='center'>Description</td>
-                                        <td align='center'>Quantity</td>
-                                        <td align='center'>Price</td>
-                                        <td align='right'>Amount</td>
-                                    </tr>
+                                invoice_items?.items?.map((item, i) => (
+                                    <Table.Tr key={i}>
+                                        <Table.Td>{item?.item}</Table.Td>
+                                        <Table.Td className='text-center'>{item?.quantity}</Table.Td>
+                                        <Table.Td className='text-center'>{item?.price}</Table.Td>
+                                        <Table.Td className='text-end'>{item?.quantity * item?.price}</Table.Td>
+                                    </Table.Tr>
                                 ))
                             }
-                            {/* <tr><td colSpan={5}><hr className='border-gray-400'/></td></tr> */}
-                            <tr className='!h-[100px]'>
-                                <td colSpan={4} className='!text-2xl border-[#f6f6f6]'> Total</td>
-                                <td align='right' className='!text-2xl font-bold border-[#f6f6f6]'> 13700</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                        </Table.Tbody>
+                    </Table>
+                    {/* <Space h="10" /> */}
+                    <Table>
+                        <Table.Tbody className='text-base font-medium'>
+                            {
+                                invoice_items?.bill?.discount ?
+                                    <>
+                                        <Table.Tr>
+                                            <Table.Td colSpan={3}>Subtotal</Table.Td>
+                                            <Table.Td className='text-end'>${invoice_items?.bill?.total}</Table.Td>
+                                        </Table.Tr>
+                                        <Table.Tr>
+                                            <Table.Td colSpan={3}>Discount ({invoice_items?.bill?.discount}%)</Table.Td>
+                                            <Table.Td className='text-end'>-${((invoice_items?.bill?.total * invoice_items?.bill?.discount) / 100)}</Table.Td>
+                                        </Table.Tr>
+                                    </> : null
+                            }
+                            <Table.Tr className='text-xl font-semibold'>
+                                <Table.Td colSpan={3}>Total</Table.Td>
+                                <Table.Td className='text-end'>${invoice_items?.bill?.total - (invoice_items?.bill?.discount>0 ? ((invoice_items?.bill?.total * invoice_items?.bill?.discount) / 100) : 0)}</Table.Td>
+                            </Table.Tr>
+                        </Table.Tbody>
+                    </Table>
                 </div>
             </div>
         </div>

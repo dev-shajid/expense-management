@@ -150,7 +150,7 @@ export default function AddNewTransaction({ params, searchParams: { redirect } }
                     label="Project Details"
                     placeholder="Enter some details"
                 />
-                <Submit />
+                <Submit type='submit' />
             </form>
         </section>
     )

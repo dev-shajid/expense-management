@@ -74,7 +74,7 @@ export default function AddNewCustomer() {
                     value={values.phone}
                     error={errors?.phone}
                     onChange={handleChange}
-                    onWheel={e=>e.target.blur()}
+                    onWheel={e => e.target.blur()}
                     placeholder="Enter Customers Phone"
                 />
 
@@ -99,7 +99,7 @@ export default function AddNewCustomer() {
                 <DateInput
                     maxDate={new Date()}
                     value={values?.since}
-                    onChange={(e) => setValues((pre) => ({ ...pre, since: e}))}
+                    onChange={(e) => setValues((pre) => ({ ...pre, since: e }))}
                     label="Date"
                     placeholder="Customer Since"
                     name='date'
@@ -114,7 +114,7 @@ export default function AddNewCustomer() {
                     label="Project Details"
                     placeholder="Enter some details"
                 />
-                <Submit />
+                <Submit type='submit' />
             </form>
         </section>
     )

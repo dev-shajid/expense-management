@@ -72,7 +72,7 @@ export default function page({ searchParams }) {
                                     onChange={handleChange}
                                     placeholder="Enter Your Password"
                                 />
-                                <Submit loading={isLoading} className='w-full !mt-4'>Sign In</Submit>
+                                <Submit type='submit' loading={isLoading} className='w-full !mt-4'>Sign In</Submit>
                                 <p className="text-sm font-light text-gray-700">
                                     Don’t have an account yet?
                                     <Link href="signup" className="font-medium text-blue-500 underline">Sign up</Link>

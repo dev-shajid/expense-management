@@ -4,6 +4,7 @@ import { createContext, useContext, useReducer } from "react";
 
 const initialState = {
     user: null,
+    invoice_items: { bill: {}, items: [] },
 }
 
 
@@ -13,6 +14,10 @@ const Reducer = (state, action) => {
             return { ...state, user: action.payload };
         case 'REMOVE_USER':
             return { ...state, user: null };
+        case 'ADD_INVOICE':
+            return { ...state, invoice_items: action.payload };
+        case 'REMOVE_INVOICE':
+            return { ...state, invoice_items: { bill: {}, items: [] } };
         default:
             return state
     }
