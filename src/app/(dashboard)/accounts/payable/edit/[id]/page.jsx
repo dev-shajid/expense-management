@@ -59,7 +59,7 @@ export default function EditTransaction({ params }) {
 
     useEffect(() => {
         if (data?.name) {
-            setValues({ name: data?.name, date: data?.date, amount: data?.amount, source: data?.source, details: data?.details, type: data?.type, projectId: data?.projectId, isPaid: data?.isPaid })
+            setValues({ name: data?.name, date: data?.date, amount: data?.amount, source: data?.source, details: data?.details, type: data?.type, projectId: data?.projectId, isPaid: false })
         }
     }, [data])
 

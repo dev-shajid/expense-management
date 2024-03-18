@@ -52,11 +52,11 @@ export default function AddNewTransaction() {
         getProjectNames()
     }, [])
 
-    if (creatTransaction.isError) return <pre>{JSON.stringify(creatTransaction.error, null, 2)}</pre>
+    // if (creatTransaction.isError) return <pre>{JSON.stringify(creatTransaction.error, null, 2)}</pre>
     return (
         <section className='container'>
             <Overlay isLoading={creatTransaction.isPending} />
-            <div className="title">New Projects</div>
+            <div className="title">New Transaction</div>
             <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
                 <DateInput
                     minDate={new Date()}

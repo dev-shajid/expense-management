@@ -52,7 +52,7 @@ model Transaction {
   project    Project   @relation(fields: [projectId], references: [id])
   projectId  String    @db.ObjectId
   withdraw   Withdraw? @relation(fields: [withdrawId], references: [id])
-  withdrawId String?   @default("") @db.ObjectId
+  withdrawId String?   @db.ObjectId
   to_from    String?   @default("")
   source     String?
   amount     Int

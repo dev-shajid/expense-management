@@ -85,12 +85,15 @@ export async function GetAllProjectsTitle() {
 }
 
 // TODO: Transaction
-export async function AddTransaction({ isPaid = true, data }) {
+export async function AddTransaction({ isPaid, data }) {
+    // console.log(data)
     try {
         data.date = new Date(data.date).toISOString()
         data.amount = Number(data.amount)
         data.isPaid = isPaid
-        if (data.withdrawId) {
+
+        if (data?.withdrawId) {
+            console.log("got withdraw id")
             let withdraw = await db.withdraw.findFirst({ where: { id: data.withdrawId } })
             if (withdraw.remaining < data.amount) {
                 return { success: false, error: "Insufficient amount!" }
@@ -139,7 +142,7 @@ export async function EditTransaction({ id, data }) {
         let transaction = await db.transaction.update({ where: { id }, data })
         let { name, projectId, date, amount, type, isPaid } = transaction
 
-        if (data.withdrawId) {
+        if (data?.withdrawId) {
             let withdraw = await db.withdraw.findFirst({ where: { id: data.withdrawId } })
             if (withdraw.remaining + prev_transaction.amount < data.amount) return { success: false, error: "Insufficient amount!" }
             await db.withdraw.update({ where: { id: withdraw.id }, data: { remaining: withdraw.remaining + prev_transaction.amount - data.amount } })
@@ -152,15 +155,15 @@ export async function EditTransaction({ id, data }) {
         let projectValue = {
             income: project.income - (prev_transaction.type == 'income' && prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'income' && isPaid ? amount : 0),
             expense: project.expense - (prev_transaction.type == 'expense' && prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'expense' && isPaid ? amount : 0),
-            receivable: project.receivable - (prev_transaction.type == 'income' && !prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'expense' && !isPaid ? amount : 0),
-            payable: project.payable - (prev_transaction.type == 'expense' && !prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'income' && !isPaid ? amount : 0),
+            receivable: project.receivable - (prev_transaction.type == 'income' && !prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'income' && !isPaid ? amount : 0),
+            payable: project.payable - (prev_transaction.type == 'expense' && !prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'expense' && !isPaid ? amount : 0),
         }
 
         let baseValue = {
             income: base.income - (prev_transaction.type == 'income' && prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'income' && isPaid ? amount : 0),
             expense: base.expense - (prev_transaction.type == 'expense' && prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'expense' && isPaid ? amount : 0),
-            receivable: base.receivable - (prev_transaction.type == 'income' && !prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'expense' && !isPaid ? amount : 0),
-            payable: base.payable - (prev_transaction.type == 'expense' && !prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'income' && !isPaid ? amount : 0),
+            receivable: base.receivable - (prev_transaction.type == 'income' && !prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'income' && !isPaid ? amount : 0),
+            payable: base.payable - (prev_transaction.type == 'expense' && !prev_transaction.isPaid ? prev_transaction.amount : 0) + (type == 'expense' && !isPaid ? amount : 0),
         }
 
 
