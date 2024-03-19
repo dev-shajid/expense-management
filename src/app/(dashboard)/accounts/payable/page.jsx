@@ -6,13 +6,14 @@ import Loading from '@/components/Loading'
 import useApi from '@/lib/useApi'
 
 export default function AcPayablePage({ searchParams: { redirect } }) {
-  let red = redirect?.split('/')
+  let redId = redirect?.split('/')
   const { getAllTransactions, getBasicInfo, getProject } = useApi()
   let query = { isPaid: false, type: 'expense' }
-  if (red && red.length >= 2) query.projectId = red[2]
+  if (redId && redId.length == 3) query.projectId = redId[2]
   let { data, isError, error, isLoading } = getAllTransactions(query)
   let { data: basicInfo, isLoading: basicInfoLoading } = getBasicInfo()
-  let projectDetails = red ? getProject({ id: red[2] }) : null
+  let projectDetails = redId ? getProject({ id: redId[2] }) : null
+  console.log(query)
 
 
   if (isError) return <div>{JSON.stringify(error, null, 2)}</div>

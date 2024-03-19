@@ -14,14 +14,14 @@ import { GetAllActiviies } from '../../../../action/api'
 export default function ActivityTable({ }) {
     const { totalActivities } = useApi()
 
-    const [data, setData] = useState([])
+    // const [data, setData] = useState([])
     const { data: total } = totalActivities()
 
-    const getAllActivities = useCallback(async ({ page, limit }) => {
-        let res = await GetAllActiviies({ page: page, limit })
-        // console.log(page, res)
-        setData(res)
-    }, [])
+    // const getAllActivities = useCallback(async ({ page, limit }) => {
+    //     let res = await GetAllActiviies({ page: page, limit })
+    //     // console.log(page, res)
+    //     setData(res)
+    // }, [])
 
 
     const columns = useMemo(
@@ -63,6 +63,10 @@ export default function ActivityTable({ }) {
 
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10, })
 
+    const { getAllActivities } = useApi()
+    let { data, isLoading, refetch, isRefetching } = getAllActivities({ page: pagination.pageIndex, limit: 10 })
+
+
     const {
         getTableProps,
         getTableBodyProps,
@@ -78,7 +82,7 @@ export default function ActivityTable({ }) {
         setGlobalFilter
     } = useTable({
         columns,
-        data,
+        data: data || [],
         initialState: pagination,
         manualPagination: true,
         pageCount: Math.ceil(total / 10),
@@ -99,6 +103,7 @@ export default function ActivityTable({ }) {
         getAllActivities({ page: state.pageIndex, pageSize: state.pageSize });
     }, [state.pageIndex, state.pageSize]);
 
+    if (isLoading) return <div>Loading...</div>
     return (
         <>
             <GlobalFilter
@@ -157,7 +162,7 @@ export default function ActivityTable({ }) {
                                                     cell.column.Header == 'Date'
                                                         ? dayjs(cell.value)?.format('DD MMM YYYY, hh:mm:ss A')
                                                         : cell.column.Header == 'Id'
-                                                            ? row?.index + 1 + 10*pagination.pageIndex
+                                                            ? row?.index + 1 + 10 * pagination.pageIndex
                                                             : cell.column.Header == 'Type'
                                                                 ? <p className={`${cell.value == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.value}</p>
                                                                 : !cell.value
