@@ -8,14 +8,22 @@ import { GrNext, GrPrevious } from "react-icons/gr";
 import { RxCross1 } from 'react-icons/rx'
 import useApi from '@/lib/useApi'
 import Loading from './Loading'
+import { useQuery } from '@tanstack/react-query'
+import { GetAllActiviies } from '../../action/api'
 
 
-export default function ReactTable({ data = [], columns, getTableData, db, query }) {
-    // console.log(query)
+export default function ReactTable({ getTableData, columns, db, query }) {
+
     const { totalCount } = useApi()
     const { data: total } = totalCount(db, query || {})
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10, })
-    const [isLoading, setLoading] = useState(false)
+
+    const TableData = useQuery({
+        queryKey: [db, pagination, query],
+        queryFn: () => getTableData({ page: pagination.pageIndex, limit: pagination.pageSize }),
+    })
+
+    const defaultData = React.useMemo(() => [], [])
 
     const {
         getTableProps,
@@ -32,7 +40,7 @@ export default function ReactTable({ data = [], columns, getTableData, db, query
         setGlobalFilter,
     } = useTable({
         columns,
-        data,
+        data: TableData?.data ?? defaultData,
         initialState: pagination,
         manualPagination: true,
         pageCount: Math.ceil(total / 10),
@@ -48,14 +56,8 @@ export default function ReactTable({ data = [], columns, getTableData, db, query
         setPagination({ pageIndex: state.pageIndex - 1, pageSize: state.pageSize });
     }
 
-    useEffect(() => {
-        setLoading(true)
-        getTableData({ page: state.pageIndex, limit: state.pageSize });
-        setLoading(false)
-    }, [state.pageIndex, state.pageSize]);
-
-    if (isLoading) return <Loading page />
-    if (!isLoading && !page.length) return <div className='text-center font-medium text-2xl text-gray-400 select-none'>No Data!</div>
+    if (!TableData || TableData?.isLoading) return <Loading page />
+    if (!TableData?.isLoading && !TableData?.data.length) return <div className='text-center font-medium text-2xl text-gray-400 select-none'>No Data!</div>
     return (
         <>
             <GlobalFilter

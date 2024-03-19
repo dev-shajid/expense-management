@@ -1,12 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import Loading from '@/components/Loading'
 import useApi from '@/lib/useApi'
 import { FiEdit } from 'react-icons/fi'
 import { AiOutlineDelete } from 'react-icons/ai'
 import dayjs from 'dayjs'
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { GetAllTransactions } from '../../../../action/api'
 import ReactTable from '@/components/ReactTable'
 import toast from 'react-hot-toast'
@@ -15,11 +14,7 @@ export default function TransactionsPage() {
   const { deleteTransaction } = useApi()
 
   let query = { isPaid: true }
-  const [data, setData] = useState([])
-  const getTableData = useCallback(async ({ page = 0, limit = 10 }) => {
-    let res = await GetAllTransactions(query, { page, limit })
-    setData(res)
-  }, [])
+  const getTableData = async ({ page = 0, limit = 10 }) => await GetAllTransactions(query, { page, limit })
 
   async function handleDelete(id) {
     let loadingPromise = toast.loading("Loading...")
@@ -91,7 +86,7 @@ export default function TransactionsPage() {
       <div className="title">All Transaction</div>
       <div className='mt-6'>
         <Link href={'/transactions/addnew'} className="add_button">Add Transaction</Link>
-        <ReactTable data={data} getTableData={getTableData} db='transaction' columns={columns} query={query} />
+        <ReactTable getTableData={getTableData} db='transaction' columns={columns} query={query} />
       </div>
     </>
   )

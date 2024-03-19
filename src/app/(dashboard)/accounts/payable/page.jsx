@@ -3,16 +3,19 @@
 import Link from 'next/link'
 import Loading from '@/components/Loading'
 import useApi from '@/lib/useApi'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { FiEdit } from 'react-icons/fi'
 import { AiOutlineDelete } from 'react-icons/ai'
 import dayjs from 'dayjs'
 import { useCallback, useMemo, useState } from 'react'
 import { GetAllTransactions } from '../../../../../action/api'
 import ReactTable from '@/components/ReactTable'
+import { ActionIcon } from '@mantine/core'
+import { FaCheck } from 'react-icons/fa'
 
 export default function AcPayablePage() {
   const params = useSearchParams()
+  const path = usePathname()
 
   let redId = params.get('redirect')?.split('/')[2]
 
@@ -36,12 +39,7 @@ export default function AcPayablePage() {
   let { data: basicInfo, isLoading: basicInfoLoading } = getBasicInfo()
   let projectDetails = redId ? getProject({ id: redId }) : null
 
-  const [data, setData] = useState([])
-  const getTableData = useCallback(async ({ page = 0, limit = 10 }) => {
-    let res = await GetAllTransactions(query, { page, limit })
-    console.log({res})
-    setData(res)
-  }, [])
+  const getTableData = async ({ page = 0, limit = 10 }) => await GetAllTransactions(query, { page, limit })
 
   // console.log({ redId, query })
   const columns = useMemo(
@@ -56,7 +54,7 @@ export default function AcPayablePage() {
               size="sm"
               onClick={() => {
                 let loadingPromise = toast.loading("Loading...")
-                editTransaction.mutate({ id: cell.row.original.id, data: { isPaid: true, projectId: cell.projectId } }, {
+                editTransaction.mutate({ id: cell.id, data: { isPaid: true, projectId: cell.projectId } }, {
                   onSuccess: (res) => {
                     if (res.success) {
                       toast.success("Updated Transaction Successfully!", { id: loadingPromise })
@@ -135,14 +133,9 @@ export default function AcPayablePage() {
 
       <div className='mt-6 space-y-4'>
         <Link href={'/accounts/payable/addnew'} className="add_button">Add Transaction</Link>
-        {
-          data?.length ?
-            <>
-              <div className="font-semibold text-xl">All Transactions</div>
-              <ReactTable data={data} getTableData={getTableData} db='transaction' columns={columns} query={query} />
-            </> :
-            <div className='text-center font-medium text-2xl text-gray-400 select-none'>No Transaction!</div>
-        }
+        <div className="font-semibold text-xl">All Transactions</div>
+        <ReactTable getTableData={getTableData} db='transaction' columns={columns} query={query} />
+        {/* <div className='text-center font-medium text-2xl text-gray-400 select-none'>No Transaction!</div> */}
       </div>
     </div>
   )

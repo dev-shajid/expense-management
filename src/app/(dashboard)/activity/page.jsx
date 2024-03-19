@@ -7,12 +7,7 @@ import ReactTable from '@/components/ReactTable'
 
 export default function ActivityPage() {
 
-  const [data, setData] = useState([])
-  const getTableData = useCallback(async ({ page, limit }) => {
-    let res = await GetAllActiviies({ page: page, limit })
-    setData(res)
-  }, [])
-
+  const getTableData = async (paginition) => await GetAllActiviies(paginition)
 
   const columns = useMemo(
     () => [
@@ -55,7 +50,7 @@ export default function ActivityPage() {
     <>
       <div className="title">All Activities</div>
       <div className='space-y-4'>
-        <ReactTable data={data} getTableData={getTableData} db='activity' columns={columns} />
+        <ReactTable getTableData={getTableData} db='activity' columns={columns} />
       </div>
     </>
   )

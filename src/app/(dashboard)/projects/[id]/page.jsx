@@ -1,7 +1,6 @@
 'use client'
 
-import React from 'react'
-import ProjectTransactionTable from './ProjectTransactionTable';
+import React, { useMemo } from 'react'
 import dayjs from 'dayjs';
 import useApi from '@/lib/useApi';
 import Loading from '@/components/Loading';
@@ -9,14 +8,87 @@ import { ActionIcon, Menu } from '@mantine/core';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import ReactTable from '@/components/ReactTable';
+import { AiOutlineDelete } from 'react-icons/ai';
+import { FiEdit } from 'react-icons/fi';
+import { GetAllTransactions } from '../../../../../action/api';
 
 export default function ProjectPage({ params }) {
-  const { getProject, getAllTransactions, editProject } = useApi()
+  const { getProject, deleteTransaction, editProject } = useApi()
   const { data: project, isLoading } = getProject({ id: params.id })
-  const { data, isLoading: dataLoading } = getAllTransactions({ projectId: params.id, isPaid: true })
 
-  if (isLoading || dataLoading) return <Loading page />
-  if (!project) return <div className='text-center font-medium text-2xl text-gray-400 select-none'>No Project is Found!</div>
+  let query = { projectId: params.id, isPaid: true }
+  const getTableData = async ({ page = 0, limit = 10 }) => await GetAllTransactions(query, { page, limit })
+
+  async function handleDelete(id) {
+    let loadingPromise = toast.loading("Loading...")
+    deleteTransaction.mutate(id, {
+      onSuccess: () => {
+        toast.success("Deleted Transaction!", { id: loadingPromise })
+      },
+      onError: (e) => {
+        console.log(e)
+        toast.error(e?.message || "Fail to delete Transaction", { id: loadingPromise })
+      },
+    })
+  }
+
+  const columns = useMemo(
+    () => [
+      {
+        Header: 'Id',
+        accessor: 'id',
+      },
+      {
+        Header: 'Name',
+        accessor: 'name',
+      },
+      {
+        Header: 'Date',
+        accessor: (cell) => <span>{dayjs(cell.date)?.format('DD MMM YYYY, hh:mm A')}</span>,
+      },
+      {
+        Header: 'Amount',
+        accessor: 'amount',
+      },
+      {
+        Header: 'Source',
+        accessor: 'source',
+      },
+      {
+        Header: 'Project',
+        accessor: 'project.name',
+      },
+      {
+        Header: 'Type',
+        accessor: (cell) => <p className={`${cell.type == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.type}</p>
+      },
+      {
+        Header: 'Action',
+        accessor: (cell) => {
+          return (
+            <div className='flex gap-3 justify-center items-center'>
+              <Link href={`/transactions/edit/${cell.id}?redirect=/projects/${params?.id}`}>
+                <FiEdit
+                  size={18}
+                  cursor='pointer'
+                />
+              </Link>
+              <AiOutlineDelete
+                size={20}
+                cursor='pointer'
+                onClick={() => handleDelete(cell.id)}
+              />
+            </div>
+          )
+        }
+      },
+    ],
+    [])
+
+
+  if (isLoading) return <Loading page />
+  if (!project?.name) return <div className='text-center font-medium text-2xl text-gray-400 select-none'>No Project is Found!</div>
 
   const rows = [
     { title: "Date", value: dayjs(project.start).format('D MMM YYYY') },
@@ -27,7 +99,6 @@ export default function ProjectPage({ params }) {
     { title: "A/C Payable", value: project.payable },
     { title: "A/C Receivable", value: project.receivable },
   ]
-
 
   return (
     <section className='container'>
@@ -117,14 +188,8 @@ export default function ProjectPage({ params }) {
 
 
       <div className='mt-8'>
-        {
-          data?.length ?
-            <>
-              <div className="font-semibold text">All Transactions</div>
-              <ProjectTransactionTable data={data} />
-            </> :
-            <div className='text-center font-medium text-2xl text-gray-400 select-none'>No Transaction!</div>
-        }
+        <div className="font-semibold text">All Transactions</div>
+        <ReactTable getTableData={getTableData} db='transaction' columns={columns} query={query} />
       </div>
 
     </section>

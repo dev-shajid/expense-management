@@ -3,16 +3,15 @@
 import Link from 'next/link'
 import Loading from '@/components/Loading'
 import useApi from '@/lib/useApi'
-import { usePathname, useSearchParams } from 'next/navigation'
-import { GetAllTransactions } from '../../../../../action/api'
-import { useCallback, useMemo, useState } from 'react'
-import { AiOutlineDelete } from 'react-icons/ai'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { FiEdit } from 'react-icons/fi'
+import { AiOutlineDelete } from 'react-icons/ai'
 import dayjs from 'dayjs'
-import { FaCheck } from 'react-icons/fa'
-import toast from 'react-hot-toast'
-import { ActionIcon } from '@mantine/core'
+import { useCallback, useMemo, useState } from 'react'
+import { GetAllTransactions } from '../../../../../action/api'
 import ReactTable from '@/components/ReactTable'
+import { ActionIcon } from '@mantine/core'
+import { FaCheck } from 'react-icons/fa'
 
 export default function AcReceivablePage() {
   const params = useSearchParams()
@@ -22,17 +21,13 @@ export default function AcReceivablePage() {
 
   const { getBasicInfo, getProject, deleteTransaction, editTransaction } = useApi()
 
-  let query = { isPaid: false, type: 'expense' }
+  let query = { isPaid: false, type: 'income' }
 
   if (redId) query.projectId = redId
   let { data: basicInfo, isLoading: basicInfoLoading } = getBasicInfo()
   let projectDetails = redId ? getProject({ id: redId }) : null
 
-  const [data, setData] = useState([])
-  const getTableData = useCallback(async ({ page = 0, limit = 10 }) => {
-    let res = await GetAllTransactions(query, { page, limit })
-    setData(res)
-  }, [])
+  const getTableData = async ({ page = 0, limit = 10 }) => await GetAllTransactions(query, { page, limit })
 
   async function handleDelete(id) {
     let loadingPromise = toast.loading("Loading...")
@@ -132,19 +127,13 @@ export default function AcReceivablePage() {
       <div className='space-y-6'>
         <div className='flex flex-col text-center justify-center items-center gap-1 max-w-fit bg-white rounded-md p-4 border'>
           <span className='text'>A/C Payable</span>
-          <span className='text-xl font-semibold'>{projectDetails?.data?.payable || basicInfo?.payable} TK</span>
+          <span className='text-xl font-semibold'>{projectDetails?.data?.receivable || basicInfo?.receivable} TK</span>
         </div>
 
         <div className='mt-6 space-y-4'>
           <Link href={'/accounts/payable/addnew'} className="add_button">Add Transaction</Link>
-          {/* {
-            data?.length ? */}
-          <>
-            <div className="font-semibold text-xl">All Transactions</div>
-            <ReactTable data={data} getTableData={getTableData} db='transaction' columns={columns} query={query} />
-          </>
-          {/* : <div className='text-center font-medium text-2xl text-gray-400 select-none'>No Transaction!</div>
-          } */}
+          <div className="font-semibold text-xl">All Transactions</div>
+          <ReactTable getTableData={getTableData} db='transaction' columns={columns} query={query} />
         </div>
       </div>
     </>

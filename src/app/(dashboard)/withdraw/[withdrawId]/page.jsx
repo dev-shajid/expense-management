@@ -1,18 +1,88 @@
 'use client'
 
-import TransactionTable from './TransactionTable'
 import Link from 'next/link'
-import Loading from '@/components/Loading'
 import useApi from '@/lib/useApi'
 import dayjs from 'dayjs'
+import { GetAllTransactions } from '../../../../../action/api'
+import ReactTable from '@/components/ReactTable'
+import { FiEdit } from 'react-icons/fi'
+import { AiOutlineDelete } from 'react-icons/ai'
+import { useMemo } from 'react'
+import toast from 'react-hot-toast'
 
 export default function WithdrawPage({ params }) {
-  const { getAllTransactions, getWithdraw } = useApi()
-  let { data, isError, error, isLoading } = getAllTransactions({ withdrawId: params.withdrawId })
+  const { deleteTransaction, getWithdraw } = useApi()
+
   let { data: withdraw, isLoading: withdrawIsLoading, isError: withdrawIsError, error: withdrawError } = getWithdraw({ id: params.withdrawId })
 
-  if (isError || withdrawIsError) return <div>Error: {JSON.stringify(error || withdrawError, null, 2)}</div>
-  if (isLoading || withdrawIsLoading) return <Loading page />
+  let query = {}
+  if (params?.withdrawId) query.withdrawId = params.withdrawId
+  const getTableData = async ({ page = 0, limit = 10 }) => await GetAllTransactions(query, { page, limit })
+
+  async function handleDelete(id) {
+    let loadingPromise = toast.loading("Loading...")
+    deleteTransaction.mutate(id, {
+      onSuccess: () => {
+        toast.success("Deleted Transaction!", { id: loadingPromise })
+      },
+      onError: (e) => {
+        console.log(e)
+        toast.error(e?.message || "Fail to delete Transaction", { id: loadingPromise })
+      },
+    })
+  }
+
+  const columns = useMemo(
+    () => [
+      {
+        Header: 'Id',
+        accessor: 'id',
+      },
+      {
+        Header: 'Transaction Name',
+        accessor: 'name',
+      },
+      {
+        Header: 'Date',
+        accessor: (cell) => <span>{dayjs(cell.date)?.format('DD MMM YYYY, hh:mm A')}</span>,
+      },
+      {
+        Header: 'Amount',
+        accessor: 'amount',
+      },
+      {
+        Header: 'Project',
+        accessor: 'project.name',
+      },
+      {
+        Header: 'Type',
+        accessor: (cell) => <p className={`${cell.type == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.type}</p>
+      },
+      {
+        Header: 'Action',
+        accessor: (cell) => {
+          return (
+            <div className='flex gap-3 justify-center items-center'>
+              <Link href={`/transactions/edit/${cell.id}`}>
+                <FiEdit
+                  size={18}
+                  cursor='pointer'
+                />
+              </Link>
+              <AiOutlineDelete
+                size={20}
+                cursor='pointer'
+                onClick={() => handleDelete(cell.id)}
+              />
+            </div>
+          )
+        }
+      },
+    ],
+    [])
+
+  // if (isError || withdrawIsError) return <div>Error: {JSON.stringify(error || withdrawError, null, 2)}</div>
+  // if (isLoading || withdrawIsLoading) return <Loading page />
   const rows = [
     { title: "Date", value: dayjs(withdraw?.start).format('D MMM YYYY') },
     { title: "Bank Account", value: withdraw?.bank_account },
@@ -42,11 +112,7 @@ export default function WithdrawPage({ params }) {
         <div className="title">All Transaction</div>
         <div className='mt-6'>
           <Link href={`/withdraw/${params.withdrawId}/add_transaction`} className="add_button">Add Transaction</Link>
-          {
-            data?.length ?
-              <TransactionTable data={data} /> :
-              <div className='text-center font-medium text-2xl text-gray-400 select-none'>No withdraw yet.</div>
-          }
+          <ReactTable getTableData={getTableData} db='transaction' columns={columns} query={query} />
         </div>
       </div>
     </section>
