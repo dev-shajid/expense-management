@@ -5,15 +5,15 @@ import Link from 'next/link'
 import Loading from '@/components/Loading'
 import useApi from '@/lib/useApi'
 
-export default function AcPayablePage({ searchParams: { redirect } }) {
-  let redId = redirect?.split('/')[2]
+export default function AcPayablePage({ searchParams }) {
+  let redId = searchParams?.redirect?.split('/')[2]
   const { getAllTransactions, getBasicInfo, getProject } = useApi()
   let query = { isPaid: false, type: 'expense' }
   if (redId) query.projectId = redId
   let { data, isError, error, isLoading } = getAllTransactions(query)
   let { data: basicInfo, isLoading: basicInfoLoading } = getBasicInfo()
   let projectDetails = redId ? getProject({ id: redId }) : null
-  console.log(query, redId, redirect)
+  console.log(query, redId, searchParams)
 
 
   if (isError) return <div>{JSON.stringify(error, null, 2)}</div>
