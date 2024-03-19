@@ -5,20 +5,21 @@ import Submit from '@/components/Submit';
 import { validateAddTransactionForm } from '@/helper/validate';
 import { GetAllProjectsTitle } from '../../../../../../action/api';
 import toast from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import useApi from '@/lib/useApi';
 import Overlay from '@/components/Overlay';
 import { DateInput } from '@mantine/dates';
 import { Select, TextInput, Textarea } from '@mantine/core';
 import Loading from '@/components/Loading';
 
-export default function AddNewTransaction({ params, searchParams: { redirect } }) {
+export default function AddNewTransaction() {
+    const params = useSearchParams()
     const [values, setValues] = useState({ date: undefined, amount: '', previous: '', bank_account: '', details: '' })
     const [errors, setErrors] = useState({})
     const [projectNames, setProjectNames] = useState([])
     const router = useRouter()
     const { editWithdraw, getWithdraw } = useApi()
-    let { data, isError, error, isLoading } = getWithdraw({ id: params.id })
+    let { data, isError, error, isLoading } = getWithdraw({ id: params.get('id') })
 
     function handleChange(e) {
         setValues((pre) => ({ ...pre, [e.target.name]: e.target.value }))
@@ -30,7 +31,7 @@ export default function AddNewTransaction({ params, searchParams: { redirect } }
         setErrors(d)
         if (!Object.keys(d).length) {
             let loadingPromise = toast.loading("Loading...")
-            editWithdraw.mutate({ id: params.id, data: values }, {
+            editWithdraw.mutate({ id: params.get('id'), data: values }, {
                 onSuccess: () => {
                     router.push('/withdraw')
                     toast.success("Updated Withdraw!", { id: loadingPromise })

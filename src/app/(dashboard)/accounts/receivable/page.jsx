@@ -4,9 +4,12 @@ import TransactionTable from '../ACTransactionTable'
 import Link from 'next/link'
 import Loading from '@/components/Loading'
 import useApi from '@/lib/useApi'
+import { useSearchParams } from 'next/navigation'
 
-export default function AcReceivablePage({ searchParams: { redirect } }) {
-  let red = redirect?.split('/')
+export default function AcReceivablePage() {
+  const params = useSearchParams()
+  let red = params.get('redirect')?.split('/')
+  
   const { getAllTransactions, getBasicInfo, getProject } = useApi()
   let query = { isPaid: false, type: 'income' }
   if (red && red.length >= 2) query.projectId = red[2]
@@ -23,7 +26,7 @@ export default function AcReceivablePage({ searchParams: { redirect } }) {
         <span className='text'>A/C Receivalbe</span>
         <span className='text-xl font-semibold'>{projectDetails?.data?.receivable || basicInfo?.receivable} TK</span>
       </div>
-      
+
       <div className='mt-6 space-y-4'>
         <Link href={'/accounts/receivable/addnew'} className="add_button">Add Transaction</Link>
         {

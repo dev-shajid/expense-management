@@ -5,21 +5,22 @@ import Submit from '@/components/Submit';
 import { validateAddTransactionForm } from '@/helper/validate';
 import { GetAllProjectsTitle } from '../../../../../../action/api';
 import toast from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import useApi from '@/lib/useApi';
 import Overlay from '@/components/Overlay';
 import { DateInput } from '@mantine/dates';
 import { Select, TextInput, Textarea } from '@mantine/core';
 import Loading from '@/components/Loading';
 
-export default function AddNewTransaction({ params, searchParams: { redirect } }) {
-    // console.log(params, redirect)
+export default function AddNewTransaction() {
+    const params = useSearchParams()
+    // console.log(params, params.get('redirect'))
     const [values, setValues] = useState({ name: '', date: null, amount: '', source: '', details: '', type: '', projectId: '', isPaid: true })
     const [errors, setErrors] = useState({})
     const [projectNames, setProjectNames] = useState([])
     const router = useRouter()
     const { editTransaction, getTransaction } = useApi()
-    let { data, isError, error, isLoading } = getTransaction({ id: params.id })
+    let { data, isError, error, isLoading } = getTransaction({ id: params.get('id') })
 
     function handleChange(e) {
         setValues((pre) => ({ ...pre, [e.target.name]: e.target.value }))
@@ -33,10 +34,10 @@ export default function AddNewTransaction({ params, searchParams: { redirect } }
         if (!Object.keys(d).length) {
             // alert(JSON.stringify(values, null, 2))
             let loadingPromise = toast.loading("Loading...")
-            editTransaction.mutate({ id: params.id, data: values, redirect }, {
+            editTransaction.mutate({ id: params.get('id'), data: values, redirect: params.get('redirect') }, {
                 onSuccess: (res) => {
                     if (res.success) {
-                        router.push(redirect ? redirect : '/transactions')
+                        router.push(params.get('redirect') ? params.get('redirect') : '/transactions')
                         toast.success("Transaction Successful!", { id: loadingPromise })
                     }
                     else throw new Error(res.error)
