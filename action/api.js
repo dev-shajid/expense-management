@@ -108,14 +108,14 @@ export async function AddTransaction({ isPaid, data }) {
             select: { income: true, expense: true, payable: true, receivable: true },
         })
 
-        
+
         let baseValue = {
             income: base.income + (data.type == 'income' && data.isPaid ? data.amount : 0),
             expense: base.expense + (data.type == 'expense' && data.isPaid ? data.amount : 0),
             receivable: base.receivable + (data.type == 'income' && !data.isPaid ? data.amount : 0),
             payable: base.payable + (data.type == 'expense' && !data.isPaid ? data.amount : 0),
         }
-        
+
         let projectValue = {
             income: project.income + (data.type == 'income' && data.isPaid ? data.amount : 0),
             expense: project.expense + (data.type == 'expense' && data.isPaid ? data.amount : 0),
@@ -123,7 +123,7 @@ export async function AddTransaction({ isPaid, data }) {
             payable: project.payable + (data.type == 'expense' && !data.isPaid ? data.amount : 0),
         }
         // console.log(data, project)
-        
+
         await db.project.update({ where: { id: data.projectId }, data: projectValue })
         await db.basic.update({ where: { id: base.id }, data: baseValue })
 
@@ -218,7 +218,7 @@ export async function DeleteTransaction(id) {
 }
 
 export async function GetAllTransactions(query) {
-    // console.log(query)
+    console.log(query)
     try {
         let transactions = await db.transaction.findMany({
             where: query,

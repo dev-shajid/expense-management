@@ -1,8 +1,19 @@
+'use client'
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { AddCustomer, AddProject, AddTransaction, AddWithdraw, DeleteCustomer, DeleteTransaction, DeleteUser, DeleteWithdraw, EditCustomer, EditPassword, EditProfile, EditProject, EditTransaction, EditWithdraw, GetAllActiviies, GetAllProjects, GetAllTransactions, GetAllWithdraws, GetAuthUser, GetBasicInfo, GetCustomer, GetCustomers, GetProject, GetTransaction, GetUsers, GetWithdraw, TotalActiviies, VerifyUser } from "../../action/api"
 
 export default function useApi() {
     const queryClient = useQueryClient()
+
+    let test = ({ page, limit }) => useQuery({
+        queryKey: ['activities', page],
+        queryFn: async (key) => {
+            console.log(key)
+            return await GetAllActiviies({ page, limit })
+        },
+        refetchOnWindowFocus: false,
+    })
 
     return {
         getProject: ({ id }) => useQuery({
@@ -20,7 +31,7 @@ export default function useApi() {
             onSuccess: async (_, e) => await queryClient.invalidateQueries(['projects'])
         }),
         editProject: useMutation({
-            mutationFn: async ({id, values})=>await EditProject({id, values}),
+            mutationFn: async ({ id, values }) => await EditProject({ id, values }),
             onSuccess: async (_, e) => await queryClient.invalidateQueries(['projects'])
         }),
 
@@ -86,6 +97,8 @@ export default function useApi() {
             queryFn: async () => await TotalActiviies(),
             refetchOnWindowFocus: false,
         }),
+        getAllActivities: test,
+
 
         getCustomers: () => useQuery({
             queryKey: ['customers'],
@@ -126,7 +139,7 @@ export default function useApi() {
             refetchOnWindowFocus: false,
         }),
         verifyUser: useMutation({
-            mutationFn: ({ id, role='user' }) => VerifyUser({ id, role }),
+            mutationFn: ({ id, role = 'user' }) => VerifyUser({ id, role }),
             onSuccess: async (_, e) => await queryClient.invalidateQueries(['users'])
         }),
         roleUser: useMutation({
