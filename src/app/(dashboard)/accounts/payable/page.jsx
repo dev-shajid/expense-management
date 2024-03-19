@@ -4,16 +4,20 @@ import TransactionTable from '../ACTransactionTable'
 import Link from 'next/link'
 import Loading from '@/components/Loading'
 import useApi from '@/lib/useApi'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function AcPayablePage({ searchParams }) {
-  let redId = searchParams?.redirect?.split('/')[2]
+export default function AcPayablePage() {
+  const params = useSearchParams()
+
+  let redId = params.get('redirect')?.split('/')[2]
+
   const { getAllTransactions, getBasicInfo, getProject } = useApi()
   let query = { isPaid: false, type: 'expense' }
   if (redId) query.projectId = redId
   let { data, isError, error, isLoading } = getAllTransactions(query)
   let { data: basicInfo, isLoading: basicInfoLoading } = getBasicInfo()
   let projectDetails = redId ? getProject({ id: redId }) : null
-  console.log(query, redId, searchParams)
+  console.log(query, redId, params)
 
 
   if (isError) return <div>{JSON.stringify(error, null, 2)}</div>

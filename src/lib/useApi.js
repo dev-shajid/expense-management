@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { AddCustomer, AddProject, AddTransaction, AddWithdraw, DeleteCustomer, DeleteTransaction, DeleteUser, DeleteWithdraw, EditCustomer, EditPassword, EditProfile, EditProject, EditTransaction, EditWithdraw, GetAllActivies, GetAllProjects, GetAllTransactions, GetAllWithdraws, GetAuthUser, GetBasicInfo, GetCustomer, GetCustomers, GetProject, GetTransaction, GetUsers, GetWithdraw, TotalActiviies, VerifyUser } from "../../action/api"
+import { AddCustomer, AddProject, AddTransaction, AddWithdraw, DeleteCustomer, DeleteTransaction, DeleteUser, DeleteWithdraw, EditCustomer, EditPassword, EditProfile, EditProject, EditTransaction, EditWithdraw, GetAllActiviies, GetAllProjects, GetAllTransactions, GetAllWithdraws, GetAuthUser, GetBasicInfo, GetCustomer, GetCustomers, GetProject, GetTransaction, GetUsers, GetWithdraw, TotalActiviies, VerifyUser } from "../../action/api"
 
 export default function useApi() {
     const queryClient = useQueryClient()
@@ -90,7 +90,7 @@ export default function useApi() {
             queryKey: ['activities', page],
             queryFn: async (key) => {
                 console.log(key)
-                return await GetAllActivies({ page, limit })
+                return await GetAllActiviies({ page, limit })
             },
             refetchOnWindowFocus: false,
         }),

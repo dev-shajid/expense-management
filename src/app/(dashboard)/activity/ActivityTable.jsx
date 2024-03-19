@@ -8,20 +8,20 @@ import { GrNext, GrPrevious } from "react-icons/gr";
 import dayjs from 'dayjs'
 import { RxCross1 } from 'react-icons/rx'
 import useApi from '@/lib/useApi'
-import { GetAllActivies } from '../../../../action/api'
+import { GetAllActiviies } from '../../../../action/api'
 
 
 export default function ActivityTable({ }) {
-    const { totalActivities, getAllActivities } = useApi()
+    const { totalActivities } = useApi()
 
-    // const [data, setData] = useState([])
+    const [data, setData] = useState([])
     const { data: total } = totalActivities()
 
-    // const getAllActivities = useCallback(async ({ page, limit }) => {
-    //     let res = await GetAllActivies({ page: page, limit })
-    //     // console.log(page, res)
-    //     setData(res)
-    // }, [])
+    const getAllActivities = useCallback(async ({ page, limit }) => {
+        let res = await GetAllActiviies({ page: page, limit })
+        // console.log(page, res)
+        setData(res)
+    }, [])
 
 
     const columns = useMemo(
@@ -62,8 +62,6 @@ export default function ActivityTable({ }) {
         [])
 
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10, })
-    let { data, isLoading, refetch, isRefetching } = getAllActivities({ page: pagination.pageIndex, limit: 10 })
-
 
     const {
         getTableProps,
@@ -77,35 +75,30 @@ export default function ActivityTable({ }) {
         nextPage,
         previousPage,
         state,
-        setGlobalFilter,
-    } = useTable(
-        {
-            columns,
-            data: [], // Initialize data with empty array
-            initialState: { pageIndex: 0, pageSize: 10 },
-            manualPagination: true,
-            pageCount: Math.ceil(total / 10),
-        },
-        useGlobalFilter,
-        useSortBy,
-        usePagination
-    );
-
-    useEffect(() => {
-        getAllActivities({ page: state.pageIndex, limit: state.pageSize });
-    }, [state.pageIndex, state.pageSize]);
+        setGlobalFilter
+    } = useTable({
+        columns,
+        data,
+        initialState: pagination,
+        manualPagination: true,
+        pageCount: Math.ceil(total / 10),
+    }, useGlobalFilter, useSortBy, usePagination)
 
     const goToNextPage = () => {
         nextPage();
-        refetch({ page: state.pageIndex + 1, limit: state.pageSize });
+        setPagination({ pageIndex: state.pageIndex + 1, pageSize: state.pageSize });
     };
 
     const goToPreviousPage = () => {
         previousPage();
-        refetch({ page: state.pageIndex - 1, limit: state.pageSize });
+        setPagination({ pageIndex: state.pageIndex - 1, pageSize: state.pageSize });
     };
 
-    if (isLoading) return <div>Loading...</div>
+
+    useEffect(() => {
+        getAllActivities({ page: state.pageIndex, pageSize: state.pageSize });
+    }, [state.pageIndex, state.pageSize]);
+
     return (
         <>
             <GlobalFilter
@@ -164,7 +157,7 @@ export default function ActivityTable({ }) {
                                                     cell.column.Header == 'Date'
                                                         ? dayjs(cell.value)?.format('DD MMM YYYY, hh:mm:ss A')
                                                         : cell.column.Header == 'Id'
-                                                            ? row?.index + 1 + 10 * pagination.pageIndex
+                                                            ? row?.index + 1 + 10*pagination.pageIndex
                                                             : cell.column.Header == 'Type'
                                                                 ? <p className={`${cell.value == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.value}</p>
                                                                 : !cell.value
