@@ -12,15 +12,14 @@ import { DateInput } from '@mantine/dates';
 import { Select, TextInput, Textarea } from '@mantine/core';
 import Loading from '@/components/Loading';
 
-export default function AddNewTransaction() {
-    const params = useSearchParams()
-    // console.log(params, params.get('redirect'))
+export default function AddNewTransaction({ params }) {
+    let red = useSearchParams()
     const [values, setValues] = useState({ name: '', date: null, amount: '', source: '', details: '', type: '', projectId: '', isPaid: true })
     const [errors, setErrors] = useState({})
     const [projectNames, setProjectNames] = useState([])
     const router = useRouter()
     const { editTransaction, getTransaction } = useApi()
-    let { data, isError, error, isLoading } = getTransaction({ id: params.get('id') })
+    let { data, isError, error, isLoading } = getTransaction({ id: params.id })
 
     function handleChange(e) {
         setValues((pre) => ({ ...pre, [e.target.name]: e.target.value }))
@@ -34,17 +33,17 @@ export default function AddNewTransaction() {
         if (!Object.keys(d).length) {
             // alert(JSON.stringify(values, null, 2))
             let loadingPromise = toast.loading("Loading...")
-            editTransaction.mutate({ id: params.get('id'), data: values, redirect: params.get('redirect') }, {
+            editTransaction.mutate({ id: params.id, data: values, redirect: red.get('redirect') }, {
                 onSuccess: (res) => {
                     if (res.success) {
-                        router.push(params.get('redirect') ? params.get('redirect') : '/transactions')
-                        toast.success("Transaction Successful!", { id: loadingPromise })
+                        router.push(red.get('redirect') ? red.get('redirect') : '/transactions')
+                        toast.success("Transaction Updated!", { id: loadingPromise })
                     }
                     else throw new Error(res.error)
                 },
                 onError: (e) => {
                     console.log(e)
-                    toast.error(e?.message || "Fail to create Project", { id: loadingPromise })
+                    toast.error(e?.message || "Fail to update Transaction", { id: loadingPromise })
                 },
             })
         }
@@ -62,7 +61,7 @@ export default function AddNewTransaction() {
     useEffect(() => {
         // console.log(data)
         if (data?.name) {
-            setValues({ name: data?.name, date: data?.date, amount: data?.amount, source: data?.source, details: data?.details, type: data?.type, projectId: data?.projectId, isPaid: data?.isPaid })
+            setValues({ name: data?.name, date: data?.date, amount: data?.amount, source: data?.source, details: data?.details, type: data?.type, projectId: data?.projectId, withdrawId: data.withdrawId, isPaid: data?.isPaid })
         }
     }, [data])
 

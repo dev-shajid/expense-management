@@ -9,17 +9,16 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import useApi from '@/lib/useApi';
 import Overlay from '@/components/Overlay';
 import { DateInput } from '@mantine/dates';
-import { Select, TextInput, Textarea } from '@mantine/core';
+import { TextInput, Textarea } from '@mantine/core';
 import Loading from '@/components/Loading';
 
-export default function AddNewTransaction() {
-    const params = useSearchParams()
+export default function AddNewTransaction({ params }) {
     const [values, setValues] = useState({ date: undefined, amount: '', previous: '', bank_account: '', details: '' })
     const [errors, setErrors] = useState({})
     const [projectNames, setProjectNames] = useState([])
     const router = useRouter()
     const { editWithdraw, getWithdraw } = useApi()
-    let { data, isError, error, isLoading } = getWithdraw({ id: params.get('id') })
+    let { data, isError, error, isLoading } = getWithdraw({ id: params.id })
 
     function handleChange(e) {
         setValues((pre) => ({ ...pre, [e.target.name]: e.target.value }))
@@ -31,7 +30,7 @@ export default function AddNewTransaction() {
         setErrors(d)
         if (!Object.keys(d).length) {
             let loadingPromise = toast.loading("Loading...")
-            editWithdraw.mutate({ id: params.get('id'), data: values }, {
+            editWithdraw.mutate({ id: params.id, data: values }, {
                 onSuccess: () => {
                     router.push('/withdraw')
                     toast.success("Updated Withdraw!", { id: loadingPromise })

@@ -137,6 +137,7 @@ export async function AddTransaction({ isPaid, data }) {
 }
 
 export async function EditTransaction({ id, data }) {
+    console.log(data, id)
     try {
         if (data.date) data.date = new Date(data.date)
         if (data.amount) data.amount = Number(data.amount)
@@ -283,10 +284,11 @@ export async function AddWithdraw({ data }) {
 
 export async function EditWithdraw({ id, data }) {
     try {
+        let prev = await db.withdraw.findFirst({ where: { id } })
         data.date = new Date(data.date).toISOString()
         data.amount = Number(data.amount)
         data.previous = Number(data.previous)
-        data.remaining = Number(data.remaining)
+        data.remaining = prev.remaining - (prev.amount + prev.previous) + data.amount + data.previous
 
         await db.withdraw.update({ where: { id }, data })
         return true
