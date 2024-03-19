@@ -112,7 +112,7 @@ export default function TransactionTable({ data }) {
         prepareRow,
         state,
         setGlobalFilter
-    } = useTable({ columns, data, initialState: { pageSize: 20, } }, useGlobalFilter, useSortBy, usePagination)
+    } = useTable({ columns, data, initialState: { pageSize: 10, } }, useGlobalFilter, useSortBy, usePagination)
 
 
     const { deleteTransaction, editTransaction } = useApi()

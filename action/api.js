@@ -218,9 +218,15 @@ export async function DeleteTransaction(id) {
     }
 }
 
-export async function GetAllTransactions(query) {
-    console.log(query)
+export async function GetAllTransactions(query, p) {
+    // console.log(query)
     try {
+        let paginition = {}
+        if (p?.limit) {
+            paginition.skip = p.page * (p.limit || 10)
+            paginition.take = p.limit || 10
+        }
+
         let transactions = await db.transaction.findMany({
             where: query,
             orderBy: {
@@ -232,7 +238,8 @@ export async function GetAllTransactions(query) {
                         name: true,
                     }
                 }
-            }
+            },
+            ...paginition,
         })
         // console.log(transactions)
         return transactions
@@ -308,9 +315,18 @@ export async function DeleteWithdraw({ id }) {
     }
 }
 
-export async function GetAllWithdraws() {
+export async function GetAllWithdraws(p) {
     try {
-        let withdraws = await db.withdraw.findMany({ orderBy: { createdAt: 'desc' } })
+        let paginition = {}
+        if (p?.limit) {
+            paginition.skip = p.page * (p.limit || 10)
+            paginition.take = p.limit || 10
+        }
+
+        let withdraws = await db.withdraw.findMany({
+            orderBy: { createdAt: 'desc' },
+            ...paginition
+        })
         return withdraws
     } catch (error) {
         console.log({ GetAllWithdraws_Error: error.message })
@@ -344,13 +360,18 @@ export async function AddActivity({ name, project, amount, type, action }) {
     }
 }
 
-export async function GetAllActiviies({ page, limit = 10 }) {
+export async function GetAllActiviies(p) {
+    // console.log(p)
     try {
-        console.log({ page })
+        let paginition = {}
+        if (p?.limit) {
+            paginition.skip = p.page * (p.limit || 10)
+            paginition.take = p.limit || 10
+        }
+
         let transactions = await db.activity.findMany({
-            skip: (page - 0) * limit,
-            take: limit,
             orderBy: { createdAt: 'desc', },
+            ...paginition,
         })
         // console.log({ transactions })
         return transactions
@@ -360,9 +381,12 @@ export async function GetAllActiviies({ page, limit = 10 }) {
     }
 }
 
-export async function TotalActiviies() {
+export async function TotalCount(name, query) {
+    // console.log({ name, query })
     try {
-        return (await db.activity.count())
+        let total = await db[name].count({ where: query })
+        // console.log({ total })
+        return total
     } catch (error) {
         console.log({ Activity_Error: error.message })
         return error

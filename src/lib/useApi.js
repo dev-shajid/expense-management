@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { AddCustomer, AddProject, AddTransaction, AddWithdraw, DeleteCustomer, DeleteTransaction, DeleteUser, DeleteWithdraw, EditCustomer, EditPassword, EditProfile, EditProject, EditTransaction, EditWithdraw, GetAllActiviies, GetAllProjects, GetAllTransactions, GetAllWithdraws, GetAuthUser, GetBasicInfo, GetCustomer, GetCustomers, GetProject, GetTransaction, GetUsers, GetWithdraw, TotalActiviies, VerifyUser } from "../../action/api"
+import { AddCustomer, AddProject, AddTransaction, AddWithdraw, DeleteCustomer, DeleteTransaction, DeleteUser, DeleteWithdraw, EditCustomer, EditPassword, EditProfile, EditProject, EditTransaction, EditWithdraw, GetAllActiviies, GetAllProjects, GetAllTransactions, GetAllWithdraws, GetBasicInfo, GetCustomer, GetCustomers, GetProject, GetTransaction, GetUsers, GetWithdraw, TotalCount, VerifyUser } from "../../action/api"
 
 export default function useApi() {
     const queryClient = useQueryClient()
@@ -25,10 +25,10 @@ export default function useApi() {
         }),
 
 
-        getAllTransactions: (values) => {
+        getAllTransactions: (query, paginition) => {
             return useQuery({
-                queryKey: ['transactions', values],
-                queryFn: async () => await GetAllTransactions(values),
+                queryKey: ['transactions', query, paginition],
+                queryFn: async () => await GetAllTransactions(query, paginition),
                 refetchOnWindowFocus: false,
             })
         },
@@ -81,11 +81,12 @@ export default function useApi() {
         }),
 
 
-        totalActivities: () => useQuery({
-            queryKey: ['total_activities'],
-            queryFn: async () => await TotalActiviies(),
+        totalCount: (name, query) => useQuery({
+            queryKey: ['total_counts', name , query],
+            queryFn: async () => await TotalCount(name, query),
             refetchOnWindowFocus: false,
         }),
+
         getAllActivities: ({ page, limit }) => useQuery({
             queryKey: ['activities', page],
             queryFn: async (key) => {

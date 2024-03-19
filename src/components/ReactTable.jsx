@@ -2,66 +2,20 @@
 
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
-import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAsyncDebounce, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table'
 import { GrNext, GrPrevious } from "react-icons/gr";
-import dayjs from 'dayjs'
 import { RxCross1 } from 'react-icons/rx'
 import useApi from '@/lib/useApi'
-import { GetAllActiviies } from '../../../../action/api'
+import Loading from './Loading'
 
 
-export default function ActivityTable({ }) {
-    const { totalActivities } = useApi()
-
-    const [data, setData] = useState([])
-    const { data: total } = totalActivities()
-
-    const getAllActivities = useCallback(async ({ page, limit }) => {
-        let res = await GetAllActiviies({ page: page, limit })
-        // console.log(page, res)
-        setData(res)
-    }, [])
-
-
-    const columns = useMemo(
-        () => [
-            {
-                Header: 'Id',
-                accessor: 'projectId',
-            },
-            {
-                Header: 'Transaction Name',
-                accessor: 'name',
-            },
-            // {
-            //     Header: 'Details',
-            //     accessor: 'transaction.details',
-            // },
-            {
-                Header: 'Date',
-                accessor: 'createdAt',
-            },
-            {
-                Header: 'Amount',
-                accessor: 'amount',
-            },
-            {
-                Header: 'Project',
-                accessor: 'project',
-            },
-            {
-                Header: 'Type',
-                accessor: 'type',
-            },
-            {
-                Header: 'Action',
-                accessor: 'action',
-            },
-        ],
-        [])
-
+export default function ReactTable({ data = [], columns, getTableData, db, query }) {
+    // console.log(query)
+    const { totalCount } = useApi()
+    const { data: total } = totalCount(db, query || {})
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10, })
+    const [isLoading, setLoading] = useState(false)
 
     const {
         getTableProps,
@@ -75,7 +29,7 @@ export default function ActivityTable({ }) {
         nextPage,
         previousPage,
         state,
-        setGlobalFilter
+        setGlobalFilter,
     } = useTable({
         columns,
         data,
@@ -92,13 +46,16 @@ export default function ActivityTable({ }) {
     const goToPreviousPage = () => {
         previousPage();
         setPagination({ pageIndex: state.pageIndex - 1, pageSize: state.pageSize });
-    };
-
+    }
 
     useEffect(() => {
-        getAllActivities({ page: state.pageIndex, pageSize: state.pageSize });
+        setLoading(true)
+        getTableData({ page: state.pageIndex, limit: state.pageSize });
+        setLoading(false)
     }, [state.pageIndex, state.pageSize]);
 
+    if (isLoading) return <Loading page />
+    if (!isLoading && !page.length) return <div className='text-center font-medium text-2xl text-gray-400 select-none'>No Data!</div>
     return (
         <>
             <GlobalFilter
@@ -154,15 +111,11 @@ export default function ActivityTable({ }) {
                                                 {...restCell}
                                             >
                                                 {
-                                                    cell.column.Header == 'Date'
-                                                        ? dayjs(cell.value)?.format('DD MMM YYYY, hh:mm:ss A')
-                                                        : cell.column.Header == 'Id'
-                                                            ? row?.index + 1 + 10*pagination.pageIndex
-                                                            : cell.column.Header == 'Type'
-                                                                ? <p className={`${cell.value == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.value}</p>
-                                                                : !cell.value
-                                                                    ? <RxCross1 className='mx-auto text-gray-400 select-none' />
-                                                                    : cell.value
+                                                    cell.column.Header == 'Id'
+                                                        ? row?.index + 1 + 10 * pagination.pageIndex
+                                                        : !cell.value
+                                                            ? <RxCross1 className='mx-auto text-gray-400 select-none' />
+                                                            : cell.value
                                                 }
                                             </td>
                                         )

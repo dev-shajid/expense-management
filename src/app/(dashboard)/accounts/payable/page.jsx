@@ -1,27 +1,130 @@
 'use client'
 
-import TransactionTable from '../ACTransactionTable'
 import Link from 'next/link'
 import Loading from '@/components/Loading'
 import useApi from '@/lib/useApi'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { FiEdit } from 'react-icons/fi'
+import { AiOutlineDelete } from 'react-icons/ai'
+import dayjs from 'dayjs'
+import { useCallback, useMemo, useState } from 'react'
+import { GetAllTransactions } from '../../../../../action/api'
+import ReactTable from '@/components/ReactTable'
 
 export default function AcPayablePage() {
   const params = useSearchParams()
 
   let redId = params.get('redirect')?.split('/')[2]
 
-  const { getAllTransactions, getBasicInfo, getProject } = useApi()
+  const { getBasicInfo, getProject, deleteTransaction, editTransaction } = useApi()
+
+  async function handleDelete(id) {
+    let loadingPromise = toast.loading("Loading...")
+    deleteTransaction.mutate(id, {
+      onSuccess: () => {
+        toast.success("Deleted Transaction!", { id: loadingPromise })
+      },
+      onError: (e) => {
+        console.log(e)
+        toast.error(e?.message || "Fail to delete Transaction", { id: loadingPromise })
+      },
+    })
+  }
+
   let query = { isPaid: false, type: 'expense' }
   if (redId) query.projectId = redId
-  let { data, isError, error, isLoading } = getAllTransactions(query)
   let { data: basicInfo, isLoading: basicInfoLoading } = getBasicInfo()
   let projectDetails = redId ? getProject({ id: redId }) : null
-  console.log(query, redId, params)
+
+  const [data, setData] = useState([])
+  const getTableData = useCallback(async ({ page = 0, limit = 10 }) => {
+    let res = await GetAllTransactions(query, { page, limit })
+    console.log({res})
+    setData(res)
+  }, [])
+
+  // console.log({ redId, query })
+  const columns = useMemo(
+    () => [
+      {
+        Header: 'Update',
+        accessor: (cell) => {
+          return <>
+            <ActionIcon
+              variant="light"
+              color="indigo"
+              size="sm"
+              onClick={() => {
+                let loadingPromise = toast.loading("Loading...")
+                editTransaction.mutate({ id: cell.row.original.id, data: { isPaid: true, projectId: cell.projectId } }, {
+                  onSuccess: (res) => {
+                    if (res.success) {
+                      toast.success("Updated Transaction Successfully!", { id: loadingPromise })
+                    }
+                    else throw new Error(res.error)
+                  },
+                  onError: (e) => {
+                    console.log(e)
+                    toast.error(e?.message || "Something is wrong!", { id: loadingPromise })
+                  },
+                })
+              }}
+            >
+              <FaCheck size={14} />
+            </ActionIcon>
+          </>
+        }
+      },
+      {
+        Header: 'Id',
+        accessor: 'id',
+      },
+      {
+        Header: 'Transaction Name',
+        accessor: 'name',
+      },
+      {
+        Header: 'Date',
+        accessor: (cell) => <span>{dayjs(cell.date)?.format('DD MMM YYYY, hh:mm A')}</span>,
+      },
+      {
+        Header: 'Amount',
+        accessor: 'amount',
+      },
+      {
+        Header: 'Project',
+        accessor: 'project.name',
+      },
+      {
+        Header: 'Type',
+        accessor: (cell) => <p className={`${cell.type == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.type}</p>
+      },
+      {
+        Header: 'Action',
+        accessor: (cell) => {
+          return (
+            <div className='flex gap-3 justify-center items-center'>
+              <Link href={`${path}/edit/${cell.id}`}>
+                <FiEdit
+                  size={18}
+                  cursor='pointer'
+                />
+              </Link>
+              <AiOutlineDelete
+                size={20}
+                cursor='pointer'
+                onClick={() => handleDelete(cell.id)}
+              />
+            </div>
+          )
+        }
+      },
+    ],
+    [])
 
 
-  if (isError) return <div>{JSON.stringify(error, null, 2)}</div>
-  if (isLoading || basicInfoLoading || projectDetails?.isLoading) return <Loading page />
+  if (basicInfoLoading || projectDetails?.isLoading) return <Loading page />
+  // if (isError) return <div>{JSON.stringify(error, null, 2)}</div>
 
   return (
     <div className='space-y-6'>
@@ -36,7 +139,7 @@ export default function AcPayablePage() {
           data?.length ?
             <>
               <div className="font-semibold text-xl">All Transactions</div>
-              <TransactionTable data={data} />
+              <ReactTable data={data} getTableData={getTableData} db='transaction' columns={columns} query={query} />
             </> :
             <div className='text-center font-medium text-2xl text-gray-400 select-none'>No Transaction!</div>
         }
