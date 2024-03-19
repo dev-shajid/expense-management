@@ -32,10 +32,10 @@ export default function InvoiceDesign() {
                     <div className='flex justify-between items-start'>
                         <div className='text-left'>
                             <div className='text-sm font-bold'>Bill To:</div>
-                            <div className='text-xl font-medium'>{invoice_items?.name || 'Company Name'}</div>
-                            <div className='text-sm'>{invoice_items?.address || 'Your Business Address'}</div>
-                            <div className='text-sm'>{invoice_items?.email || 'Email'}</div>
-                            <div className='text-sm'>{invoice_items?.phone || 'Phone'}</div>
+                            <div className='text-xl font-medium'>{invoice_items?.bill?.name || 'Company Name'}</div>
+                            <div className='text-sm'>{invoice_items?.bill?.address || 'Your Business Address'}</div>
+                            <div className='text-sm'>{invoice_items?.bill?.email || 'Email'}</div>
+                            <div className='text-sm'>{invoice_items?.bill?.phone || 'Phone'}</div>
                         </div>
                         <div className='text-right'>
                             {/* <div className='text-sm'>INVOICE NO: #12032</div> */}

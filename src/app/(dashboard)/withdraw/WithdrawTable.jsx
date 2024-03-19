@@ -17,7 +17,22 @@ import { RxCross1 } from 'react-icons/rx'
 
 
 export default function WithdrawTable({ data }) {
-    const router = useRouter()
+
+
+    const { deleteWithdraw } = useApi()
+
+    async function handleDelete(id) {
+        let loadingPromise = toast.loading("Loading...")
+        deleteWithdraw.mutate({ id }, {
+            onSuccess: () => {
+                toast.success("Deleted Withdraw!", { id: loadingPromise })
+            },
+            onError: (e) => {
+                console.log(e)
+                toast.error(e?.message || "Fail to delete Withdraw", { id: loadingPromise })
+            },
+        })
+    }
 
     const columns = useMemo(
         () => [
@@ -27,11 +42,11 @@ export default function WithdrawTable({ data }) {
             },
             {
                 Header: 'Bank',
-                accessor: 'bank_account',
+                accessor: (cell) => <Link href={`/withdraw/${cell.id}`}>{cell.bank_account}</Link>,
             },
             {
                 Header: 'Date',
-                accessor: 'date',
+                accessor: (cell) => <span>{dayjs(cell.date)?.format('DD MMM YYYY, hh:mm A')}</span>,
             },
             {
                 Header: 'Amount',
@@ -51,6 +66,23 @@ export default function WithdrawTable({ data }) {
             },
             {
                 Header: 'Action',
+                accessor: (cell) => {
+                    return (
+                        <div className='flex gap-3 justify-center items-center'>
+                            <Link href={`/withdraw/edit/${cell.id}`}>
+                                <FiEdit
+                                    size={18}
+                                    cursor='pointer'
+                                />
+                            </Link>
+                            <AiOutlineDelete
+                                size={20}
+                                cursor='pointer'
+                                onClick={() => handleDelete(cell.id)}
+                            />
+                        </div>
+                    )
+                }
             },
         ],
         [])
@@ -70,22 +102,6 @@ export default function WithdrawTable({ data }) {
         state,
         setGlobalFilter
     } = useTable({ columns, data, initialState: { pageSize: 20, } }, useGlobalFilter, useSortBy, usePagination)
-
-
-    const { deleteWithdraw } = useApi()
-
-    async function handleDelete(id) {
-        let loadingPromise = toast.loading("Loading...")
-        deleteWithdraw.mutate({ id }, {
-            onSuccess: () => {
-                toast.success("Deleted Withdraw!", { id: loadingPromise })
-            },
-            onError: (e) => {
-                console.log(e)
-                toast.error(e?.message || "Fail to delete Withdraw", { id: loadingPromise })
-            },
-        })
-    }
 
 
     if (deleteWithdraw.isError) return <pre>{JSON.stringify(deleteWithdraw.error, null, 2)}</pre>
@@ -146,29 +162,11 @@ export default function WithdrawTable({ data }) {
                                                 {...restCell}
                                             >
                                                 {
-                                                    cell.column.Header == 'Date'
-                                                        ? dayjs(cell.value)?.format('DD MMM YYYY')
-                                                        : cell.column.Header == 'Id'
-                                                            ? row?.index + 1
-                                                            : cell.column.Header == 'Bank'
-                                                                ? <Link href={`/withdraw/${cell.row.values.id}`}>{cell.value}</Link>
-                                                                : cell.column.Header == 'Action'
-                                                                    ? <div className='flex gap-3 justify-center items-center'>
-                                                                        <Link href={`/withdraw/edit/${cell.row.values.id}`}>
-                                                                            <FiEdit
-                                                                                size={18}
-                                                                                cursor='pointer'
-                                                                            />
-                                                                        </Link>
-                                                                        <AiOutlineDelete
-                                                                            size={20}
-                                                                            cursor='pointer'
-                                                                            onClick={() => handleDelete(cell.row.values.id)}
-                                                                        />
-                                                                    </div>
-                                                                    : !cell.value
-                                                                        ? <RxCross1 className='mx-auto text-gray-400 select-none' />
-                                                                        : cell.value
+                                                    cell.column.Header == 'Id'
+                                                        ? row?.index + 1
+                                                        : !cell.value
+                                                            ? <RxCross1 className='mx-auto text-gray-400 select-none' />
+                                                            : cell.value
                                                 }
                                             </td>
                                         )

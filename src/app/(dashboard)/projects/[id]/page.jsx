@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 export default function ProjectPage({ params }) {
   const { getProject, getAllTransactions, editProject } = useApi()
   const { data: project, isLoading } = getProject({ id: params.id })
-  const { data, isLoading: dataLoading } = getAllTransactions({ projectId: params.id })
+  const { data, isLoading: dataLoading } = getAllTransactions({ projectId: params.id, isPaid: true })
 
   if (isLoading || dataLoading) return <Loading page />
   if (!project) return <div className='text-center font-medium text-2xl text-gray-400 select-none'>No Project is Found!</div>
@@ -57,7 +57,7 @@ export default function ProjectPage({ params }) {
                   let loadingPromise = toast.loading("Loading...")
                   editProject.mutate({ id: project.id, values: { status: project.status == 'End' ? 'On Going' : 'End' } }, {
                     onSuccess: (res) => {
-                      if(res.success) toast.success("Project Updated!", { id: loadingPromise })
+                      if (res.success) toast.success("Project Updated!", { id: loadingPromise })
                     },
                     onError: (e) => {
                       console.log(e)
@@ -92,12 +92,22 @@ export default function ProjectPage({ params }) {
       </div>
       <div className='grid gap-4 lg:grid-cols-5 sm:grid-cols-3 grid-cols-2'>
         {
-          rows.map((p, i) => (
-            <div key={i} className='flex flex-col text-center justify-center items-center gap-1 bg-white rounded-md p-4 border'>
-              <span className='text-xs'>{p.title}</span>
-              <span className='text font-semibold min-w-fit'>{p.value}</span>
-            </div>
-          ))
+          rows.map((p, i) => {
+            if (p.title == 'A/C Payable' || p.title == 'A/C Receivable') {
+              return <Link key={i} href={p.title == 'A/C Payable' ? `/accounts/payable?redirect=/projects/${project?.id}` : `/accounts/receivable?redirect=/projects/${project?.id}`}>
+                <div className='flex flex-col text-center justify-center items-center gap-1 bg-white rounded-md p-4 border'>
+                  <span className='text-xs'>{p.title}</span>
+                  <span className='text font-semibold min-w-fit'>{p.value}</span>
+                </div>
+              </Link>
+            }
+            else {
+              return <div key={i} className='flex flex-col text-center justify-center items-center gap-1 bg-white rounded-md p-4 border'>
+                <span className='text-xs'>{p.title}</span>
+                <span className='text font-semibold min-w-fit'>{p.value}</span>
+              </div>
+            }
+          })
         }
       </div>
       {project.details ? <div className='grid gap-1 mt-4 bg-white rounded-md p-4 border'>

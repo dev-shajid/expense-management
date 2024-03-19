@@ -18,6 +18,22 @@ import { RxCross1 } from "react-icons/rx";
 
 export default function CustomersTable({ data }) {
     let path = usePathname()
+
+    const { deleteCustomer } = useApi()
+
+    async function handleDelete(id) {
+        let loadingPromise = toast.loading("Loading...")
+        deleteCustomer.mutate({id}, {
+            onSuccess: () => {
+                toast.success("Deleted Transaction!", { id: loadingPromise })
+            },
+            onError: (e) => {
+                console.log(e)
+                toast.error(e?.message || "Fail to delete Transaction", { id: loadingPromise })
+            },
+        })
+    }
+
     const columns = useMemo(
         () => [
             {
@@ -46,7 +62,7 @@ export default function CustomersTable({ data }) {
             },
             {
                 Header: 'Customer Since',
-                accessor: 'since',
+                accessor: (cell) => <span>{dayjs(cell.since)?.format('DD MMM YYYY')}</span>,
             },
             {
                 Header: 'Details',
@@ -54,6 +70,23 @@ export default function CustomersTable({ data }) {
             },
             {
                 Header: 'Action',
+                accessor: (cell) => {
+                    return (
+                        <div className='flex gap-3 justify-center items-center'>
+                            <Link href={`/customers/edit/${cell.id}`}>
+                                <FiEdit
+                                    size={18}
+                                    cursor='pointer'
+                                />
+                            </Link>
+                            <AiOutlineDelete
+                                size={20}
+                                cursor='pointer'
+                                onClick={() => handleDelete(cell.id)}
+                            />
+                        </div>
+                    )
+                }
             },
         ],
         [])
@@ -73,22 +106,6 @@ export default function CustomersTable({ data }) {
         state,
         setGlobalFilter
     } = useTable({ columns, data, initialState: { pageSize: 20, } }, useGlobalFilter, useSortBy, usePagination)
-
-
-    const { deleteCustomer } = useApi()
-
-    async function handleDelete(id) {
-        let loadingPromise = toast.loading("Loading...")
-        deleteCustomer.mutate(id, {
-            onSuccess: () => {
-                toast.success("Deleted Transaction!", { id: loadingPromise })
-            },
-            onError: (e) => {
-                console.log(e)
-                toast.error(e?.message || "Fail to delete Transaction", { id: loadingPromise })
-            },
-        })
-    }
 
 
     if (deleteCustomer.isError) return <pre>{JSON.stringify(deleteCustomer.error, null, 2)}</pre>
@@ -111,7 +128,7 @@ export default function CustomersTable({ data }) {
                                         return (
                                             <th align='center' key={key} {...restColumn} className="px-5 py-4 border-b-[1px] border-gray-300 dark:border-gray-600 bg-gray-300 dark:bg-gray-800 text-left md:text-base text-sm font-semibold uppercase" >
                                                 <div className={`flex space-x-1 ${j == 0 ? '' : 'justify-center'} items-center`}>
-                                                    <p className={`relative text-center ${column.id=='since'?'min-w-[160px]':''}`}>
+                                                    <p className={`relative text-center ${column.id == 'since' ? 'min-w-[160px]' : ''}`}>
                                                         {column.render('Header')}
                                                         <span className={`absolute right-[-15px]`}>
                                                             {column.isSorted
@@ -149,27 +166,11 @@ export default function CustomersTable({ data }) {
                                                 {...restCell}
                                             >
                                                 {
-                                                    cell.column.Header == 'Customer Since'
-                                                        ? dayjs(cell.value)?.format('DD MMM YYYY')
-                                                        : cell.column.Header == 'Id'
-                                                            ? row?.index+1
-                                                                : cell.column.Header == 'Action'
-                                                                    ? <div className='flex gap-3 justify-center items-center'>
-                                                                        <Link href={`${path}/edit/${cell.row.values.id}`}>
-                                                                            <FiEdit
-                                                                                size={18}
-                                                                                cursor='pointer'
-                                                                            />
-                                                                        </Link>
-                                                                        <AiOutlineDelete
-                                                                            size={20}
-                                                                            cursor='pointer'
-                                                                            onClick={() => handleDelete(cell.row.values.id)}
-                                                                        />
-                                                                    </div>
-                                                                    : !cell.value
-                                                                        ? <RxCross1 className='mx-auto text-gray-400 select-none'/>
-                                                                        : cell.value
+                                                    cell.column.Header == 'Id'
+                                                        ? row?.index + 1
+                                                        : !cell.value
+                                                            ? <RxCross1 className='mx-auto text-gray-400 select-none' />
+                                                            : cell.value
                                                 }
                                             </td>
                                         )

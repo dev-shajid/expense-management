@@ -30,7 +30,7 @@ export default function TransactionTable({ data }) {
             },
             {
                 Header: 'Date',
-                accessor: 'date',
+                accessor: (cell) => <span>{dayjs(cell.date)?.format('DD MMM YYYY, hh:mm A')}</span>,
             },
             {
                 Header: 'Amount',
@@ -42,10 +42,27 @@ export default function TransactionTable({ data }) {
             },
             {
                 Header: 'Type',
-                accessor: 'type',
+                accessor: (cell) => <p className={`${cell.type == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.type}</p>
             },
             {
                 Header: 'Action',
+                accessor: (cell) => {
+                    return (
+                        <div className='flex gap-3 justify-center items-center'>
+                            <Link href={`/transactions/edit/${cell.id}`}>
+                                <FiEdit
+                                    size={18}
+                                    cursor='pointer'
+                                />
+                            </Link>
+                            <AiOutlineDelete
+                                size={20}
+                                cursor='pointer'
+                                onClick={() => handleDelete(cell.id)}
+                            />
+                        </div>
+                    )
+                }
             },
         ],
         [])
@@ -141,29 +158,11 @@ export default function TransactionTable({ data }) {
                                                 {...restCell}
                                             >
                                                 {
-                                                    cell.column.Header == 'Date'
-                                                        ? dayjs(cell.value)?.format('DD MMM YYYY')
-                                                        : cell.column.Header == 'Id'
-                                                            ? row?.index + 1
-                                                            : cell.column.Header == 'Type'
-                                                                ? <p className={`${cell.value == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.value}</p>
-                                                                : cell.column.Header == 'Action'
-                                                                    ? <div className='flex gap-3 justify-center items-center'>
-                                                                        <Link href={`/withdraw/${row.original.withdrawId}/edit/${row.original.id}`}>
-                                                                            <FiEdit
-                                                                                size={18}
-                                                                                cursor='pointer'
-                                                                            />
-                                                                        </Link>
-                                                                        <AiOutlineDelete
-                                                                            size={20}
-                                                                            cursor='pointer'
-                                                                            onClick={() => handleDelete(cell.row.values.id)}
-                                                                        />
-                                                                    </div>
-                                                                    : !cell.value
-                                                                        ? <RxCross1 className='mx-auto text-gray-400 select-none' />
-                                                                        : cell.value
+                                                    cell.column.Header == 'Id'
+                                                        ? row?.index + 1
+                                                        : !cell.value
+                                                            ? <RxCross1 className='mx-auto text-gray-400 select-none' />
+                                                            : cell.value
                                                 }
                                             </td>
                                         )

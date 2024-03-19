@@ -23,8 +23,33 @@ export default function TransactionTable({ data }) {
     const columns = useMemo(
         () => [
             {
-                Header: '',
-                accessor: 'paid',
+                Header: 'Update',
+                accessor: (cell) => {
+                    return <>
+                        <ActionIcon
+                            variant="light"
+                            color="indigo"
+                            size="sm"
+                            onClick={() => {
+                                let loadingPromise = toast.loading("Loading...")
+                                editTransaction.mutate({ id: cell.row.original.id, data: { isPaid: true, projectId: cell.projectId } }, {
+                                    onSuccess: (res) => {
+                                        if (res.success) {
+                                            toast.success("Updated Transaction Successfully!", { id: loadingPromise })
+                                        }
+                                        else throw new Error(res.error)
+                                    },
+                                    onError: (e) => {
+                                        console.log(e)
+                                        toast.error(e?.message || "Something is wrong!", { id: loadingPromise })
+                                    },
+                                })
+                            }}
+                        >
+                            <FaCheck size={14} />
+                        </ActionIcon>
+                    </>
+                }
             },
             {
                 Header: 'Id',
@@ -36,7 +61,7 @@ export default function TransactionTable({ data }) {
             },
             {
                 Header: 'Date',
-                accessor: 'date',
+                accessor: (cell) => <span>{dayjs(cell.date)?.format('DD MMM YYYY, hh:mm A')}</span>,
             },
             {
                 Header: 'Amount',
@@ -48,10 +73,27 @@ export default function TransactionTable({ data }) {
             },
             {
                 Header: 'Type',
-                accessor: 'type',
+                accessor: (cell) => <p className={`${cell.type == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.type}</p>
             },
             {
                 Header: 'Action',
+                accessor: (cell) => {
+                    return (
+                        <div className='flex gap-3 justify-center items-center'>
+                            <Link href={`${path}/edit/${cell.id}`}>
+                                <FiEdit
+                                    size={18}
+                                    cursor='pointer'
+                                />
+                            </Link>
+                            <AiOutlineDelete
+                                size={20}
+                                cursor='pointer'
+                                onClick={() => handleDelete(cell.id)}
+                            />
+                        </div>
+                    )
+                }
             },
         ],
         [])
@@ -147,54 +189,11 @@ export default function TransactionTable({ data }) {
                                                 {...restCell}
                                             >
                                                 {
-                                                    cell.column.Header == 'Date'
-                                                        ? dayjs(cell.value)?.format('DD MMM YYYY')
-                                                        : cell.column.Header == 'Id'
-                                                            ? row?.index + 1
-                                                            : cell.column.Header == 'Type'
-                                                                ? <p className={`${cell.value == 'income' ? 'bg-green-500' : 'bg-red-400'} font-medium text-white text-center inline-block capitalize rounded-full px-4`}>{cell.value}</p>
-                                                                : cell.column.Header == 'Action'
-                                                                    ? <div className='flex gap-3 justify-center items-center'>
-                                                                        <Link href={`${path}/edit/${cell.row.values.id}`}>
-                                                                            <FiEdit
-                                                                                size={18}
-                                                                                cursor='pointer'
-                                                                            />
-                                                                        </Link>
-                                                                        <AiOutlineDelete
-                                                                            size={20}
-                                                                            cursor='pointer'
-                                                                            onClick={() => handleDelete(cell.row.values.id)}
-                                                                        />
-                                                                    </div>
-                                                                    : cell.column.id == 'paid'
-                                                                        ? <>
-                                                                            <ActionIcon
-                                                                                variant="light"
-                                                                                color="indigo"
-                                                                                size="sm"
-                                                                                onClick={() => {
-                                                                                    let loadingPromise = toast.loading("Loading...")
-                                                                                    editTransaction.mutate({ id: cell.row.original.id, data: { isPaid: true, projectId: cell.row.original.projectId } }, {
-                                                                                        onSuccess: (res) => {
-                                                                                            if (res.success) {
-                                                                                                toast.success("Updated Transaction Successfully!", { id: loadingPromise })
-                                                                                            }
-                                                                                            else throw new Error(res.error)
-                                                                                        },
-                                                                                        onError: (e) => {
-                                                                                            console.log(e)
-                                                                                            toast.error(e?.message || "Something is wrong!", { id: loadingPromise })
-                                                                                        },
-                                                                                    })
-                                                                                }}
-                                                                            >
-                                                                                <FaCheck size={14} />
-                                                                            </ActionIcon>
-                                                                        </>
-                                                                        : !cell.value
-                                                                            ? <RxCross1 className='mx-auto text-gray-400 select-none' />
-                                                                            : cell.value
+                                                    cell.column.Header == 'Id'
+                                                        ? row?.index + 1
+                                                        : !cell.value
+                                                            ? <RxCross1 className='mx-auto text-gray-400 select-none' />
+                                                            : cell.value
                                                 }
                                             </td>
                                         )

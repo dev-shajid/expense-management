@@ -26,12 +26,6 @@ export default function useApi() {
 
 
         getAllTransactions: (values) => {
-            // let query = {}
-            // console.log(values)
-            // if (values?.withdrawId) query.withdrawId = values?.withdrawId
-            // if (values?.isPaid) query.isPaid = values?.isPaid
-            // if (values?.type) query.type = values?.type
-            // if (values?.projectId) query.projectId = values?.projectId
             return useQuery({
                 queryKey: ['transactions', values],
                 queryFn: async () => await GetAllTransactions(values),

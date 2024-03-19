@@ -69,7 +69,7 @@ export default function AddNewTransaction({ params }) {
     return (
         <section className='container'>
             <Overlay isLoading={editTransaction.isPending} />
-            <div className="title">New Projects</div>
+            <div className="title">Edit Transaction</div>
             <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
                 <DateInput
                     minDate={new Date()}

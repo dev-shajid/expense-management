@@ -13,7 +13,7 @@ import { Autocomplete, Select, TextInput, Textarea } from '@mantine/core';
 
 export default function AddNewTransaction({ params }) {
     // console.log(params)
-    const [values, setValues] = useState({ name: '', date: undefined, amount: '', source: '', details: '', type: 'Expense', projectId: '', isPaid: true, withdrawId: params.withdrawId })
+    const [values, setValues] = useState({ name: '', date: undefined, amount: '', source: '', details: '', type: 'expense', projectId: '', isPaid: true, withdrawId: params.withdrawId })
     const [errors, setErrors] = useState({})
     const [projectNames, setProjectNames] = useState([])
     const router = useRouter()
@@ -74,11 +74,9 @@ export default function AddNewTransaction({ params }) {
                 />
 
                 <TextInput
-                    value={values.type}
+                    value={values.type[0].toUpperCase() + values.type.slice(1)}
                     name='type'
                     label="Type"
-                    error={errors?.type}
-                    placeholder="Pick value"
                     required
                     readOnly
                 />

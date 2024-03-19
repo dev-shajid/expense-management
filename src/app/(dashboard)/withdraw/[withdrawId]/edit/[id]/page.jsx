@@ -13,7 +13,7 @@ import { Select, TextInput, Textarea } from '@mantine/core';
 import Loading from '@/components/Loading';
 
 export default function EditTransaction({ params }) {
-    const [values, setValues] = useState({ name: '', date: undefined, amount: '', source: '', details: '', type: 'Expense', projectId: '', isPaid: true, withdrawId: params.withdrawId })
+    const [values, setValues] = useState({ name: '', date: undefined, amount: '', source: '', details: '', type: 'expense', projectId: '', isPaid: true, withdrawId: params.withdrawId })
     const [errors, setErrors] = useState({})
     const [projectNames, setProjectNames] = useState([])
     const router = useRouter()
@@ -60,7 +60,7 @@ export default function EditTransaction({ params }) {
     useEffect(() => {
         // console.log(data)
         if (data?.name) {
-            setValues({ name: data?.name, date: data?.date, amount: data?.amount, source: data?.source, details: data?.details, type: 'Expense', projectId: data?.projectId, isPaid: true, withdrawId: params.withdrawId })
+            setValues({ name: data?.name, date: data?.date, amount: data?.amount, source: data?.source, details: data?.details, type: 'expense', projectId: data?.projectId, isPaid: true, withdrawId: params.withdrawId })
         }
     }, [data])
 
@@ -84,10 +84,8 @@ export default function EditTransaction({ params }) {
                 />
 
                 <TextInput
-                    value={values.type}
-                    name='type'
+                    value={values.type[0].toUpperCase() + values.type.slice(1)}
                     label="Type"
-                    error={errors?.type}
                     placeholder="Pick value"
                     required
                     readOnly
