@@ -13,7 +13,7 @@ export default function AcPayablePage({ searchParams: { redirect } }) {
   let { data, isError, error, isLoading } = getAllTransactions(query)
   let { data: basicInfo, isLoading: basicInfoLoading } = getBasicInfo()
   let projectDetails = redId ? getProject({ id: redId }) : null
-  console.log(query, redId)
+  console.log(query, redId, redirect)
 
 
   if (isError) return <div>{JSON.stringify(error, null, 2)}</div>

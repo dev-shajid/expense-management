@@ -8,17 +8,17 @@ import { GrNext, GrPrevious } from "react-icons/gr";
 import dayjs from 'dayjs'
 import { RxCross1 } from 'react-icons/rx'
 import useApi from '@/lib/useApi'
-import { GetAllActiviies } from '../../../../action/api'
+import { GetAllActivies } from '../../../../action/api'
 
 
 export default function ActivityTable({ }) {
-    const { totalActivities } = useApi()
+    const { totalActivities, getAllActivities } = useApi()
 
     // const [data, setData] = useState([])
     const { data: total } = totalActivities()
 
     // const getAllActivities = useCallback(async ({ page, limit }) => {
-    //     let res = await GetAllActiviies({ page: page, limit })
+    //     let res = await GetAllActivies({ page: page, limit })
     //     // console.log(page, res)
     //     setData(res)
     // }, [])
@@ -62,8 +62,6 @@ export default function ActivityTable({ }) {
         [])
 
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10, })
-
-    const { getAllActivities } = useApi()
     let { data, isLoading, refetch, isRefetching } = getAllActivities({ page: pagination.pageIndex, limit: 10 })
 
 
@@ -79,29 +77,33 @@ export default function ActivityTable({ }) {
         nextPage,
         previousPage,
         state,
-        setGlobalFilter
-    } = useTable({
-        columns,
-        data: data || [],
-        initialState: pagination,
-        manualPagination: true,
-        pageCount: Math.ceil(total / 10),
-    }, useGlobalFilter, useSortBy, usePagination)
+        setGlobalFilter,
+    } = useTable(
+        {
+            columns,
+            data: [], // Initialize data with empty array
+            initialState: { pageIndex: 0, pageSize: 10 },
+            manualPagination: true,
+            pageCount: Math.ceil(total / 10),
+        },
+        useGlobalFilter,
+        useSortBy,
+        usePagination
+    );
+
+    useEffect(() => {
+        getAllActivities({ page: state.pageIndex, limit: state.pageSize });
+    }, [state.pageIndex, state.pageSize]);
 
     const goToNextPage = () => {
         nextPage();
-        setPagination({ pageIndex: state.pageIndex + 1, pageSize: state.pageSize });
+        refetch({ page: state.pageIndex + 1, limit: state.pageSize });
     };
 
     const goToPreviousPage = () => {
         previousPage();
-        setPagination({ pageIndex: state.pageIndex - 1, pageSize: state.pageSize });
+        refetch({ page: state.pageIndex - 1, limit: state.pageSize });
     };
-
-
-    useEffect(() => {
-        getAllActivities({ page: state.pageIndex, pageSize: state.pageSize });
-    }, [state.pageIndex, state.pageSize]);
 
     if (isLoading) return <div>Loading...</div>
     return (

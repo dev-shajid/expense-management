@@ -1,19 +1,8 @@
-'use client'
-
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { AddCustomer, AddProject, AddTransaction, AddWithdraw, DeleteCustomer, DeleteTransaction, DeleteUser, DeleteWithdraw, EditCustomer, EditPassword, EditProfile, EditProject, EditTransaction, EditWithdraw, GetAllActiviies, GetAllProjects, GetAllTransactions, GetAllWithdraws, GetAuthUser, GetBasicInfo, GetCustomer, GetCustomers, GetProject, GetTransaction, GetUsers, GetWithdraw, TotalActiviies, VerifyUser } from "../../action/api"
+import { AddCustomer, AddProject, AddTransaction, AddWithdraw, DeleteCustomer, DeleteTransaction, DeleteUser, DeleteWithdraw, EditCustomer, EditPassword, EditProfile, EditProject, EditTransaction, EditWithdraw, GetAllActivies, GetAllProjects, GetAllTransactions, GetAllWithdraws, GetAuthUser, GetBasicInfo, GetCustomer, GetCustomers, GetProject, GetTransaction, GetUsers, GetWithdraw, TotalActiviies, VerifyUser } from "../../action/api"
 
 export default function useApi() {
     const queryClient = useQueryClient()
-
-    let test = ({ page, limit }) => useQuery({
-        queryKey: ['activities', page],
-        queryFn: async (key) => {
-            console.log(key)
-            return await GetAllActiviies({ page, limit })
-        },
-        refetchOnWindowFocus: false,
-    })
 
     return {
         getProject: ({ id }) => useQuery({
@@ -97,7 +86,14 @@ export default function useApi() {
             queryFn: async () => await TotalActiviies(),
             refetchOnWindowFocus: false,
         }),
-        getAllActivities: test,
+        getAllActivities: ({ page, limit }) => useQuery({
+            queryKey: ['activities', page],
+            queryFn: async (key) => {
+                console.log(key)
+                return await GetAllActivies({ page, limit })
+            },
+            refetchOnWindowFocus: false,
+        }),
 
 
         getCustomers: () => useQuery({

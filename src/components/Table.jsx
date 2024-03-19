@@ -8,7 +8,7 @@ import { GrNext, GrPrevious } from "react-icons/gr";
 import dayjs from 'dayjs'
 import { RxCross1 } from 'react-icons/rx'
 import useApi from '@/lib/useApi'
-import { GetAllActiviies } from '../../../../action/api'
+import { GetAllActivies } from '../../../../action/api'
 
 
 export default function ActivityTable({ }) {
@@ -18,7 +18,7 @@ export default function ActivityTable({ }) {
     const { data: total } = totalActivities()
 
     const getAllActivities = useCallback(async ({ page, limit }) => {
-        let res = await GetAllActiviies({ page: page, limit })
+        let res = await GetAllActivies({ page: page, limit })
         // console.log(page, res)
         setData(res)
     }, [])

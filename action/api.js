@@ -342,7 +342,7 @@ export async function AddActivity({ name, project, amount, type, action }) {
     }
 }
 
-export async function GetAllActiviies({ page, limit = 10 }) {
+export async function GetAllActivies({ page, limit = 10 }) {
     try {
         console.log({ page })
         let transactions = await db.activity.findMany({
