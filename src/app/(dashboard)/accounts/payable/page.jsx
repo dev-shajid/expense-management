@@ -12,6 +12,7 @@ import { GetAllTransactions } from '../../../../../action/api'
 import ReactTable from '@/components/ReactTable'
 import { ActionIcon } from '@mantine/core'
 import { FaCheck } from 'react-icons/fa'
+import toast from 'react-hot-toast'
 
 export default function AcPayablePage() {
   const params = useSearchParams()
@@ -47,6 +48,7 @@ export default function AcPayablePage() {
       {
         Header: 'Update',
         accessor: (cell) => {
+          // console.log(cell)
           return <>
             <ActionIcon
               variant="light"

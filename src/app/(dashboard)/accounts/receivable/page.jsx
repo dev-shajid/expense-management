@@ -12,6 +12,7 @@ import { GetAllTransactions } from '../../../../../action/api'
 import ReactTable from '@/components/ReactTable'
 import { ActionIcon } from '@mantine/core'
 import { FaCheck } from 'react-icons/fa'
+import toast from 'react-hot-toast'
 
 export default function AcReceivablePage() {
   const params = useSearchParams()
@@ -53,7 +54,7 @@ export default function AcReceivablePage() {
               size="sm"
               onClick={() => {
                 let loadingPromise = toast.loading("Loading...")
-                editTransaction.mutate({ id: cell.row.original.id, data: { isPaid: true, projectId: cell.projectId } }, {
+                editTransaction.mutate({ id: cell.id, data: { isPaid: true, projectId: cell.projectId } }, {
                   onSuccess: (res) => {
                     if (res.success) {
                       toast.success("Updated Transaction Successfully!", { id: loadingPromise })
@@ -131,7 +132,7 @@ export default function AcReceivablePage() {
         </div>
 
         <div className='mt-6 space-y-4'>
-          <Link href={'/accounts/payable/addnew'} className="add_button">Add Transaction</Link>
+          <Link href={'/accounts/receivable/addnew'} className="add_button">Add Transaction</Link>
           <div className="font-semibold text-xl">All Transactions</div>
           <ReactTable getTableData={getTableData} db='transaction' columns={columns} query={query} />
         </div>

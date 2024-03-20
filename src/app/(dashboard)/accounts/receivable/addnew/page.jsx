@@ -27,17 +27,17 @@ export default function AddNewTransaction() {
         e.preventDefault()
         let d = await validateAddTransactionForm(values)
         setErrors(d)
-        console.log(d)
+        // console.log(d)
         if (!Object.keys(d).length) {
             // alert(JSON.stringify(values, null, 2))
             let loadingPromise = toast.loading("Loading...")
-            creatTransaction.mutate(({ data: values, isPaid: false }), {
+            creatTransaction.mutate({ data: values, isPaid: false }, {
                 onSuccess: () => {
                     router.push('/accounts/receivable')
                     toast.success("Transaction Successful!", { id: loadingPromise })
                 },
                 onError: (e) => {
-                    toast.error("Fail to create Transaction", { id: loadingPromise })
+                    toast.error(e.message || "Fail to create Transaction", { id: loadingPromise })
                 },
             })
         }
@@ -53,7 +53,7 @@ export default function AddNewTransaction() {
         getProjectNames()
     }, [])
 
-    if (creatTransaction.isError) return <pre>{JSON.stringify(creatTransaction.error, null, 2)}</pre>
+    // if (creatTransaction.isError) return <pre>{JSON.stringify(creatTransaction.error, null, 2)}</pre>
     return (
         <section className='container'>
             <Overlay isLoading={creatTransaction.isPending} />
