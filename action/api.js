@@ -535,3 +535,16 @@ export async function EditPassword({ id, data }) {
         return { message: error.message, success: false }
     }
 }
+
+// TODO: GET CSV
+
+export async function GetCSVData(name,query, include) {
+    // console.log(db,query)
+    try {
+        let data = await db[name].findMany({ where:query, include, orderBy: { createdAt: 'desc' } })
+        return data
+    } catch (error) {
+        console.log({ GetCSVData_Error: error.message })
+        return error
+    }
+}

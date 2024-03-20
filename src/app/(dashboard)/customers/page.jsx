@@ -1,9 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import Loading from '@/components/Loading'
 import useApi from '@/lib/useApi'
-import CustomersTable from './CustomersTable'
 import { AiOutlineDelete } from 'react-icons/ai'
 import { FiEdit } from 'react-icons/fi'
 import dayjs from 'dayjs'

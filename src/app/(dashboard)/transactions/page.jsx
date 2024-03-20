@@ -5,8 +5,8 @@ import useApi from '@/lib/useApi'
 import { FiEdit } from 'react-icons/fi'
 import { AiOutlineDelete } from 'react-icons/ai'
 import dayjs from 'dayjs'
-import { useMemo } from 'react'
-import { GetAllTransactions } from '../../../../action/api'
+import { useMemo, useState } from 'react'
+import { GetAllTransactions, GetCSVData } from '../../../../action/api'
 import ReactTable from '@/components/ReactTable'
 import toast from 'react-hot-toast'
 
@@ -77,8 +77,15 @@ export default function TransactionsPage() {
     ],
     [])
 
-  // if (isError) return <div>{JSON.stringify(error, null, 2)}</div>
-  // if (isLoading) return <Loading page />
+  const [csvData, setCsvData] = useState([])
+  const handleCSVExport = async (csvRef) => {
+    const res = await GetCSVData('transaction', query, { project: { select: { name: true, } } })
+    setCsvData(res.map(p => ({ ID: p.id, Name: p.name, Project: p?.project.name, Details: p.details, Date: dayjs(p?.date || p?.since).format('DD MMM YYYY, hh:mm A'), Amount: p.amount, Type: p.type, Source: p.source })))
+    setTimeout(() => {
+      csvRef.current.link.click()
+    }, 1000)
+  }
+
   if (deleteTransaction.isError) return <pre>{JSON.stringify(deleteTransaction.error, null, 2)}</pre>
 
   return (
@@ -86,7 +93,7 @@ export default function TransactionsPage() {
       <div className="title">All Transaction</div>
       <div className='mt-6'>
         <Link href={'/transactions/addnew'} className="add_button">Add Transaction</Link>
-        <ReactTable getTableData={getTableData} db='transaction' columns={columns} query={query} />
+        <ReactTable getTableData={getTableData} db='transaction' columns={columns} query={query} csvData={csvData} handleCSVExport={handleCSVExport} />
       </div>
     </>
   )

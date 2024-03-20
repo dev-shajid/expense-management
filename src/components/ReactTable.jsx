@@ -2,18 +2,18 @@
 
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
-import React, { useEffect, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useAsyncDebounce, useGlobalFilter, usePagination, useSortBy, useTable } from 'react-table'
 import { GrNext, GrPrevious } from "react-icons/gr";
 import { RxCross1 } from 'react-icons/rx'
 import useApi from '@/lib/useApi'
 import Loading from './Loading'
 import { useQuery } from '@tanstack/react-query'
-import { GetAllActiviies } from '../../action/api'
+import { CSVLink } from 'react-csv'
 
 
-export default function ReactTable({ getTableData, columns, db, query }) {
-
+export default function ReactTable({ getTableData, columns, db, query, handleCSVExport, csvData }) {
+    const csvRef = useRef(null)
     const { totalCount } = useApi()
     const { data: total } = totalCount(db, query || {})
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10, })
@@ -60,10 +60,31 @@ export default function ReactTable({ getTableData, columns, db, query }) {
     if (!TableData?.isLoading && !TableData?.data.length) return <div className='text-center font-medium text-2xl text-gray-400 select-none'>No Data!</div>
     return (
         <>
-            <GlobalFilter
-                globalFilter={state?.globalFilter}
-                setGlobalFilter={setGlobalFilter}
-            />
+            <div className='flex flex-wrap justify-between items-center'>
+                <GlobalFilter
+                    globalFilter={state?.globalFilter}
+                    setGlobalFilter={setGlobalFilter}
+                />
+
+                {
+                    handleCSVExport ?
+                        <>
+                            <CSVLink
+                                data={csvData}
+                                filename={`${db}.csv`}
+                                ref={csvRef}
+                                title={`${db}`}
+                                target='_blank'
+                            />
+                            <button
+                                onClick={() => handleCSVExport(csvRef)}
+                                className='text-sm bg-gray-900 text-white rounded-md font-medium px-3 py-1'
+                            >
+                                Export
+                            </button>
+                        </> : null
+                }
+            </div>
             <div className='rounded-md overflow-x-auto'>
                 <table {...getTableProps()} className='w-full table dark:text-white !text-sm min-w-[800px]'>
                     <thead>
@@ -144,7 +165,7 @@ function GlobalFilter({ globalFilter, setGlobalFilter }) {
     }, 300)
 
     return (
-        <div className='py-4 my-4 flex justify-between items-center max-w-full overflow-x-hidden'>
+        <div className='py-4 min-w-[300px] my-4 flex justify-between items-center max-w-full overflow-x-hidden'>
             {/* Search:{' '} */}
             <input
                 value={value || ""}

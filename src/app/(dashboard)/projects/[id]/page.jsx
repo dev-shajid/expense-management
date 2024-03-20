@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import dayjs from 'dayjs';
 import useApi from '@/lib/useApi';
 import Loading from '@/components/Loading';
@@ -11,7 +11,7 @@ import toast from 'react-hot-toast';
 import ReactTable from '@/components/ReactTable';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { FiEdit } from 'react-icons/fi';
-import { GetAllTransactions } from '../../../../../action/api';
+import { GetAllTransactions, GetCSVData } from '../../../../../action/api';
 
 export default function ProjectPage({ params }) {
   const { getProject, deleteTransaction, editProject } = useApi()
@@ -85,6 +85,15 @@ export default function ProjectPage({ params }) {
       },
     ],
     [])
+
+  const [csvData, setCsvData] = useState([])
+  const handleCSVExport = async (csvRef) => {
+    const res = await GetCSVData('transaction', query)
+    setCsvData(res.map(p => ({ ID: p.id, Name: p.name, Details: p.details, Date: dayjs(p?.date || p?.since).format('DD MMM YYYY, hh:mm A'), Amount: p.amount, Type: p.type, Source: p.source })))
+    setTimeout(() => {
+      csvRef.current.link.click()
+    }, 1000)
+  }
 
 
   if (isLoading) return <Loading page />
@@ -189,7 +198,7 @@ export default function ProjectPage({ params }) {
 
       <div className='mt-8'>
         <div className="font-semibold text">All Transactions</div>
-        <ReactTable getTableData={getTableData} db='transaction' columns={columns} query={query} />
+        <ReactTable getTableData={getTableData} db='transaction' columns={columns} query={query} csvData={csvData} handleCSVExport={handleCSVExport} />
       </div>
 
     </section>
