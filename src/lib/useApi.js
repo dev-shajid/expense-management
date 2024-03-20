@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { AddCustomer, AddProject, AddTransaction, AddWithdraw, DeleteCustomer, DeleteTransaction, DeleteUser, DeleteWithdraw, EditCustomer, EditPassword, EditProfile, EditProject, EditTransaction, EditWithdraw, GetAllActiviies, GetAllProjects, GetAllTransactions, GetAllWithdraws, GetBasicInfo, GetCustomer, GetCustomers, GetProject, GetTransaction, GetUsers, GetWithdraw, TotalCount, VerifyUser } from "../../action/api"
+import { AddCustomer, AddProject, AddTransaction, AddWithdraw, DeleteCustomer, DeleteProject, DeleteTransaction, DeleteUser, DeleteWithdraw, EditCustomer, EditPassword, EditProfile, EditProject, EditTransaction, EditWithdraw, GetAllActiviies, GetAllProjects, GetAllTransactions, GetAllWithdraws, GetBasicInfo, GetCustomer, GetCustomers, GetProject, GetTransaction, GetUsers, GetWithdraw, TotalCount, VerifyUser } from "../../action/api"
 
 export default function useApi() {
     const queryClient = useQueryClient()
@@ -21,6 +21,10 @@ export default function useApi() {
         }),
         editProject: useMutation({
             mutationFn: async ({ id, values }) => await EditProject({ id, values }),
+            onSuccess: async (_, e) => await queryClient.invalidateQueries(['projects'])
+        }),
+        deleteProject: useMutation({
+            mutationFn: async ({ id }) => await DeleteProject({ id }),
             onSuccess: async (_, e) => await queryClient.invalidateQueries(['projects'])
         }),
 

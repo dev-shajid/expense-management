@@ -85,7 +85,7 @@ export default function AcPayablePage() {
       },
       {
         Header: 'Date',
-        accessor: (cell) => <span>{dayjs(cell.date)?.format('DD MMM YYYY, hh:mm A')}</span>,
+        accessor: (cell) => <span>{dayjs(cell.date)?.format('DD MMM YYYY')}, {dayjs(cell.createdAt)?.format('hh:mm A')}</span>,
       },
       {
         Header: 'Amount',

@@ -44,7 +44,7 @@ export default function WithdrawPage({ params }) {
       },
       {
         Header: 'Date',
-        accessor: (cell) => <span>{dayjs(cell.date)?.format('DD MMM YYYY, hh:mm A')}</span>,
+        accessor: (cell) => <span>{dayjs(cell.date)?.format('DD MMM YYYY')}, {dayjs(cell.createdAt)?.format('hh:mm A')}</span>,
       },
       {
         Header: 'Amount',
@@ -81,8 +81,6 @@ export default function WithdrawPage({ params }) {
     ],
     [])
 
-  // if (isError || withdrawIsError) return <div>Error: {JSON.stringify(error || withdrawError, null, 2)}</div>
-  // if (isLoading || withdrawIsLoading) return <Loading page />
   const rows = [
     { title: "Date", value: dayjs(withdraw?.start).format('D MMM YYYY') },
     { title: "Bank Account", value: withdraw?.bank_account },

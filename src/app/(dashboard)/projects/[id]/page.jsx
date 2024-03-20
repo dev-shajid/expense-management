@@ -12,9 +12,12 @@ import ReactTable from '@/components/ReactTable';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { FiEdit } from 'react-icons/fi';
 import { GetAllTransactions, GetCSVData } from '../../../../../action/api';
+import { useRouter } from 'next/navigation';
+import Overlay from '@/components/Overlay';
 
 export default function ProjectPage({ params }) {
-  const { getProject, deleteTransaction, editProject } = useApi()
+  const router = useRouter()
+  const { getProject, deleteTransaction, editProject, deleteProject } = useApi()
   const { data: project, isLoading } = getProject({ id: params.id })
 
   let query = { projectId: params.id, isPaid: true }
@@ -45,7 +48,7 @@ export default function ProjectPage({ params }) {
       },
       {
         Header: 'Date',
-        accessor: (cell) => <span>{dayjs(cell.date)?.format('DD MMM YYYY, hh:mm A')}</span>,
+        accessor: (cell) => <span>{dayjs(cell.date)?.format('DD MMM YYYY')}, {dayjs(cell.createdAt)?.format('hh:mm A')}</span>,
       },
       {
         Header: 'Amount',
@@ -111,6 +114,7 @@ export default function ProjectPage({ params }) {
 
   return (
     <section className='container'>
+      <Overlay isLoading={deleteProject.isPending || editProject.isPending} />
       <div className='flex justify-between items-center gap-4'>
         <div className="title">{project.name}</div>
         <>
@@ -148,24 +152,25 @@ export default function ProjectPage({ params }) {
               >
                 {project.status == 'End' ? 'On Going' : 'End'} Project
               </Menu.Item>
-              <Menu.Divider />
+              {/* <Menu.Divider />
               <Menu.Item
                 color="red"
                 onClick={() => {
                   let loadingPromise = toast.loading("Loading...")
-                  deleteUser.mutate({ id: project.id }, {
+                  deleteProject.mutate({ id: project.id }, {
                     onSuccess: () => {
                       toast.success("Deleted Successfully!", { id: loadingPromise })
+                      router.push('/projects')
                     },
                     onError: (e) => {
-                      console.log(e)
+                      console.log({ Error: e.message })
                       toast.error(e?.message || "Something is wrong!", { id: loadingPromise })
                     },
                   })
                 }}
               >
                 Delete Project
-              </Menu.Item>
+              </Menu.Item> */}
             </Menu.Dropdown>
           </Menu>
         </>

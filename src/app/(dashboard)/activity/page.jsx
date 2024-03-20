@@ -25,7 +25,7 @@ export default function ActivityPage() {
       // },
       {
         Header: 'Date',
-        accessor: (cell) => <span>{dayjs(cell.date).format('DD MMM YYYY, hh:mm A')}</span>,
+        accessor: (cell) => <span>{dayjs(cell.createdAt).format('DD MMM YYYY, hh:mm A')}</span>,
       },
       {
         Header: 'Amount',

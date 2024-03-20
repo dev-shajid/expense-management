@@ -51,6 +51,19 @@ export async function EditProject({ id, values }) {
     }
 }
 
+export async function DeleteProject({ id }) {
+    console.log({ id })
+    try {
+        let project = await db.project.findFirst({ where: { id } })
+        console.log(project)
+        await db.project.delete({ where: { id } })
+        return { success: true }
+    } catch (error) {
+        console.log({ DeleteProject_Error: error.message })
+        return error
+    }
+}
+
 export async function GetAllProjects() {
     try {
         let projects = await db.project.findMany({
@@ -538,10 +551,10 @@ export async function EditPassword({ id, data }) {
 
 // TODO: GET CSV
 
-export async function GetCSVData(name,query, include) {
+export async function GetCSVData(name, query, include) {
     // console.log(db,query)
     try {
-        let data = await db[name].findMany({ where:query, include, orderBy: { createdAt: 'desc' } })
+        let data = await db[name].findMany({ where: query, include, orderBy: { createdAt: 'desc' } })
         return data
     } catch (error) {
         console.log({ GetCSVData_Error: error.message })
