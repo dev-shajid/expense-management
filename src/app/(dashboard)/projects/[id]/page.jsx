@@ -92,7 +92,7 @@ export default function ProjectPage({ params }) {
   const [csvData, setCsvData] = useState([])
   const handleCSVExport = async (csvRef) => {
     const res = await GetCSVData('transaction', query)
-    setCsvData(res.map(p => ({ ID: p.id, Name: p.name, Details: p.details, Date: dayjs(p?.date || p?.since).format('DD MMM YYYY, hh:mm A'), Amount: p.amount, Type: p.type, Source: p.source })))
+    setCsvData(res.map(p => ({ ID: p.id, Name: p.name, Details: p.details, Date: `${dayjs(p?.date || p?.since).format('DD MMM YYYY')}, ${dayjs(p?.createdAt).format('hh:mm A')}`, Amount: p.amount, Type: p.type, Source: p.source })))
     setTimeout(() => {
       csvRef.current.link.click()
     }, 1000)

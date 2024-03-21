@@ -97,7 +97,7 @@ export default function ReactTable({ getTableData, columns, db, query, handleCSV
                                         return (
                                             <th align='center' key={key} {...restColumn} className="px-5 py-4 border-b-[1px] border-gray-300 dark:border-gray-600 bg-gray-300 dark:bg-gray-800 text-left md:text-base text-sm font-semibold uppercase" >
                                                 <div className={`flex space-x-1 ${j == 0 ? '' : 'justify-center'} items-center`}>
-                                                    <p className='relative'>
+                                                    <p className='relative text-center'>
                                                         {column.render('Header')}
                                                         <span className={`absolute right-[-15px]`}>
                                                             {column.isSorted

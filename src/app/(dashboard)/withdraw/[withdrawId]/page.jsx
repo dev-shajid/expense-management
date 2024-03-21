@@ -63,7 +63,7 @@ export default function WithdrawPage({ params }) {
         accessor: (cell) => {
           return (
             <div className='flex gap-3 justify-center items-center'>
-              <Link href={`/transactions/edit/${cell.id}`}>
+              <Link href={`/transactions/edit/${cell.id}?redirect=/withdraw/${params.withdrawId}`}>
                 <FiEdit
                   size={18}
                   cursor='pointer'

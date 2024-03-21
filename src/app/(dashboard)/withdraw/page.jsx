@@ -9,6 +9,7 @@ import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { AiOutlineDelete } from 'react-icons/ai'
 import { FiEdit } from 'react-icons/fi'
+import Overlay from '@/components/Overlay'
 
 export default function TransactionsPage() {
   const { deleteWithdraw } = useApi()
@@ -83,6 +84,7 @@ export default function TransactionsPage() {
 
   return (
     <>
+      <Overlay isLoading={deleteWithdraw.isPending}/>
       <div className="title">All Withdraw</div>
       <div className='mt-6'>
         <Link href={'/withdraw/addnew'} className="add_button">Add Withdraw</Link>

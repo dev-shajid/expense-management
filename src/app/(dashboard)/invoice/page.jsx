@@ -5,11 +5,12 @@ import { useUserContext } from '@/context/ContextProvider'
 import { NumberInput, Space, TextInput } from '@mantine/core'
 import Link from 'next/link'
 import React, { useState } from 'react'
+import { RxCross1 } from 'react-icons/rx'
 
 export default function InvoicePage() {
   const { dispatch } = useUserContext()
-  const [values, setValues] = useState({ company_name: '', address: '', email: '', phone: '', discount: '' })
-  const [items, setItems] = useState([{ item: 'Mobile', quantity: 5, price: 3000 }])
+  const [values, setValues] = useState({ own_company_name: '', own_address: '', own_email: '', own_phone: '', company_name: '', address: '', email: '', phone: '', discount: '' })
+  const [items, setItems] = useState([{ item: '', quantity: undefined, price: undefined }])
 
   function handleChange(e) {
     setValues((pre) => ({ ...pre, [e.target.name]: e.target.value }))
@@ -26,6 +27,45 @@ export default function InvoicePage() {
       <div className="title">Create Invoice</div>
       <div className='space-y-4'>
         <div className='bg-gray-s100 rounded-md space-y-8 border border-gray-300 p-4 sm:p-6'>
+          <div className='space-y-4'>
+            <div className="font-semibold text-xl">Your Details:</div>
+            <div className='flex flex-col gap-4'>
+              <TextInput
+                label="Company Name"
+                name='company_name'
+                type='text'
+                value={values?.company_name}
+                onChange={handleChange}
+                placeholder="Enter Company Name"
+              />
+              <TextInput
+                label="Business Address"
+                name='address'
+                type='text'
+                value={values?.address}
+                onChange={handleChange}
+                placeholder="Enter Company Address"
+              />
+              <TextInput
+                label="Email"
+                name='email'
+                type='text'
+                value={values?.email}
+                onChange={handleChange}
+                placeholder="Enter Company Email"
+              />
+              <TextInput
+                label="Phone"
+                name='phone'
+                type='text'
+                value={values?.phone}
+                onChange={handleChange}
+                placeholder="Enter Phone Number"
+              />
+            </div>
+          </div>
+          <Space h={1} />
+
           <div className='space-y-4'>
             <div className="font-semibold text-xl">Bill To:</div>
             <div className='flex flex-col gap-4'>
@@ -69,7 +109,19 @@ export default function InvoicePage() {
             {
               items?.map((item, i) => (
                 <div key={i} className='space-y-4 bg-white border p-4 rounded-md'>
-                  <div className="font-semibold text-xl">Item-{i + 1}:</div>
+                  <div className='flex justify-between gap4'>
+                    <div className="font-semibold text-xl">Item-{i + 1}:</div>
+                    {i ?
+                      <RxCross1
+                        onClick={() => {
+                          let newItems = [...items]
+                          newItems.splice(i, 1);
+                          setItems(newItems)
+                        }}
+                        className='cursor-pointer'
+                      />
+                      : null}
+                  </div>
                   <div className='flex flex-col gap-4'>
                     <TextInput
                       label="Item Name"
@@ -121,10 +173,10 @@ export default function InvoicePage() {
           />
         </div>
         <Link href='/invoice/view'><Submit onClick={() => {
-          let t=0
-          items.forEach(e=>t += Number(e.price) * Number(e.quantity))
+          let t = 0
+          items.forEach(e => t += Number(e.price) * Number(e.quantity))
           console.log(t)
-          dispatch({ type: 'ADD_INVOICE', payload: { bill: {...values, total:t}, items } })
+          dispatch({ type: 'ADD_INVOICE', payload: { bill: { ...values, total: t }, items } })
         }} value="Preview" /></Link>
       </div>
     </div >
