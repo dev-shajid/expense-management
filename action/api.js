@@ -55,7 +55,10 @@ export async function DeleteProject({ id }) {
     console.log({ id })
     try {
         let project = await db.project.findFirst({ where: { id } })
-        console.log(project)
+        let basic = (await db.basic.findMany())[0]
+        let data={total_project: basic.total_project -1 }
+        if(project.status=='on going') data.ongoing_project=basic.ongoing_project-1 
+        await db.basic.update({ where: { id: basic.id }, data })
         await db.project.delete({ where: { id } })
         return { success: true }
     } catch (error) {
