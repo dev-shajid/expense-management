@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import useApi from '@/lib/useApi';
 import Overlay from '@/components/Overlay';
 import { DateInput } from '@mantine/dates';
-import { Autocomplete, Select, TextInput, Textarea } from '@mantine/core';
+import { Autocomplete, NumberInput, Select, TextInput, Textarea } from '@mantine/core';
 
 export default function AddNewTransaction() {
     const [values, setValues] = useState({ name: '', date: undefined, amount: '', source: '', details: '', type: '', projectId: '', isPaid: true })
@@ -112,14 +112,14 @@ export default function AddNewTransaction() {
                     placeholder="Enter the Source"
                 />
 
-                <TextInput
+                <NumberInput
                     label='Amount'
                     name='amount'
-                    type='number'
                     min={0}
                     value={values.amount}
                     error={errors?.amount}
-                    onChange={handleChange}
+                    thousandSeparator
+                    onChange={(e) => setValues(pre => ({ ...pre, amount: e }))}
                     onWheel={e => e.target.blur()}
                     placeholder="Enter the Amount"
                     required

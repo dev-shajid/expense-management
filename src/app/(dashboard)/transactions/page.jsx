@@ -9,6 +9,7 @@ import { useMemo, useState } from 'react'
 import { GetAllTransactions, GetCSVData } from '../../../../action/api'
 import ReactTable from '@/components/ReactTable'
 import toast from 'react-hot-toast'
+import { NumberFormatter, Popover } from '@mantine/core'
 
 export default function TransactionsPage() {
   const { deleteTransaction } = useApi()
@@ -36,7 +37,20 @@ export default function TransactionsPage() {
       },
       {
         Header: 'Transaction Name',
-        accessor: 'name',
+        accessor: (cell) => (
+          <Popover width={200} position="bottom" withArrow shadow="md">
+            <Popover.Target>
+              <span className='cursor-pointer'>{cell.name}</span>
+            </Popover.Target>
+            <Popover.Dropdown className='text-center'>
+              {
+                cell.details ?
+                  <span className='text-sm'>{cell.details}</span> :
+                  <span className='text-sm text-gray-400'>No Details!</span>
+              }
+            </Popover.Dropdown>
+          </Popover>
+        ),
       },
       {
         Header: 'Date',
@@ -44,7 +58,7 @@ export default function TransactionsPage() {
       },
       {
         Header: 'Amount',
-        accessor: 'amount',
+        accessor: (cell) => <NumberFormatter thousandSeparator value={cell.amount} />,
       },
       {
         Header: 'Project',

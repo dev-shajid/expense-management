@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react'
 import dayjs from 'dayjs';
 import useApi from '@/lib/useApi';
 import Loading from '@/components/Loading';
-import { ActionIcon, Menu } from '@mantine/core';
+import { ActionIcon, Menu, NumberFormatter, Popover } from '@mantine/core';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
@@ -43,8 +43,21 @@ export default function ProjectPage({ params }) {
         accessor: 'id',
       },
       {
-        Header: 'Name',
-        accessor: 'name',
+        Header: 'Transaction Name',
+        accessor: (cell) => (
+          <Popover width={200} position="bottom" withArrow shadow="md">
+            <Popover.Target>
+              <span className='cursor-pointer'>{cell.name}</span>
+            </Popover.Target>
+            <Popover.Dropdown className='text-center'>
+              {
+                cell.details ?
+                  <span className='text-sm'>{cell.details}</span> :
+                  <span className='text-sm text-gray-400'>No Details!</span>
+              }
+            </Popover.Dropdown>
+          </Popover>
+        ),
       },
       {
         Header: 'Date',
@@ -52,7 +65,7 @@ export default function ProjectPage({ params }) {
       },
       {
         Header: 'Amount',
-        accessor: 'amount',
+        accessor: (cell) => <NumberFormatter thousandSeparator value={cell.amount} />,
       },
       {
         Header: 'Source',
@@ -104,12 +117,12 @@ export default function ProjectPage({ params }) {
 
   const rows = [
     { title: "Date", value: dayjs(project.start).format('D MMM YYYY') },
-    { title: "Budget", value: project.budget },
-    { title: "Income", value: project.income },
-    { title: "Expense", value: project.expense },
+    { title: "Budget", value: <NumberFormatter thousandSeparator value={project.budget} /> },
+    { title: "Income", value: <NumberFormatter thousandSeparator value={project.income} /> },
+    { title: "Expense", value: <NumberFormatter thousandSeparator value={project.expense} /> },
     { title: "Status", value: project.status },
-    { title: "A/C Payable", value: project.payable },
-    { title: "A/C Receivable", value: project.receivable },
+    { title: "A/C Payable", value: <NumberFormatter thousandSeparator value={project.payable} /> },
+    { title: "A/C Receivable", value: <NumberFormatter thousandSeparator value={project.receivable} /> },
   ]
 
   return (

@@ -114,14 +114,14 @@ export default function AddNewTransaction({ params }) {
                     placeholder="Enter the Source"
                 />
 
-                <TextInput
+                <NumberInput
                     label='Amount'
                     name='amount'
-                    type='number'
                     min={0}
                     value={values.amount}
                     error={errors?.amount}
-                    onChange={handleChange}
+                    thousandSeparator
+                    onChange={(e) => setValues(pre => ({ ...pre, amount: e }))}
                     onWheel={e => e.target.blur()}
                     placeholder="Enter the Amount"
                     required

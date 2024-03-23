@@ -3,6 +3,7 @@
 import Loading from "@/components/Loading";
 import { useUserContext } from "@/context/ContextProvider";
 import useApi from "@/lib/useApi";
+import { NumberFormatter } from "@mantine/core";
 import axios from "axios"
 import { useEffect, useState } from "react";
 
@@ -18,10 +19,10 @@ export default function Home() {
     { title: "Total Projects", value: data.total_project },
     { title: "Ongoing Projects", value: data.ongoing_project },
     { title: "Project Done", value: data.total_project - data.ongoing_project },
-    { title: "Income", value: data.income },
-    { title: "Expense", value: data.expense },
-    { title: "A/C Payable", value: data.payable },
-    { title: "A/C Receivable", value: data.receivable },
+    { title: "Income", value: <NumberFormatter thousandSeparator value={data.income}/> },
+    { title: "Expense", value: <NumberFormatter thousandSeparator value={data.expense}/> },
+    { title: "A/C Payable", value: <NumberFormatter thousandSeparator value={data.payable}/> },
+    { title: "A/C Receivable", value: <NumberFormatter thousandSeparator value={data.receivable}/> },
   ]
 
   return (

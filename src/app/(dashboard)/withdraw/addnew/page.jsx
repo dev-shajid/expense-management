@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import useApi from '@/lib/useApi';
 import Overlay from '@/components/Overlay';
 import { DateInput } from '@mantine/dates';
-import { TextInput, Textarea } from '@mantine/core';
+import { NumberInput, TextInput, Textarea } from '@mantine/core';
 
 export default function AddNewTransaction() {
     const [values, setValues] = useState({ date: undefined, amount: '', previous: '', bank_account: '', details: '' })
@@ -57,41 +57,29 @@ export default function AddNewTransaction() {
                     required
                 />
 
-                <TextInput
+                <NumberInput
                     label="Amount"
                     name='amount'
-                    type='number'
                     value={values.amount}
                     error={errors?.amount}
-                    onChange={handleChange}
+                    thousandSeparator
+                    onChange={(e) => setValues(pre => ({ ...pre, amount: e }))}
                     onWheel={e => e.target.blur()}
                     placeholder="Enter the amount"
                     required
                 />
 
-                <TextInput
+                <NumberInput
                     label="Previous"
                     name='previous'
-                    type='number'
                     value={values.previous}
                     error={errors?.previous}
-                    onChange={handleChange}
+                    thousandSeparator
+                    onChange={(e) => setValues(pre => ({ ...pre, previous: e }))}
                     onWheel={e => e.target.blur()}
                     placeholder="Previous remaining amount"
                     required
                 />
-
-                {/* <TextInput
-                    label="Remaining"
-                    name='remaining'
-                    type='number'
-                    value={values.remaining}
-                    error={errors?.remaining}
-                    onChange={handleChange}
-                    onWheel={e=>e.target.blur()}
-                    placeholder="Enter the Remaining amount"
-                    required
-                /> */}
 
                 <TextInput
                     label='Bank Account'

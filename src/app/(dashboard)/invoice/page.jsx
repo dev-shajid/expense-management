@@ -143,8 +143,9 @@ export default function InvoicePage() {
                     <NumberInput
                       label="Price"
                       name='price'
-                      type='text'
+                      min={0}
                       value={item?.price}
+                      thousandSeparator
                       onChange={(e) => handleItemChange(Number(e), i, 'price')}
                       placeholder="Enter Item's Price"
                     />

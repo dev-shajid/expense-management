@@ -10,7 +10,7 @@ import dayjs from 'dayjs'
 import { useCallback, useMemo, useState } from 'react'
 import { GetAllTransactions } from '../../../../../action/api'
 import ReactTable from '@/components/ReactTable'
-import { ActionIcon } from '@mantine/core'
+import { ActionIcon, NumberFormatter, Popover } from '@mantine/core'
 import { FaCheck } from 'react-icons/fa'
 import toast from 'react-hot-toast'
 
@@ -79,7 +79,20 @@ export default function AcReceivablePage() {
       },
       {
         Header: 'Transaction Name',
-        accessor: 'name',
+        accessor: (cell) => (
+          <Popover width={200} position="bottom" withArrow shadow="md">
+            <Popover.Target>
+              <span className='cursor-pointer'>{cell.name}</span>
+            </Popover.Target>
+            <Popover.Dropdown className='text-center'>
+              {
+                cell.details ?
+                  <span className='text-sm'>{cell.details}</span> :
+                  <span className='text-sm text-gray-400'>No Details!</span>
+              }
+            </Popover.Dropdown>
+          </Popover>
+        ),
       },
       {
         Header: 'Date',
@@ -87,7 +100,7 @@ export default function AcReceivablePage() {
       },
       {
         Header: 'Amount',
-        accessor: 'amount',
+        accessor: (cell) => <NumberFormatter thousandSeparator value={cell.amount} />,
       },
       {
         Header: 'Project',
@@ -127,8 +140,8 @@ export default function AcReceivablePage() {
     <>
       <div className='space-y-6'>
         <div className='flex flex-col text-center justify-center items-center gap-1 max-w-fit bg-white rounded-md p-4 border'>
-          <span className='text'>A/C Payable</span>
-          <span className='text-xl font-semibold'>{projectDetails?.data?.receivable || basicInfo?.receivable} TK</span>
+          <span className='text'>A/C Receivable</span>
+          <span className='text-xl font-semibold'><NumberFormatter thousandSeparator value={projectDetails?.data?.receivable || basicInfo?.receivable} /> TK</span>
         </div>
 
         <div className='mt-6 space-y-4'>

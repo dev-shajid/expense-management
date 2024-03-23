@@ -9,7 +9,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import useApi from '@/lib/useApi';
 import Overlay from '@/components/Overlay';
 import { DateInput } from '@mantine/dates';
-import { Select, TextInput, Textarea } from '@mantine/core';
+import { NumberInput, Select, TextInput, Textarea } from '@mantine/core';
 import Loading from '@/components/Loading';
 
 export default function AddNewTransaction({ params }) {
@@ -128,14 +128,15 @@ export default function AddNewTransaction({ params }) {
                     placeholder="Enter the Source"
                 />
 
-                <TextInput
+                <NumberInput
+
                     label='Amount'
                     name='amount'
-                    type='number'
                     min={0}
                     value={values.amount}
                     error={errors?.amount}
-                    onChange={handleChange}
+                    thousandSeparator
+                    onChange={(e) => setValues(pre => ({ ...pre, amount: e }))}
                     onWheel={e => e.target.blur()}
                     placeholder="Enter the Amount"
                     required

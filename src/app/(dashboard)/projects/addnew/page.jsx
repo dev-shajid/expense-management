@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import useApi from '@/lib/useApi';
 import Overlay from '@/components/Overlay';
-import { TextInput, Textarea } from '@mantine/core';
+import { NumberInput, TextInput, Textarea } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 
 export default function AddNewProduct() {
@@ -68,14 +68,14 @@ export default function AddNewProduct() {
                     placeholder="Enter Your Name"
                 />
 
-                <TextInput
+                <NumberInput
                     label='Budget'
                     name='budget'
-                    type='number'
                     min={0}
                     value={values.budget}
                     error={errors?.budget}
-                    onChange={handleChange}
+                    thousandSeparator
+                    onChange={(e) => setValues(pre => ({ ...pre, budget: e }))}
                     onWheel={e => e.target.blur()}
                     placeholder="Enter Your Project Budget"
                 />

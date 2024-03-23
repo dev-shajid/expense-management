@@ -9,6 +9,7 @@ import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { GetCustomers } from '../../../../action/api'
 import ReactTable from '@/components/ReactTable'
+import { Popover } from '@mantine/core'
 
 export default function CustomersPage() {
   const { deleteCustomer } = useApi()
@@ -36,7 +37,20 @@ export default function CustomersPage() {
       },
       {
         Header: 'Name',
-        accessor: 'name',
+        accessor: (cell) => (
+          <Popover width={200} position="bottom" withArrow shadow="md">
+            <Popover.Target>
+              <span className='cursor-pointer'>{cell.name}</span>
+            </Popover.Target>
+            <Popover.Dropdown className='text-center'>
+              {
+                cell.details ?
+                  <span className='text-sm'>{cell.details}</span> :
+                  <span className='text-sm text-gray-400'>No Details!</span>
+              }
+            </Popover.Dropdown>
+          </Popover>
+        ),
       },
       {
         Header: 'Email',
@@ -57,10 +71,6 @@ export default function CustomersPage() {
       {
         Header: 'Customer Since',
         accessor: (cell) => <span>{dayjs(cell.since)?.format('DD MMM YYYY')}</span>,
-      },
-      {
-        Header: 'Details',
-        accessor: 'details',
       },
       {
         Header: 'Action',
