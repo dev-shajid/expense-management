@@ -209,7 +209,7 @@ export default function ProjectPage({ params }) {
         }
       </div>
       {project.details ? <div className='grid gap-1 mt-4 bg-white rounded-md p-4 border'>
-        <span className='text-xs text-gray-500'>Project Details</span>
+        <span className='text-xs text-gray-500'>Details</span>
         <span className='text-sm'>{project.details}</span>
       </div> : null}
 

@@ -131,7 +131,7 @@ export default function AddNewTransaction() {
                     onChange={handleChange}
                     autosize
                     minRows={5}
-                    label="Project Details"
+                    label="Details"
                     placeholder="Enter some details"
                 />
                 <Submit type='submit' />

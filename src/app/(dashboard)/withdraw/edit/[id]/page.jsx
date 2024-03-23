@@ -32,10 +32,10 @@ export default function AddNewTransaction({ params }) {
             let loadingPromise = toast.loading("Loading...")
             editWithdraw.mutate({ id: params.id, data: values }, {
                 onSuccess: (res) => {
-                    if(res.success){
+                    if (res.success) {
                         router.push('/withdraw')
                         toast.success("Updated Withdraw!", { id: loadingPromise })
-                    }else throw new Error(res.message)
+                    } else throw new Error(res.message)
                 },
                 onError: (e) => {
                     console.log(e)
@@ -121,7 +121,7 @@ export default function AddNewTransaction({ params }) {
                     onChange={handleChange}
                     autosize
                     minRows={5}
-                    label="Project Details"
+                    label="Details"
                     placeholder="Enter some details"
                 />
                 <Submit type='submit' />
