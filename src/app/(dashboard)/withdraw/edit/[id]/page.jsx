@@ -31,9 +31,11 @@ export default function AddNewTransaction({ params }) {
         if (!Object.keys(d).length) {
             let loadingPromise = toast.loading("Loading...")
             editWithdraw.mutate({ id: params.id, data: values }, {
-                onSuccess: () => {
-                    router.push('/withdraw')
-                    toast.success("Updated Withdraw!", { id: loadingPromise })
+                onSuccess: (res) => {
+                    if(res.success){
+                        router.push('/withdraw')
+                        toast.success("Updated Withdraw!", { id: loadingPromise })
+                    }else throw new Error(res.message)
                 },
                 onError: (e) => {
                     console.log(e)
@@ -59,8 +61,8 @@ export default function AddNewTransaction({ params }) {
         }
     }, [data])
 
-    if (editWithdraw.isError) return <pre>Error: {JSON.stringify(editWithdraw.error, null, 2)}</pre>
-    if (isError) return <pre>Error: {JSON.stringify(error, null, 2)}</pre>
+    // if (editWithdraw.isError) return <pre>Error: {JSON.stringify(editWithdraw.error, null, 2)}</pre>
+    // if (isError) return <pre>Error: {JSON.stringify(error, null, 2)}</pre>
     if (isLoading) return <Loading page />
     return (
         <section className='container'>

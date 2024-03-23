@@ -321,8 +321,10 @@ export async function EditWithdraw({ id, data }) {
         data.previous = Number(data.previous)
         data.remaining = prev.remaining - (prev.amount + prev.previous) + data.amount + data.previous
 
+        if (data.remaining < 0) return { success: false, message: "Insufficient Balance" }
+
         await db.withdraw.update({ where: { id }, data })
-        return true
+        return { success: true }
     } catch (error) {
         console.log({ EditWithdraw_Error: error.message })
         return error
@@ -335,9 +337,20 @@ export async function DeleteWithdraw({ id }) {
         let withdraw = await db.withdraw.findFirst({ where: { id } })
 
         let data = { expense: basic.expense - (withdraw.amount + withdraw.previous - withdraw.remaining) }
-
-
         await db.basic.update({ where: { id: basic.id }, data })
+
+        let transactions = await db.transaction.findMany({ where: { withdrawId: withdraw.id } })
+        let sum = {}
+        transactions.forEach(e => {
+            sum[e.projectId] = sum[e.projectId] ? sum[e.projectId] + e.amount : e.amount
+        });
+
+        for (let s in sum) {
+            let project = await db.project.findFirst({ where: { id: s } })
+            await db.project.update({ where: { id: s }, data: { expense: project.expense - sum[s] } })
+        }
+
+        console.log(sum)
         await db.withdraw.delete({ where: { id } })
         return true
     } catch (error) {
