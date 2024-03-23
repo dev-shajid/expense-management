@@ -165,7 +165,7 @@ export default function ProjectPage({ params }) {
               >
                 {project.status == 'End' ? 'On Going' : 'End'} Project
               </Menu.Item>
-              {/* <Menu.Divider />
+              <Menu.Divider />
               <Menu.Item
                 color="red"
                 onClick={() => {
@@ -183,7 +183,7 @@ export default function ProjectPage({ params }) {
                 }}
               >
                 Delete Project
-              </Menu.Item> */}
+              </Menu.Item>
             </Menu.Dropdown>
           </Menu>
         </>

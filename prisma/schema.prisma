@@ -49,9 +49,9 @@ model Transaction {
   id         String    @id @default(auto()) @map("_id") @db.ObjectId
   name       String
   details    String?
-  project    Project   @relation(fields: [projectId], references: [id])
+  project    Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId  String    @db.ObjectId
-  withdraw   Withdraw? @relation(fields: [withdrawId], references: [id])
+  withdraw   Withdraw? @relation(fields: [withdrawId], references: [id], onDelete: Cascade)
   withdrawId String?   @db.ObjectId
   to_from    String?   @default("")
   source     String?
