@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import useApi from '@/lib/useApi';
 import Overlay from '@/components/Overlay';
 import { DateInput } from '@mantine/dates';
-import { Autocomplete, Select, TextInput, Textarea } from '@mantine/core';
+import { Autocomplete, NumberInput, Select, TextInput, Textarea } from '@mantine/core';
 
 export default function AddNewTransaction({ params }) {
     // console.log(params)

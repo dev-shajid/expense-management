@@ -52,12 +52,20 @@ export async function EditProject({ id, values }) {
 }
 
 export async function DeleteProject({ id }) {
-    console.log({ id })
+    // console.log({ id })
     try {
         let project = await db.project.findFirst({ where: { id } })
         let basic = (await db.basic.findMany())[0]
-        let data={total_project: basic.total_project -1 }
-        if(project.status=='On Going') data.ongoing_project=basic.ongoing_project-1 
+
+        let data = {
+            total_project: basic.total_project - 1,
+            income: basic.income - project.income,
+            expense: basic.expense - project.expense,
+            payable: basic.payable - project.payable,
+            receivable: basic.receivable - project.receivable,
+        }
+        if (project.status == 'On Going') data.ongoing_project = basic.ongoing_project - 1
+
         await db.basic.update({ where: { id: basic.id }, data })
         await db.project.delete({ where: { id } })
         return { success: true }
@@ -323,6 +331,13 @@ export async function EditWithdraw({ id, data }) {
 
 export async function DeleteWithdraw({ id }) {
     try {
+        let basic = (await db.basic.findMany())[0]
+        let withdraw = await db.withdraw.findFirst({ where: { id } })
+
+        let data = { expense: basic.expense - (withdraw.amount + withdraw.previous - withdraw.remaining) }
+
+
+        await db.basic.update({ where: { id: basic.id }, data })
         await db.withdraw.delete({ where: { id } })
         return true
     } catch (error) {
