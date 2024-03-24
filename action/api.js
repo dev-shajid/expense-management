@@ -66,6 +66,19 @@ export async function DeleteProject({ id }) {
         }
         if (project.status == 'On Going') data.ongoing_project = basic.ongoing_project - 1
 
+
+        let transactions = await db.transaction.findMany({ where: { projectId: project.id } })
+        let sum = {}
+        transactions.forEach(e => {
+            sum[e.withdrawId] = sum[e.withdrawId] ? sum[e.withdrawId] + e.amount : e.amount
+        });
+
+        for (let s in sum) {
+            let withdraw = await db.withdraw.findFirst({ where: { id: s } })
+            await db.withdraw.update({ where: { id: s }, data: { remaining: withdraw.remaining + sum[s] } })
+        }
+
+
         await db.basic.update({ where: { id: basic.id }, data })
         await db.project.delete({ where: { id } })
         return { success: true }
@@ -166,15 +179,16 @@ export async function EditTransaction({ id, data }) {
         if (data.date) data.date = new Date(data.date)
         if (data.amount) data.amount = Number(data.amount)
         let prev_transaction = await db.transaction.findFirst({ where: { id } })
-        let transaction = await db.transaction.update({ where: { id }, data })
-        let { name, projectId, date, amount, type, isPaid } = transaction
 
         if (data?.withdrawId) {
+            if(data.type=='income') return {success:false, error: 'Withdraw transaction cannot be Income type!'}
             let withdraw = await db.withdraw.findFirst({ where: { id: data.withdrawId } })
             if (withdraw.remaining + prev_transaction.amount < data.amount) return { success: false, error: "Insufficient amount!" }
             await db.withdraw.update({ where: { id: withdraw.id }, data: { remaining: withdraw.remaining + prev_transaction.amount - data.amount } })
         }
 
+        let transaction = await db.transaction.update({ where: { id }, data })
+        let { name, projectId, date, amount, type, isPaid } = transaction
 
         let base = (await db.basic.findMany())[0]
 
@@ -350,7 +364,7 @@ export async function DeleteWithdraw({ id }) {
             await db.project.update({ where: { id: s }, data: { expense: project.expense - sum[s] } })
         }
 
-        console.log(sum)
+        // console.log(sum)
         await db.withdraw.delete({ where: { id } })
         return true
     } catch (error) {

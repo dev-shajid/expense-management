@@ -59,14 +59,13 @@ export default function AddNewTransaction({ params }) {
     }, [])
 
     useEffect(() => {
-        // console.log(data)
         if (data?.name) {
             setValues({ name: data?.name, date: data?.date, amount: data?.amount, source: data?.source, details: data?.details, type: data?.type, projectId: data?.projectId, withdrawId: data.withdrawId, isPaid: data?.isPaid })
         }
     }, [data])
 
-    if (editTransaction.isError) return <pre>Error: {JSON.stringify(editTransaction.error, null, 2)}</pre>
-    if (isError) return <pre>Error: {JSON.stringify(error, null, 2)}</pre>
+    // if (editTransaction.isError) return <pre>Error: {JSON.stringify(editTransaction.error, null, 2)}</pre>
+    // if (isError) return <pre>Error: {JSON.stringify(error, null, 2)}</pre>
     if (isLoading) return <Loading page />
     return (
         <section className='container'>
@@ -88,6 +87,7 @@ export default function AddNewTransaction({ params }) {
                     data={[{ label: 'Income', value: 'income' }, { label: 'Expense', value: 'expense' }]}
                     value={values.type}
                     name='type'
+                    readOnly={values?.withdrawId ? true : false}
                     onChange={(v) => setValues(p => ({ ...p, type: v }))}
                     label="Type"
                     error={errors?.type}
