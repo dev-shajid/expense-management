@@ -10,6 +10,8 @@ import { AiOutlineDelete } from 'react-icons/ai'
 import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { NumberFormatter, Popover } from '@mantine/core'
+import Overlay from '@/components/Overlay'
+import Loading from '@/components/Loading'
 
 export default function WithdrawPage({ params }) {
   const { deleteTransaction, getWithdraw } = useApi()
@@ -103,30 +105,34 @@ export default function WithdrawPage({ params }) {
     { title: "Remaining", value: <NumberFormatter thousandSeparator value={withdraw?.remaining}/> },
   ]
 
+  if(withdrawIsLoading) return <Loading page/>
   return (
-    <section className='container'>
-      <div className='grid gap-4 lg:grid-cols-5 sm:grid-cols-3 grid-cols-2'>
-        {
-          rows.map((p, i) => (
-            <div key={i} className='flex flex-col text-center justify-center items-center gap-1 bg-white rounded-md p-4 border'>
-              <span className='text-xs'>{p.title}</span>
-              <span className='text font-semibold min-w-fit'>{p.value}</span>
-            </div>
-          ))
-        }
-      </div>
-      {withdraw?.details ? <div className='grid gap-1 mt-4 bg-white rounded-md p-4 border'>
-        <span className='text-xs text-gray-500'>Withdraw Details</span>
-        <span className='text-sm'>{withdraw.details}</span>
-      </div> : null}
-
-      <div className='mt-8'>
-        <div className="title">All Transaction</div>
-        <div className='mt-6'>
-          <Link href={`/withdraw/${params.withdrawId}/add_transaction`} className="add_button">Add Transaction</Link>
-          <ReactTable getTableData={getTableData} db='transaction' columns={columns} query={query} />
+    <>
+      <Overlay isLoading={deleteTransaction.isPending}/>
+      <section className='container'>
+        <div className='grid gap-4 lg:grid-cols-5 sm:grid-cols-3 grid-cols-2'>
+          {
+            rows.map((p, i) => (
+              <div key={i} className='flex flex-col text-center justify-center items-center gap-1 bg-white rounded-md p-4 border'>
+                <span className='text-xs'>{p.title}</span>
+                <span className='text font-semibold min-w-fit'>{p.value}</span>
+              </div>
+            ))
+          }
         </div>
-      </div>
-    </section>
+        {withdraw?.details ? <div className='grid gap-1 mt-4 bg-white rounded-md p-4 border'>
+          <span className='text-xs text-gray-500'>Withdraw Details</span>
+          <span className='text-sm'>{withdraw.details}</span>
+        </div> : null}
+
+        <div className='mt-8'>
+          <div className="title">All Transaction</div>
+          <div className='mt-6'>
+            <Link href={`/withdraw/${params.withdrawId}/add_transaction`} className="add_button">Add Transaction</Link>
+            <ReactTable getTableData={getTableData} db='transaction' columns={columns} query={query} />
+          </div>
+        </div>
+      </section>
+    </>
   )
 }
