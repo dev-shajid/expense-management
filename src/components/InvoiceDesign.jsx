@@ -57,8 +57,8 @@ export default function InvoiceDesign() {
                                     <Table.Tr key={i}>
                                         <Table.Td>{item?.item}</Table.Td>
                                         <Table.Td className='text-center'>{item?.quantity}</Table.Td>
-                                        <Table.Td className='text-center'>{item?.price}</Table.Td>
-                                        <Table.Td className='text-end'>{item?.quantity * item?.price}</Table.Td>
+                                        <Table.Td className='text-center'>৳ {item?.price}</Table.Td>
+                                        <Table.Td className='text-end'>৳ {item?.quantity * item?.price}</Table.Td>
                                     </Table.Tr>
                                 ))
                             }
@@ -72,17 +72,17 @@ export default function InvoiceDesign() {
                                     <>
                                         <Table.Tr>
                                             <Table.Td colSpan={3}>Subtotal</Table.Td>
-                                            <Table.Td className='text-end'>${invoice_items?.bill?.total}</Table.Td>
+                                            <Table.Td className='text-end'>৳ {invoice_items?.bill?.total}</Table.Td>
                                         </Table.Tr>
                                         <Table.Tr>
                                             <Table.Td colSpan={3}>Discount ({invoice_items?.bill?.discount}%)</Table.Td>
-                                            <Table.Td className='text-end'>-${((invoice_items?.bill?.total * invoice_items?.bill?.discount) / 100)}</Table.Td>
+                                            <Table.Td className='text-end'>-৳ {((invoice_items?.bill?.total * invoice_items?.bill?.discount) / 100)}</Table.Td>
                                         </Table.Tr>
                                     </> : null
                             }
                             <Table.Tr className='text-xl font-semibold'>
                                 <Table.Td colSpan={3}>Total</Table.Td>
-                                <Table.Td className='text-end'>${invoice_items?.bill?.total - (invoice_items?.bill?.discount>0 ? ((invoice_items?.bill?.total * invoice_items?.bill?.discount) / 100) : 0)}</Table.Td>
+                                <Table.Td className='text-end'>৳ {invoice_items?.bill?.total - (invoice_items?.bill?.discount>0 ? ((invoice_items?.bill?.total * invoice_items?.bill?.discount) / 100) : 0)}</Table.Td>
                             </Table.Tr>
                         </Table.Tbody>
                     </Table>

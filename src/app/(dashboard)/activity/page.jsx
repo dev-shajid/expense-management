@@ -43,7 +43,7 @@ export default function ActivityPage() {
       },
       {
         Header: 'Amount',
-        accessor: (cell) => <NumberFormatter thousandSeparator value={cell.amount} />,
+        accessor: (cell) => <>৳ <NumberFormatter thousandSeparator value={cell.amount} /></>,
       },
       {
         Header: 'Project',

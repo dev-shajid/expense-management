@@ -65,7 +65,7 @@ export default function ProjectPage({ params }) {
       },
       {
         Header: 'Amount',
-        accessor: (cell) => <NumberFormatter thousandSeparator value={cell.amount} />,
+        accessor: (cell) => <>৳ <NumberFormatter thousandSeparator value={cell.amount} /></>,
       },
       {
         Header: 'Source',
@@ -117,10 +117,10 @@ export default function ProjectPage({ params }) {
 
   const rows = [
     { title: "Date", value: dayjs(project.start).format('D MMM YYYY') },
+    { title: "Status", value: project.status },
     { title: "Budget", value: <NumberFormatter thousandSeparator value={project.budget} /> },
     { title: "Income", value: <NumberFormatter thousandSeparator value={project.income} /> },
     { title: "Expense", value: <NumberFormatter thousandSeparator value={project.expense} /> },
-    { title: "Status", value: project.status },
     { title: "A/C Payable", value: <NumberFormatter thousandSeparator value={project.payable} /> },
     { title: "A/C Receivable", value: <NumberFormatter thousandSeparator value={project.receivable} /> },
   ]
@@ -195,14 +195,14 @@ export default function ProjectPage({ params }) {
               return <Link key={i} href={p.title == 'A/C Payable' ? `/accounts/payable?redirect=/projects/${project?.id}` : `/accounts/receivable?redirect=/projects/${project?.id}`}>
                 <div className='flex flex-col text-center justify-center items-center gap-1 bg-white rounded-md p-4 border'>
                   <span className='text-xs'>{p.title}</span>
-                  <span className='text font-semibold min-w-fit'>{p.value}</span>
+                  <span className='text font-semibold min-w-fit'>৳ {p.value}</span>
                 </div>
               </Link>
             }
             else {
               return <div key={i} className='flex flex-col text-center justify-center items-center gap-1 bg-white rounded-md p-4 border'>
                 <span className='text-xs'>{p.title}</span>
-                <span className='text font-semibold min-w-fit'>{p.value}</span>
+                <span className='text font-semibold min-w-fit'>{i > 1 ? '৳' : null} {p.value}</span>
               </div>
             }
           })

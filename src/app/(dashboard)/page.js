@@ -32,7 +32,7 @@ export default function Home() {
           rows.map((p, i) => user.role!='admin' && p.title=='Income'  ? null : (
             <div key={i} className='flex flex-col text-center justify-center items-center gap-1 bg-white rounded-md p-4 border'>
               <span className='text-xs'>{p.title}</span>
-              <span className='text font-semibold min-w-fit'>{p.value}</span>
+              <span className='text font-semibold min-w-fit'>{i>2?'৳':null} {p.value}</span>
             </div>
           ))
         }

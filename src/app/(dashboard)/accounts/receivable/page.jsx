@@ -100,7 +100,7 @@ export default function AcReceivablePage() {
       },
       {
         Header: 'Amount',
-        accessor: (cell) => <NumberFormatter thousandSeparator value={cell.amount} />,
+        accessor: (cell) => <>৳ <NumberFormatter thousandSeparator value={cell.amount} /></>,
       },
       {
         Header: 'Project',
@@ -141,7 +141,7 @@ export default function AcReceivablePage() {
       <div className='space-y-6'>
         <div className='flex flex-col text-center justify-center items-center gap-1 max-w-fit bg-white rounded-md p-4 border'>
           <span className='text'>A/C Receivable</span>
-          <span className='text-xl font-semibold'><NumberFormatter thousandSeparator value={projectDetails?.data?.receivable || basicInfo?.receivable} /> TK</span>
+          <span className='text-xl font-semibold'>৳ <NumberFormatter thousandSeparator value={projectDetails?.data?.receivable || basicInfo?.receivable} /></span>
         </div>
 
         <div className='mt-6 space-y-4'>

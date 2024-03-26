@@ -44,15 +44,15 @@ export default function TransactionsPage() {
       },
       {
         Header: 'Amount',
-        accessor: (cell) => <NumberFormatter thousandSeparator value={cell.amount} />,
+        accessor: (cell) => <>৳ <NumberFormatter thousandSeparator value={cell.amount} /></>,
       },
       {
         Header: 'Previous',
-        accessor: (cell) => <NumberFormatter thousandSeparator value={cell.previous} />,
+        accessor: (cell) => <>৳ <NumberFormatter thousandSeparator value={cell.previous} /></>,
       },
       {
         Header: 'Remaining',
-        accessor: (cell) => <NumberFormatter thousandSeparator value={cell.remaining} />,
+        accessor: (cell) => <>৳ <NumberFormatter thousandSeparator value={cell.remaining} /></>,
       },
       {
         Header: 'Details',
