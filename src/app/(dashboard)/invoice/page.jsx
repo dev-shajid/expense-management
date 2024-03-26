@@ -32,33 +32,33 @@ export default function InvoicePage() {
             <div className='flex flex-col gap-4'>
               <TextInput
                 label="Company Name"
-                name='company_name'
+                name='own_company_name'
                 type='text'
-                value={values?.company_name}
+                value={values?.own_company_name}
                 onChange={handleChange}
                 placeholder="Enter Company Name"
               />
               <TextInput
                 label="Business Address"
-                name='address'
+                name='own_address'
                 type='text'
-                value={values?.address}
+                value={values?.own_address}
                 onChange={handleChange}
                 placeholder="Enter Company Address"
               />
               <TextInput
                 label="Email"
-                name='email'
+                name='own_email'
                 type='text'
-                value={values?.email}
+                value={values?.own_email}
                 onChange={handleChange}
                 placeholder="Enter Company Email"
               />
               <TextInput
                 label="Phone"
-                name='phone'
+                name='own_phone'
                 type='text'
-                value={values?.phone}
+                value={values?.own_phone}
                 onChange={handleChange}
                 placeholder="Enter Phone Number"
               />

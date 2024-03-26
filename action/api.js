@@ -10,7 +10,7 @@ export async function Logout() {
         cookies().delete('token');
         return true
     } catch (error) {
-        return error
+        return error.message
     }
 }
 

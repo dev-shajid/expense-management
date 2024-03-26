@@ -37,7 +37,7 @@ export default async function middleware(req) {
 export const config = {
     matcher: [
         '/',
-        '/admin', '/projects', '/activity', '/projects/:path*',
+        '/admin', '/projects', '/actiivity', '/projects/:path*',
         '/signin', '/signup',
     ]
 }
