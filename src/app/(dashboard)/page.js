@@ -37,9 +37,9 @@ export default function Home() {
           ))
         }
       </div>
-      <div className="text-3xl">
+      {/* <div className="text-3xl">
         Hello World
-      </div>
+      </div> */}
     </section>
   );
 }

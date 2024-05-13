@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Expense Management System
 
-## Getting Started
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+    <a href="https://expense-management2.vercel.app/">
+        <img src="./public/ss1.png" alt="Logo">
+    </a>
+    <a href="https://expense-management2.vercel.app/">
+        <img src="./public/ss2.png" alt="Logo">
+    </a>
+    <a href="https://expense-management2.vercel.app/">
+        <img src="./public/ss3.png" alt="Logo">
+    </a>
+    <a href="https://expense-management2.vercel.app/">
+        <img src="./public/ss4.png" alt="Logo">
+    </a>
+</div>
 
-First, run the development server:
+## Overview
+The Expense Management System is a web application designed to help users track and manage their expenses efficiently. It provides a user-friendly interface for adding projects, and transactions, expenses and withdraw under a particular projects, helping individuals and businesses maintain control over their finances.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Features
+- **User Authentication**: Secure user authentication system to ensure data privacy and access control.
+- **Expense Tracking**: Ability to add, edit, and delete expenses with customizable categories and tags.
+- **Dashboard**: Interactive dashboard displaying summary.
+- **Invoice**: Invoice Generator.
+- **Multi-platform Access**: Accessible from desktop, tablet, and mobile devices for on-the-go expense management.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Technologies Used
+- **Frontend**: Next.js for server-side rendering and React for building interactive UI components.
+- **Backend**: MongoDB for data storage and management.
+- **Authentication**: JSON Web Tokens (JWT) for secure user authentication.
+- **UI Library**: Maintine UI.
+- **Styling**: Tailwind css for styling.
+- **Deployment**: Hosted on vercel.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+<!-- CONTACT -->
+## Contact
+For any inquiries or support, please contact-[Gmail](mailto:sajidislam729@gmail.com)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
